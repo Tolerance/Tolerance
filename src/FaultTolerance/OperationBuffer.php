@@ -14,9 +14,16 @@ interface OperationBuffer
     public function add(Operation $operation);
 
     /**
-     * Returns an operation if there's some in the buffer.
+     * Returns the current operation at the head of the buffer.
      *
      * @return Operation|null
      */
-    public function get();
+    public function current();
+
+    /**
+     * Pop the operation from the head of the buffer.
+     *
+     * @return Operation
+     */
+    public function pop();
 }
