@@ -1,0 +1,15 @@
+{
+    "name": "sroze/fault-tolerance",
+    "type": "library",
+    "license": "MIT",
+
+    "require-dev": {
+        "phpspec/phpspec": "~2.0"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "FaultTolerance\\": "src/"
+        }
+    }
+}
