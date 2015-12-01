@@ -31,7 +31,19 @@ class InMemoryOperationBuffer implements OperationBuffer
     /**
      * {@inheritdoc}
      */
-    public function get()
+    public function current()
+    {
+        if (false !== ($operation = current($this->operations))) {
+            return $operation;
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pop()
     {
         return array_shift($this->operations);
     }
