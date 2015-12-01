@@ -1,8 +1,8 @@
 # FaultTolerance
 
-A set of classes that helps to setup fault-tolerant applications in PHP.
-
 **This is an early draft and is not supposed to be used as it now, I may break things :)**
+
+A set of classes that helps to setup fault-tolerant applications in PHP.
 
 - [Operations](#operations)
 - [Operation Runners](#operation-runners)
