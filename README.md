@@ -6,6 +6,7 @@ A set of classes that helps to setup fault-tolerant applications in PHP.
 
 - [Operations](#operations)
 - [Operation Runners](#operation-runners)
+- [Waiters](#waiters)
 
 ## Operation
 
@@ -66,4 +67,17 @@ $runner->run($secondOperation);
 
 // That will actually run the first one first,
 // and then the second one
+```
+
+## Waiters
+
+These are actual implementations of wait. The only for now is the `SleepWaiter` that calls `sleep` basically.
+
+```php
+use FaultTolerance\Waiter\SleepWaiter;
+
+$waiter = new SleepWaiter();
+
+// That will sleep for 1000 milliseconds, so 1 second
+$waiter->sleep(1000);
 ```
