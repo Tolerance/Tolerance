@@ -5,7 +5,8 @@
 A set of classes that helps to setup fault-tolerant applications in PHP.
 
 - [Operations](#operations)
-- [Operation Runners](#operation-runners)
+- [Operation runners](#operation-runners)
+- [Wait strategies](#wait-strategies)
 - [Waiters](#waiters)
 
 ## Operation
@@ -80,4 +81,32 @@ $waiter = new SleepWaiter();
 
 // That will sleep for 500 milliseconds
 $waiter->sleep(0.5);
+```
+
+## Wait strategies
+
+Many different wait strategies can be used in order to retry things or simply wait for a circuit to be closed, etc...
+
+### Exponential
+
+Each time you will call `wait` on the object, it'll wait an exponential number of seconds, based on your exponent.
+
+```php
+use FaultTolerance\WaitStrategy\Exponential;
+use FaultTolerance\Waiter\SleepWaiter;
+
+// We use an initial exponent of 1
+$waiter = new SleepWaiter();
+$waitStrategy = new Exponential($waiter, 1);
+
+// Waits exp(1)
+$waitStrategy->wait();
+
+// Waits exp(2)
+$waitStrategy->wait();
+
+// Waits exp(3)
+$waitStrategy->wait();
+
+// ...
 ```
