@@ -18,8 +18,8 @@ class SleepWaiter implements Waiter
     /**
      * {@inheritdoc}
      */
-    public function wait($milliSeconds)
+    public function wait($seconds)
     {
-        usleep($milliSeconds * 1000);
+        usleep($seconds * 1000000);
     }
 }
