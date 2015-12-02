@@ -78,6 +78,6 @@ use FaultTolerance\Waiter\SleepWaiter;
 
 $waiter = new SleepWaiter();
 
-// That will sleep for 1000 milliseconds, so 1 second
-$waiter->sleep(1000);
+// That will sleep for 500 milliseconds
+$waiter->sleep(0.5);
 ```

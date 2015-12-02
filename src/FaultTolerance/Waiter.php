@@ -7,9 +7,9 @@ use FaultTolerance\Waiter\WaiterException;
 interface Waiter
 {
     /**
-     * @param int $milliSeconds
+     * @param int $seconds
      *
      * @throws WaiterException
      */
-    public function wait($milliSeconds);
+    public function wait($seconds);
 }
