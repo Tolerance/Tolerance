@@ -42,6 +42,8 @@ class RetryOperationRunner implements OperationRunner
             } catch (WaiterException $waiterException) {
                 throw $e;
             }
+
+            $this->run($operation);
         }
     }
 }

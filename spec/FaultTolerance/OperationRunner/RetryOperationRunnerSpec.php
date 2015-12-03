@@ -24,12 +24,14 @@ class RetryOperationRunnerSpec extends ObjectBehavior
     function it_should_retry_to_run_the_operation(OperationRunner $runner, WaitStrategy $waitStrategy, Operation $operation)
     {
         $runner->run($operation)->will(function() use ($operation) {
-            $this->run($operation)->willReturn('foo');
+            $this->run($operation)->willReturn();
 
             throw new \RuntimeException('Operation failed');
         });
 
         $this->run($operation);
+
+        $runner->run($operation)->shouldHaveBeenCalledTimes(2);
     }
 
     function it_should_throw_the_original_exception_if_the_wait_fails(OperationRunner $runner, WaitStrategy $waitStrategy, Operation $operation)
