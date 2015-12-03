@@ -29,6 +29,7 @@ describes the different operation runners available:
 
 - [`SimpleOperationRunner`](#simpleoperationrunner) that simply calls the operation
 - [`BufferedOperationRunner`](#bufferedoperationrunner) will buffer operations and try to run them.
+- [`RetryOperationRunner`](#retryoperationrunner) will retry the operation until it is successful.
 
 ### SimpleOperationRunner
 
@@ -68,6 +69,27 @@ $runner->run($secondOperation);
 
 // That will actually run the first one first,
 // and then the second one
+```
+
+### RetryOperationRunner
+
+This runner will retry to run the operation until it is successful or the wait strategy decide to fail. Again, this
+should be used as decorator as an existing operation runner.
+
+```php
+use FaultTolerance\OperationRunner\SimpleOperationRunner;
+use FaultTolerance\OperationRunner\RetryOperationRunner;
+use FaultTolerance\Waiter\SleepWaiter;
+use FaultTolerance\WaitStrategy\Exponential;
+
+// This example will run the operation until it is successful
+// and will wait an exponential amount of time between the calls.
+
+$runner = new SimpleOperationRunner();
+$waitStrategy = new Exponential(new SleepWaiter(), 1);
+$runner = new RetryOperationRunner($runner, $waitStrategy);
+
+$runner->run($operation);
 ```
 
 ## Waiters
