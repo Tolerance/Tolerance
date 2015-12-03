@@ -92,6 +92,9 @@ $runner = new RetryOperationRunner($runner, $waitStrategy);
 $runner->run($operation);
 ```
 
+**Note:** you should decorate your `WaitingStrategy` by the [`Max` strategy](#max) in order to prevent infinite or
+ extremely long loops.
+
 ## Waiters
 
 These are actual implementations of wait. The only for now is the `SleepWaiter` that calls `sleep` basically.
@@ -131,4 +134,13 @@ $waitStrategy->wait();
 $waitStrategy->wait();
 
 // ...
+```
+
+### Max
+
+This decoration strategy defines a maximum amount of waits.
+
+```php
+// Wait for a maximum amount of 10 times
+$waitingStrategy = new Max($waitingStrategy, 10);
 ```
