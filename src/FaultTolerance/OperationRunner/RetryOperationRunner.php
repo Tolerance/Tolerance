@@ -35,7 +35,7 @@ class RetryOperationRunner implements OperationRunner
     public function run(Operation $operation)
     {
         try {
-            $this->runner->run($operation);
+            return $this->runner->run($operation);
         } catch (\Exception $e) {
             try {
                 $this->waitStrategy->wait();
@@ -43,7 +43,7 @@ class RetryOperationRunner implements OperationRunner
                 throw $e;
             }
 
-            $this->run($operation);
+            return $this->run($operation);
         }
     }
 }
