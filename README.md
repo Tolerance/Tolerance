@@ -4,7 +4,7 @@
 
 A set of classes that helps to setup fault-tolerant applications in PHP.
 
-- [Operations](#operations)
+- [Operations](#operation)
 - [Operation runners](#operation-runners)
 - [Wait strategies](#wait-strategies)
 - [Waiters](#waiters)
