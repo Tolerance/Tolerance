@@ -1,4 +1,4 @@
-# FaultTolerance
+# Tolerance
 
 **This is an early draft and is not supposed to be used as it now, I may break things :)**
 
@@ -15,7 +15,7 @@ An operation is an atomic piece of processing. This is for instance an API call 
 You can defines an operation by using the callback method, like this:
 
 ```php
-use FaultTolerance\Operation\Callback;
+use Tolerance\Operation\Callback;
 
 $operation = new Callback(function() use ($client) {
     return $client->get('/foo');
@@ -36,7 +36,7 @@ describes the different operation runners available:
 That's the simplest operation runner ever. It calls `run()` on the operation.
 
 ```php
-use FaultTolerance\OperationRunner\SimpleOperationRunner;
+use Tolerance\OperationRunner\SimpleOperationRunner;
 
 $runner = new SimpleOperationRunner();
 $runner->run($operation);
@@ -48,9 +48,9 @@ The idea of this runner is to try running the operations but if not possible, th
 run it before the operation you'll add an other time.
 
 ```php
-use FaultTolerance\OperationBuffer\InMemoryOperationBuffer;
-use FaultTolerance\OperationRunner\SimpleOperationRunner;
-use FaultTolerance\OperationRunner\BufferedOperationRunner;
+use Tolerance\OperationBuffer\InMemoryOperationBuffer;
+use Tolerance\OperationRunner\SimpleOperationRunner;
+use Tolerance\OperationRunner\BufferedOperationRunner;
 
 $buffer = new InMemoryOperationBuffer();
 $runner = new BufferedOperationRunner(new SimpleOperationRunner(), $buffer);
@@ -77,10 +77,10 @@ This runner will retry to run the operation until it is successful or the wait s
 should be used as decorator as an existing operation runner.
 
 ```php
-use FaultTolerance\OperationRunner\SimpleOperationRunner;
-use FaultTolerance\OperationRunner\RetryOperationRunner;
-use FaultTolerance\Waiter\SleepWaiter;
-use FaultTolerance\WaitStrategy\Exponential;
+use Tolerance\OperationRunner\SimpleOperationRunner;
+use Tolerance\OperationRunner\RetryOperationRunner;
+use Tolerance\Waiter\SleepWaiter;
+use Tolerance\WaitStrategy\Exponential;
 
 // This example will run the operation until it is successful
 // and will wait an exponential amount of time between the calls.
@@ -100,7 +100,7 @@ $runner->run($operation);
 These are actual implementations of wait. The only for now is the `SleepWaiter` that calls `sleep` basically.
 
 ```php
-use FaultTolerance\Waiter\SleepWaiter;
+use Tolerance\Waiter\SleepWaiter;
 
 $waiter = new SleepWaiter();
 
@@ -117,8 +117,8 @@ Many different wait strategies can be used in order to retry things or simply wa
 Each time you will call `wait` on the object, it'll wait an exponential number of seconds, based on your exponent.
 
 ```php
-use FaultTolerance\WaitStrategy\Exponential;
-use FaultTolerance\Waiter\SleepWaiter;
+use Tolerance\WaitStrategy\Exponential;
+use Tolerance\Waiter\SleepWaiter;
 
 // We use an initial exponent of 1
 $waiter = new SleepWaiter();
