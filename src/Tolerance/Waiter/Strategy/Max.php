@@ -2,9 +2,6 @@
 
 namespace Tolerance\Waiter\Strategy;
 
-use Tolerance\Waiter\Strategy\WaitStrategy;
-use Tolerance\Waiter\Strategy\MaxRetryException;
-
 class Max implements WaitStrategy
 {
     /**
@@ -19,7 +16,7 @@ class Max implements WaitStrategy
 
     /**
      * @param WaitStrategy $waitStrategy
-     * @param int $limit
+     * @param int          $limit
      */
     public function __construct(WaitStrategy $waitStrategy, $limit)
     {

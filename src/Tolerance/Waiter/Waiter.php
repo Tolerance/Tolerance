@@ -2,8 +2,6 @@
 
 namespace Tolerance\Waiter;
 
-use Tolerance\Waiter\WaiterException;
-
 interface Waiter
 {
     /**

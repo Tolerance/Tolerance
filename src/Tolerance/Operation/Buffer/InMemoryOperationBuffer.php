@@ -3,7 +3,6 @@
 namespace Tolerance\Operation\Buffer;
 
 use Tolerance\Operation\Operation;
-use Tolerance\Operation\Buffer\OperationBuffer;
 
 class InMemoryOperationBuffer implements OperationBuffer
 {
@@ -29,7 +28,7 @@ class InMemoryOperationBuffer implements OperationBuffer
             return $operation;
         }
 
-        return null;
+        return;
     }
 
     /**
