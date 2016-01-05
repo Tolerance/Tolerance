@@ -13,7 +13,6 @@ namespace Tolerance\Operation\Runner;
 
 use Tolerance\Operation\Operation;
 use Tolerance\Operation\Buffer\OperationBuffer;
-use Tolerance\Operation\Runner\OperationRunner;
 
 class BufferedOperationRunner implements OperationRunner
 {
@@ -28,7 +27,7 @@ class BufferedOperationRunner implements OperationRunner
     private $buffer;
 
     /**
-     * @param OperationRunner $runner
+     * @param OperationRunner                             $runner
      * @param \Tolerance\Operation\Buffer\OperationBuffer $buffer
      */
     public function __construct(OperationRunner $runner, OperationBuffer $buffer)

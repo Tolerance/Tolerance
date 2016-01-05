@@ -12,7 +12,6 @@
 namespace Tolerance\Waiter\Strategy;
 
 use Tolerance\Waiter\Waiter;
-use Tolerance\Waiter\Strategy\WaitStrategy;
 
 class Exponential implements WaitStrategy
 {
@@ -28,7 +27,7 @@ class Exponential implements WaitStrategy
 
     /**
      * @param \Tolerance\Waiter\Waiter $waiter
-     * @param int $exponent
+     * @param int                      $exponent
      */
     public function __construct(Waiter $waiter, $exponent)
     {
