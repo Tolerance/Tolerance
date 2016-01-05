@@ -1,5 +1,5 @@
 {
-    "name": "sroze/fault-tolerance",
+    "name": "sroze/tolerance",
     "type": "library",
     "license": "MIT",
 
@@ -9,7 +9,7 @@
 
     "autoload": {
         "psr-0": {
-            "FaultTolerance\\": "src/"
+            "Tolerance\\": "src/"
         }
     }
 }
