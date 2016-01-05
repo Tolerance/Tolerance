@@ -9,14 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\WaitStrategy;
+namespace Tolerance\Waiter\Strategy;
 
-use Tolerance\WaitStrategy;
+use Tolerance\Waiter\Strategy\WaitStrategy;
+use Tolerance\Waiter\Strategy\MaxRetryException;
 
 class Max implements WaitStrategy
 {
     /**
-     * @var WaitStrategy
+     * @var \Tolerance\Waiter\Strategy\WaitStrategy
      */
     private $waitStrategy;
 

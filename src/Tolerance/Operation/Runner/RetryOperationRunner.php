@@ -14,7 +14,7 @@ namespace Tolerance\Operation\Runner;
 use Tolerance\Operation\Operation;
 use Tolerance\Operation\Runner\OperationRunner;
 use Tolerance\Waiter\WaiterException;
-use Tolerance\WaitStrategy;
+use Tolerance\Waiter\Strategy\WaitStrategy;
 
 class RetryOperationRunner implements OperationRunner
 {
