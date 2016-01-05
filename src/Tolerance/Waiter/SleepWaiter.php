@@ -2,7 +2,7 @@
 
 namespace Tolerance\Waiter;
 
-use Tolerance\Waiter;
+use Tolerance\Waiter\Waiter;
 
 class SleepWaiter implements Waiter
 {

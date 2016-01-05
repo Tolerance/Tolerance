@@ -1,9 +1,9 @@
 <?php
 
-namespace Tolerance\WaitStrategy;
+namespace Tolerance\Waiter\Strategy;
 
-use Tolerance\Waiter;
-use Tolerance\WaitStrategy;
+use Tolerance\Waiter\Waiter;
+use Tolerance\Waiter\Strategy\WaitStrategy;
 
 class Exponential implements WaitStrategy
 {
@@ -18,7 +18,7 @@ class Exponential implements WaitStrategy
     private $exponent;
 
     /**
-     * @param Waiter $waiter
+     * @param \Tolerance\Waiter\Waiter $waiter
      * @param int $exponent
      */
     public function __construct(Waiter $waiter, $exponent)

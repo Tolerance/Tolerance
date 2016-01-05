@@ -1,6 +1,6 @@
 <?php
 
-namespace Tolerance\WaitStrategy;
+namespace Tolerance\Waiter\Strategy;
 
 use Tolerance\Waiter\WaiterException;
 
