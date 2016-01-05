@@ -10,4 +10,7 @@ cache:
 
 before_script: travis_retry composer install --no-interaction
 
-script: vendor/bin/phpspec run -fpretty -v
+script: 
+  - vendor/bin/phpspec run -fpretty -v
+  - vendor/bin/phpunit
+

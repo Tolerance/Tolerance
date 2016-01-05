@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.request_identifier.storage" class="Tolerance\RequestIdentifier\Storage\InMemoryRequestIdentifierStorage" />
+        <service id="tolerance.request_identifier.generator" class="Tolerance\RequestIdentifier\Generator\UniqIdGenerator" />
+        <service id="tolerance.request_identifier.resolver" class="Tolerance\RequestIdentifier\Resolver\StoredOrGeneratedResolver">
+            <argument type="service" id="tolerance.request_identifier.storage" />
+            <argument type="service" id="tolerance.request_identifier.generator" />
+        </service>
+    </services>
+</container>

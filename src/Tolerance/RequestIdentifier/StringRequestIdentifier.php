@@ -11,7 +11,6 @@
 
 namespace Tolerance\RequestIdentifier;
 
-
 class StringRequestIdentifier implements RequestIdentifier
 {
     /**
@@ -30,7 +29,7 @@ class StringRequestIdentifier implements RequestIdentifier
      */
     public static function fromString($string)
     {
-        $identifier = new StringRequestIdentifier();
+        $identifier = new self();
         $identifier->string = $string;
 
         return $identifier;
