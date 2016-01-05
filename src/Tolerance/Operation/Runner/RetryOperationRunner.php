@@ -1,9 +1,9 @@
 <?php
 
-namespace Tolerance\OperationRunner;
+namespace Tolerance\Operation\Runner;
 
-use Tolerance\Operation;
-use Tolerance\OperationRunner;
+use Tolerance\Operation\Operation;
+use Tolerance\Operation\Runner\OperationRunner;
 use Tolerance\Waiter\WaiterException;
 use Tolerance\WaitStrategy;
 

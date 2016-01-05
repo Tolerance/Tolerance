@@ -2,7 +2,7 @@
 
 namespace Tolerance\Operation;
 
-use Tolerance\Operation;
+use Tolerance\Operation\Operation;
 
 class Callback implements Operation
 {

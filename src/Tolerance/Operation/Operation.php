@@ -1,6 +1,6 @@
 <?php
 
-namespace Tolerance;
+namespace Tolerance\Operation;
 
 interface Operation
 {

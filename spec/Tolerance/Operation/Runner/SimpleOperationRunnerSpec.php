@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\Tolerance\OperationRunner;
+namespace spec\Tolerance\Operation\Runner;
 
-use Tolerance\Operation;
+use Tolerance\Operation\Operation;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
