@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance;
+namespace Tolerance\Operation\Buffer;
 
-use Tolerance\Operation;
+use Tolerance\Operation\Operation;
 
 interface OperationBuffer
 {
@@ -25,7 +25,7 @@ interface OperationBuffer
     /**
      * Returns the current operation at the head of the buffer.
      *
-     * @return Operation|null
+     * @return \Tolerance\Operation\Operation|null
      */
     public function current();
 

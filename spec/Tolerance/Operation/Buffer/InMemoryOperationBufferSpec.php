@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\Tolerance\OperationBuffer;
+namespace spec\Tolerance\Operation\Buffer;
 
-use Tolerance\Operation;
+use Tolerance\Operation\Operation;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

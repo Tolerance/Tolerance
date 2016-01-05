@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\OperationRunner;
+namespace Tolerance\Operation\Runner;
 
-use Tolerance\Operation;
-use Tolerance\OperationRunner;
+use Tolerance\Operation\Operation;
 
 class SimpleOperationRunner implements OperationRunner
 {
@@ -21,6 +20,8 @@ class SimpleOperationRunner implements OperationRunner
      */
     public function run(Operation $operation)
     {
-        return $operation->run();
+        $operation->run();
+
+        return $operation;
     }
 }

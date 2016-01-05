@@ -9,11 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance;
+namespace Tolerance\Operation;
 
-use Tolerance\Operation;
-
-interface OperationRunner
+interface Operation
 {
-    public function run(Operation $operation);
+    /**
+     * Run the given operation.
+     *
+     * @return mixed
+     */
+    public function run();
 }

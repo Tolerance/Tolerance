@@ -1,11 +1,12 @@
 <?php
 
-namespace spec\Tolerance\WaitStrategy;
+namespace spec\Tolerance\Waiter\Strategy;
 
-use Tolerance\Waiter\WaiterException;
-use Tolerance\WaitStrategy;
+use Tolerance\Waiter\Strategy\MaxRetryException;
+use Tolerance\Waiter\Strategy\WaitStrategy;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Tolerance\Waiter\WaiterException;
 
 class MaxSpec extends ObjectBehavior
 {
@@ -31,6 +32,6 @@ class MaxSpec extends ObjectBehavior
 
         $this->wait();
         $this->wait();
-        $this->shouldThrow(WaitStrategy\MaxRetryException::class)->duringWait();
+        $this->shouldThrow(MaxRetryException::class)->duringWait();
     }
 }

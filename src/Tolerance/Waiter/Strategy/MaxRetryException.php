@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\WaitStrategy;
+namespace Tolerance\Waiter\Strategy;
 
 use Tolerance\Waiter\WaiterException;
 

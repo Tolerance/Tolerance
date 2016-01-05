@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance;
+namespace Tolerance\Waiter\Strategy;
 
 use Tolerance\Waiter\WaiterException;
 
-interface Waiter
+interface WaitStrategy
 {
     /**
-     * @param int $seconds
+     * Do wait the time expected by the strategy.
      *
      * @throws WaiterException
      */
-    public function wait($seconds);
+    public function wait();
 }
