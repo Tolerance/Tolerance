@@ -18,7 +18,7 @@ class StoredOrGeneratedResolver implements RequestIdentifierResolver
     private $generator;
 
     /**
-     * @param RequestIdentifierStorage $storage
+     * @param RequestIdentifierStorage   $storage
      * @param RequestIdentifierGenerator $generator
      */
     public function __construct(RequestIdentifierStorage $storage, RequestIdentifierGenerator $generator)
