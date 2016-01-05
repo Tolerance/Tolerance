@@ -2,8 +2,6 @@
 
 namespace Tolerance\Operation;
 
-use Tolerance\Operation;
-
 class Callback implements Operation
 {
     /**

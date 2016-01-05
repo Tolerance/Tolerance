@@ -1,11 +1,10 @@
 <?php
 
-namespace Tolerance\OperationRunner;
+namespace Tolerance\Operation\Runner;
 
-use Tolerance\Operation;
-use Tolerance\OperationRunner;
+use Tolerance\Operation\Operation;
 use Tolerance\Waiter\WaiterException;
-use Tolerance\WaitStrategy;
+use Tolerance\Waiter\Strategy\WaitStrategy;
 
 class RetryOperationRunner implements OperationRunner
 {
@@ -21,7 +20,7 @@ class RetryOperationRunner implements OperationRunner
 
     /**
      * @param OperationRunner $runner
-     * @param WaitStrategy $waitStrategy
+     * @param WaitStrategy    $waitStrategy
      */
     public function __construct(OperationRunner $runner, WaitStrategy $waitStrategy)
     {

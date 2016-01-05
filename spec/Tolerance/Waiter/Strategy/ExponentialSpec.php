@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\Tolerance\WaitStrategy;
+namespace spec\Tolerance\Waiter\Strategy;
 
-use Tolerance\Waiter;
+use Tolerance\Waiter\Waiter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

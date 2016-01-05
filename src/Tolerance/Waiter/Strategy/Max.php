@@ -1,13 +1,11 @@
 <?php
 
-namespace Tolerance\WaitStrategy;
-
-use Tolerance\WaitStrategy;
+namespace Tolerance\Waiter\Strategy;
 
 class Max implements WaitStrategy
 {
     /**
-     * @var WaitStrategy
+     * @var \Tolerance\Waiter\Strategy\WaitStrategy
      */
     private $waitStrategy;
 
@@ -18,7 +16,7 @@ class Max implements WaitStrategy
 
     /**
      * @param WaitStrategy $waitStrategy
-     * @param int $limit
+     * @param int          $limit
      */
     public function __construct(WaitStrategy $waitStrategy, $limit)
     {

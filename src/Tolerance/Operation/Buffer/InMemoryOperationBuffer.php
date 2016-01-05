@@ -1,8 +1,8 @@
 <?php
-namespace Tolerance\OperationBuffer;
 
-use Tolerance\Operation;
-use Tolerance\OperationBuffer;
+namespace Tolerance\Operation\Buffer;
+
+use Tolerance\Operation\Operation;
 
 class InMemoryOperationBuffer implements OperationBuffer
 {
@@ -28,7 +28,7 @@ class InMemoryOperationBuffer implements OperationBuffer
             return $operation;
         }
 
-        return null;
+        return;
     }
 
     /**

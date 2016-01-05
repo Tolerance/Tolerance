@@ -1,8 +1,6 @@
 <?php
 
-namespace Tolerance;
-
-use Tolerance\Waiter\WaiterException;
+namespace Tolerance\Waiter;
 
 interface Waiter
 {

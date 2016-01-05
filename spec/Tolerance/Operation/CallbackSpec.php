@@ -2,7 +2,7 @@
 
 namespace spec\Tolerance\Operation;
 
-use Tolerance\Operation;
+use Tolerance\Operation\Operation;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

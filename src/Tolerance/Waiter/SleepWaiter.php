@@ -2,8 +2,6 @@
 
 namespace Tolerance\Waiter;
 
-use Tolerance\Waiter;
-
 class SleepWaiter implements Waiter
 {
     /**
