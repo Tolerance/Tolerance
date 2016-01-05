@@ -1,5 +1,5 @@
 <?php
-namespace Tolerance\OperationBuffer;
+
 /*
  * This file is part of the Tolerance package.
  *
@@ -9,9 +9,10 @@ namespace Tolerance\OperationBuffer;
  * file that was distributed with this source code.
  */
 
+namespace Tolerance\Operation\Buffer;
 
-use Tolerance\Operation;
-use Tolerance\OperationBuffer;
+use Tolerance\Operation\Operation;
+use Tolerance\Operation\Buffer\OperationBuffer;
 
 class InMemoryOperationBuffer implements OperationBuffer
 {

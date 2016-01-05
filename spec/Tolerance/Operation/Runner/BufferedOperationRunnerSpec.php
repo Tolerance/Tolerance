@@ -1,10 +1,11 @@
 <?php
 
-namespace spec\Tolerance\OperationRunner;
+namespace spec\Tolerance\Operation\Runner;
 
-use Tolerance\Operation;
-use Tolerance\OperationBuffer;
-use Tolerance\OperationRunner;
+use Tolerance\Operation\Buffer\InMemoryOperationBuffer;
+use Tolerance\Operation\Operation;
+use Tolerance\Operation\Buffer\OperationBuffer;
+use Tolerance\Operation\Runner\OperationRunner;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -17,7 +18,7 @@ class BufferedOperationRunnerSpec extends ObjectBehavior
 
     function it_runs_the_operations_already_in_the_buffer(OperationRunner $runner, Operation $first, Operation $second)
     {
-        $buffer = new OperationBuffer\InMemoryOperationBuffer();
+        $buffer = new InMemoryOperationBuffer();
         $buffer->add($first->getWrappedObject());
 
         $this->beConstructedWith($runner, $buffer);

@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\OperationRunner;
+namespace Tolerance\Operation\Runner;
 
-use Tolerance\Operation;
-use Tolerance\OperationBuffer;
-use Tolerance\OperationRunner;
+use Tolerance\Operation\Operation;
+use Tolerance\Operation\Buffer\OperationBuffer;
+use Tolerance\Operation\Runner\OperationRunner;
 
 class BufferedOperationRunner implements OperationRunner
 {
@@ -23,13 +23,13 @@ class BufferedOperationRunner implements OperationRunner
     private $runner;
 
     /**
-     * @var OperationBuffer
+     * @var \Tolerance\Operation\Buffer\OperationBuffer
      */
     private $buffer;
 
     /**
      * @param OperationRunner $runner
-     * @param OperationBuffer $buffer
+     * @param \Tolerance\Operation\Buffer\OperationBuffer $buffer
      */
     public function __construct(OperationRunner $runner, OperationBuffer $buffer)
     {

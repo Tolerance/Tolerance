@@ -36,7 +36,7 @@ describes the different operation runners available:
 That's the simplest operation runner ever. It calls `run()` on the operation.
 
 ```php
-use Tolerance\OperationRunner\SimpleOperationRunner;
+use Tolerance\Operation\Runner\SimpleOperationRunner;
 
 $runner = new SimpleOperationRunner();
 $runner->run($operation);
@@ -48,9 +48,9 @@ The idea of this runner is to try running the operations but if not possible, th
 run it before the operation you'll add an other time.
 
 ```php
-use Tolerance\OperationBuffer\InMemoryOperationBuffer;
-use Tolerance\OperationRunner\SimpleOperationRunner;
-use Tolerance\OperationRunner\BufferedOperationRunner;
+use Tolerance\Operation\Buffer\InMemoryOperationBuffer;
+use Tolerance\Operation\Runner\SimpleOperationRunner;
+use Tolerance\Operation\Runner\BufferedOperationRunner;
 
 $buffer = new InMemoryOperationBuffer();
 $runner = new BufferedOperationRunner(new SimpleOperationRunner(), $buffer);
@@ -77,8 +77,8 @@ This runner will retry to run the operation until it is successful or the wait s
 should be used as decorator as an existing operation runner.
 
 ```php
-use Tolerance\OperationRunner\SimpleOperationRunner;
-use Tolerance\OperationRunner\RetryOperationRunner;
+use Tolerance\Operation\Runner\SimpleOperationRunner;
+use Tolerance\Operation\Runner\RetryOperationRunner;
 use Tolerance\Waiter\SleepWaiter;
 use Tolerance\WaitStrategy\Exponential;
 
