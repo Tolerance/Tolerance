@@ -5,7 +5,7 @@ filter:
     excluded_paths:
         - tests/
         - vendor/
-        - specs/
+        - spec/
 
 checks:
     php:
