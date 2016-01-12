@@ -28,7 +28,7 @@ class BufferedOperationRunner implements OperationRunner
     }
 
     /**
-     * @param Operation $operation
+     * {@inheritdoc}
      */
     public function run(Operation $operation)
     {
@@ -38,5 +38,13 @@ class BufferedOperationRunner implements OperationRunner
             $this->runner->run($operation);
             $this->buffer->pop();
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Operation $operation)
+    {
+        return $this->runner->supports($operation);
     }
 }

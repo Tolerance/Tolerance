@@ -5,9 +5,23 @@ namespace Tolerance\Operation;
 interface Operation
 {
     /**
-     * Run the given operation.
+     * Is the operation successful?
      *
-     * @return mixed
+     * @return bool
      */
-    public function run();
+    public function isSuccessful();
+
+    /**
+     * Is the operation failed?
+     *
+     * @return bool
+     */
+    public function isFailed();
+
+    /**
+     * Returns true if the operation was run.
+     *
+     * @return bool
+     */
+    public function hasRun();
 }
