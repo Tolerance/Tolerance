@@ -77,3 +77,13 @@ request identifier come from the resolver that you needs in inject in it.
 Checkout the `code of the processor <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Monolog/RequestIdentifier/RequestIdentifierProcessor.php>`_,
 `Monolog's documentation <https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md#adding-extra-data-in-the-records>`_ or
 the `Symfony Bridge documentation <bridges/symfony.html#request-identifier>`_ that automatically register the listener.
+
+Guzzle middleware
+-----------------
+
+Guzzle 6, that uses the PSR-7, allow to add a set of middleware to enhance the requests. Tolerance comes with a middleware
+that adds the current request identifier in the headers of the sent requests.
+
+Checkout the `code of the middleware factory <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Guzzle/RequestIdentifier/MiddlewareFactory.php>`_,
+`Guzzle's documentation <http://docs.guzzlephp.org/en/latest/handlers-and-middleware.html#middleware>`_ or
+the `Symfony Bridge documentation <bridges/symfony.html#request-identifier>`_ that automatically register the middleware.
