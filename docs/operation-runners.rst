@@ -5,6 +5,7 @@ Once you've created your `operation <operations.html>`_, you now have to run it 
 
 First of all, you've the set of operation runners that knows how to run the default operation:
 - `CallbackOperationRunner`_ that is able to run callback operations.
+- `ChainOperationRunner`_ that is able to chain operation runners that supports different operation types.
 
 In addition, there's few useful operation runners that decorates an existing one to add extra features:
 - `RetryOperationRunner`_ will retry the operation until it is successful or considered as failing too much.
@@ -22,6 +23,24 @@ This runner is the runner that supports to run the Callback operations.
     $runner = new CallbackOperationRunner();
     $runner->run($operation);
 
+ChainOperationRunner
+--------------------
+
+Construct the runner with a bunch of runners that knows how to run the different type of operations you want to run
+and it'll ask the good one.
+
+.. code-block:: php
+
+    use Tolerance\Operation\Runner\ChainOperationRunner;
+    use Tolerance\Operation\Runner\CallbackOperationRunner;
+
+    $runner = new ChainOperationRunner([
+        new CallbackOperationRunner(),
+    ]);
+
+    $runner->run($operation);
+
+Also, the :code:`addOperationRunner` method allows you to add another runner on the fly.
 
 RetryOperationRunner
 --------------------

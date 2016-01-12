@@ -39,4 +39,12 @@ class BufferedOperationRunner implements OperationRunner
             $this->buffer->pop();
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Operation $operation)
+    {
+        return $this->runner->supports($operation);
+    }
 }

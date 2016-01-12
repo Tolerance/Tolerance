@@ -37,4 +37,12 @@ class CallbackOperationRunner implements OperationRunner
 
         return $operation;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Operation $operation)
+    {
+        return $operation instanceof Callback;
+    }
 }
