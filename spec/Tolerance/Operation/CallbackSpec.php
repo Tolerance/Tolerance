@@ -17,25 +17,4 @@ class CallbackSpec extends ObjectBehavior
     {
         $this->shouldHaveType(Operation::class);
     }
-
-    function it_should_call_the_callable(Operation $operation)
-    {
-        $operation->run()->shouldBeCalled();
-
-        $this->beConstructedWith(function() use ($operation) {
-            $operation->getWrappedObject()->run();
-        });
-
-        $this->run();
-    }
-
-    function it_should_keep_track_of_the_result()
-    {
-        $this->beConstructedWith(function() {
-            return 'foo';
-        });
-
-        $this->run();
-        $this->getResult()->shouldReturn('foo');
-    }
 }

@@ -54,4 +54,12 @@ class RetryOperationRunner implements OperationRunner
             return $this->run($operation);
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Operation $operation)
+    {
+        return $this->runner->supports($operation);
+    }
 }
