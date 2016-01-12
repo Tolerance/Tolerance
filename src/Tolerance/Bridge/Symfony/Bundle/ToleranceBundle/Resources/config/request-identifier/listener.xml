@@ -7,6 +7,7 @@
     <services>
         <service id="tolerance.request_identifier.headers_listener" class="Tolerance\Bridge\Symfony\RequestIdentifier\RequestHeadersListener">
             <argument type="service" id="tolerance.request_identifier.storage" />
+            <argument>%tolerance.request_identifier.header%</argument>
 
             <tag name="kernel.event_listener" event="kernel.request" />
         </service>
