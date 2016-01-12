@@ -2,6 +2,7 @@
 
 namespace Tolerance\Operation\Runner;
 
+use Tolerance\Operation\Exception\UnsupportedOperation;
 use Tolerance\Operation\Operation;
 
 interface OperationRunner
@@ -10,6 +11,8 @@ interface OperationRunner
      * Run the given operation.
      *
      * @param Operation $operation
+     *
+     * @throws UnsupportedOperation
      *
      * @return Operation
      */

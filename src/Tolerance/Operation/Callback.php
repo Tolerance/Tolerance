@@ -2,7 +2,7 @@
 
 namespace Tolerance\Operation;
 
-class Callback implements Operation
+class Callback extends StateContainedOperation implements Operation
 {
     /**
      * @var callable
@@ -23,15 +23,11 @@ class Callback implements Operation
     }
 
     /**
-     * {@inheritdoc}
+     * @return callable
      */
-    public function run()
+    public function getCallable()
     {
-        $callable = $this->callable;
-
-        $this->result = $callable();
-
-        return $this->result;
+        return $this->callable;
     }
 
     /**
@@ -40,5 +36,13 @@ class Callback implements Operation
     public function getResult()
     {
         return $this->result;
+    }
+
+    /**
+     * @param mixed $result
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
     }
 }
