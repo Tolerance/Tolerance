@@ -8,7 +8,8 @@
         "symfony/http-kernel": "^3.0",
         "symfony/dependency-injection": "^3.0",
         "symfony/config": "^3.0",
-        "phpunit/phpunit": "^5.1"
+        "phpunit/phpunit": "^5.1",
+        "csa/guzzle-bundle": "~2.0@dev"
     },
 
     "autoload": {
