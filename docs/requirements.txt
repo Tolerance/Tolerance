@@ -1,0 +1,1 @@
+-e git+https://github.com/fabpot/sphinx-php.git#egg=sphinx-php
