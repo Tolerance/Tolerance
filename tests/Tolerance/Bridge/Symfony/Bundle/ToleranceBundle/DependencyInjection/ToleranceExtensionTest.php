@@ -88,6 +88,24 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    public function test_it_adds_the_guzzle_middleware()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+        $builder->setDefinition('tolerance.request_identifier.guzzle_middleware', Argument::that(function(Definition $definition) {
+            return $definition->hasTag('csa_guzzle.middleware');
+        }));
+
+        $this->extension->load([
+            'tolerance' => [
+                'request_identifier' => null,
+            ]
+        ], $builder->reveal());
+    }
+
     private function createBuilder()
     {
         $builder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');

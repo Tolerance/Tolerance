@@ -18,6 +18,7 @@ The request identifier integration gives you:
 - Service to access the request identifier resolver, generator and storage
 - Request listener that reads the request identifier from a request's header
 - Monolog processor that adds the request identifier to the context of each log
+- Registered Guzzle middleware that adds the current request identifier if you are using `CsaGuzzleBundle <https://github.com/csarrazi/CsaGuzzleBundle>`_
 
 You can enable the request identifier integration in the bundle configuration:
 
@@ -51,3 +52,14 @@ By default, it also registers the Monolog processor but you can **disable** it w
     tolerance:
         request_identifier:
             monolog: false
+
+If you are using the `CsaGuzzleBundle <https://github.com/csarrazi/CsaGuzzleBundle>`_ (in its version >= 2.0) then the
+`Guzzle middleware <request-identifier.html#guzzle-middleware>`_ is automatically registered thanks to a service
+tagged :code:`csa_guzzle.middleware` and aliased :code:`tolerance_request_identifier`. If you want to disable it you can
+use the following configuration:
+
+.. code-block:: yaml
+
+    tolerance:
+        request_identifier:
+            guzzle: false
