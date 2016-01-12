@@ -33,6 +33,10 @@ class ToleranceExtension extends Extension
 
             $loader->load('request-identifier/request.xml');
             $loader->load('request-identifier/listener.xml');
+
+            if ($config['request_identifier']['monolog']) {
+                $loader->load('request-identifier/monolog.xml');
+            }
         }
     }
 }
