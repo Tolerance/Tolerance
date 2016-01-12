@@ -21,3 +21,13 @@ when you have to have an idea of the different calls implied by one "primary cal
 
 The request identifier component helps to keep a trace of the request and the Symfony, Guzzle, Monolog and other
 bridges enhance the simplicity of using it in your application.
+
+Installation
+------------
+
+The recommended way is to use Composer to install the `sroze/tolerance` package.
+
+.. code-block:: bash
+
+    $ composer require sroze/tolerance
+

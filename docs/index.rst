@@ -11,6 +11,8 @@ Contents:
     operation-runners
     waiters
     wait-strategies
+    request-identifier
+    bridges/symfony
 
 Indices and tables
 ==================
