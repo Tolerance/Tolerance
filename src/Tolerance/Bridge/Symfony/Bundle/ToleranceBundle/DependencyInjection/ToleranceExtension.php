@@ -21,10 +21,18 @@ class ToleranceExtension extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $config, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container)
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('request-identifier/request.xml');
-        $loader->load('request-identifier/listener.xml');
+
+        if ($config['request_identifier']['enabled']) {
+            $container->setParameter('tolerance.request_identifier.header', $config['request_identifier']['header']);
+
+            $loader->load('request-identifier/request.xml');
+            $loader->load('request-identifier/listener.xml');
+        }
     }
 }
