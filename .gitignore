@@ -1,4 +1,5 @@
 /vendor
 /docs/_build
 /docs/src
+/composer.lock
 
