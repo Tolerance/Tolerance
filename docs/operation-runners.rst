@@ -1,39 +1,71 @@
 Operation runners
 =================
 
-In order to run the different applications, you can use and combine different operation runners. The list bellow
-describes the different operation runners available:
+Once you've created your `operation <operations.html>`_, you now have to run it using an operation runner.
 
-- `SimpleOperationRunner`_ that simply calls the operation
+First of all, you've the set of operation runners that knows how to run the default operation:
+- `CallbackOperationRunner`_ that is able to run callback operations.
+
+In addition, there's few useful operation runners that decorates an existing one to add extra features:
+- `RetryOperationRunner`_ will retry the operation until it is successful or considered as failing too much.
 - `BufferedOperationRunner`_ will buffer operations and try to run them.
-- `RetryOperationRunner`_ will retry the operation until it is successful.
 
-SimpleOperationRunner
----------------------
+CallbackOperationRunner
+-----------------------
 
-That's the simplest operation runner ever. It calls :code:`run()` on the operation.
+This runner is the runner that supports to run the Callback operations.
 
 .. code-block:: php
 
-    use Tolerance\Operation\Runner\SimpleOperationRunner;
+    use Tolerance\Operation\Runner\CallbackOperationRunner;
 
-    $runner = new SimpleOperationRunner();
+    $runner = new CallbackOperationRunner();
     $runner->run($operation);
+
+
+RetryOperationRunner
+--------------------
+
+This runner will retry to run the operation until it is successful or the wait strategy decide to fail.
+
+.. code-block:: php
+
+    use Tolerance\Operation\Runner\CallbackOperationRunner;
+    use Tolerance\Operation\Runner\RetryOperationRunner;
+    use Tolerance\Waiter\Waiter\SleepWaiter;
+    use Tolerance\Waiter\Strategy\WaitStrategy\Exponential;
+
+    // Creates the strategy used to wait between failing calls
+    $waitStrategy = new Max(
+        new Exponential(
+            new SleepWaiter(),
+            1
+        ),
+        10
+    );
+
+    // Creates the runner
+    $runner = new RetryOperationRunner(
+        new CallbackOperationRunner(),
+        $waitStrategy
+    );
+
+    $runner->run($operation);
+
 
 BufferedOperationRunner
 -----------------------
 
-The idea of this runner is to try running the operations but if not possible, then it'll buffer it and then will try to
+This runner will try to run the operations but if one fail, then it'll buffer it and then will try to
 run it before the operation you'll add an other time.
 
 .. code-block:: php
 
     use Tolerance\Operation\Buffer\InMemoryOperationBuffer;
-    use Tolerance\Operation\Runner\SimpleOperationRunner;
     use Tolerance\Operation\Runner\BufferedOperationRunner;
 
     $buffer = new InMemoryOperationBuffer();
-    $runner = new BufferedOperationRunner(new SimpleOperationRunner(), $buffer);
+    $runner = new BufferedOperationRunner($runner, $buffer);
 
 Then, you can try to run an operation:
 
@@ -53,26 +85,10 @@ another task, it'll **first** attempt to run the operation in the buffer.
     // That will actually run the first one first,
     // and then the second one
 
-RetryOperationRunner
---------------------
+Create your own
+---------------
 
-This runner will retry to run the operation until it is successful or the wait strategy decide to fail. Again, this
-should be used as decorator as an existing operation runner.
+Despite the provided operation runners might be sufficient, you can easily create your own runner by implementing the
+`OperationRunner interface <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Operation/Runner/OperationRunner.php>`_.
 
-.. code-block:: php
-
-    use Tolerance\Operation\Runner\SimpleOperationRunner;
-    use Tolerance\Operation\Runner\RetryOperationRunner;
-    use Tolerance\Waiter\Waiter\SleepWaiter;
-    use Tolerance\Waiter\Strategy\WaitStrategy\Exponential;
-
-    // This example will run the operation until it is successful
-    // and will wait an exponential amount of time between the calls.
-
-    $runner = new SimpleOperationRunner();
-    $waitStrategy = new Exponential(new SleepWaiter(), 1);
-    $runner = new RetryOperationRunner($runner, $waitStrategy);
-
-    $runner->run($operation);
-
-**Note:** you should decorate your waiting strategy by the `Max strategy <wait-strategies.html#max-strategy>`_ in order to prevent infinite or extremely long loops.
+All you need is to be able to run it and returns the operation.

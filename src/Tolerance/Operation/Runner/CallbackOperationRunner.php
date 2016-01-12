@@ -4,7 +4,7 @@ namespace Tolerance\Operation\Runner;
 
 use Tolerance\Operation\Operation;
 
-class SimpleOperationRunner implements OperationRunner
+class CallbackOperationRunner implements OperationRunner
 {
     /**
      * {@inheritdoc}
