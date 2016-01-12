@@ -38,13 +38,16 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
-        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
-        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setDefinition('tolerance.request_identifier.storage', $definitionArgument)->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.generator', $definitionArgument)->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.resolver', $definitionArgument)->shouldBeCalled();
+        $builder->setParameter('tolerance.request_identifier.header', 'X-Request-Id')->shouldBeCalled();
 
-        $this->extension->load([], $builder->reveal());
+        $this->extension->load([
+            'tolerance' => [
+                'request_identifier' => null,
+            ]
+        ], $builder->reveal());
     }
 
     public function test_that_request_identifier_listener_is_created()
@@ -53,15 +56,24 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
 
         $builder = $this->createBuilder();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter('tolerance.request_identifier.header', 'X-Request-Id')->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.headers_listener', Argument::that(function(Definition $definition) {
             return $definition->hasTag('kernel.event_listener');
         }));
+
+        $this->extension->load([
+            'tolerance' => [
+                'request_identifier' => null,
+            ]
+        ], $builder->reveal());
     }
 
     private function createBuilder()
     {
         $builder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');
         $builder->hasExtension('http://symfony.com/schema/dic/services')->willReturn(false);
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
+        $builder->setDefinition(Argument::any(), Argument::type('Symfony\Component\DependencyInjection\Definition'))->willReturn(null);
 
         return $builder;
     }
