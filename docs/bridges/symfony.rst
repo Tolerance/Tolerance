@@ -13,6 +13,12 @@ to install this bundle in your Symfony application.
 Request Identifier
 ------------------
 
+The request identifier integration gives you:
+
+- Service to access the request identifier resolver, generator and storage
+- Request listener that reads the request identifier from a request's header
+- Monolog processor that adds the request identifier to the context of each log
+
 You can enable the request identifier integration in the bundle configuration:
 
 .. code-block:: yaml
@@ -37,3 +43,11 @@ You can configure the header used in the configuration of the bundle, which is b
     tolerance:
         request_identifier:
             header: X-Request-Id
+
+By default, it also registers the Monolog processor but you can **disable** it with the following configuration:
+
+.. code-block:: yaml
+
+    tolerance:
+        request_identifier:
+            monolog: false
