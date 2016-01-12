@@ -68,6 +68,26 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    public function test_that_it_adds_the_monolog_processor()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+        $builder->setDefinition('tolerance.request_identifier.monolog.processor', Argument::that(function(Definition $definition) {
+            return $definition->hasTag('kernel.event_listener');
+        }));
+
+        $this->extension->load([
+            'tolerance' => [
+                'request_identifier' => [
+                    'monolog' => true,
+                ],
+            ]
+        ], $builder->reveal());
+    }
+
     private function createBuilder()
     {
         $builder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');

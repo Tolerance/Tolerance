@@ -67,3 +67,13 @@ Symfony listener
 The Symfony bridge contains a request listeners that listeners to requests and gets the identifier from the header you
 want, then store it in the storage you've provided to it. You can have a look to the `code if the listener <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Symfony/RequestIdentifier/RequestHeadersListener.php>`_
 or checkout the `Symfony Bridge documentation <bridges/symfony.html>`_.
+
+Monolog processor
+-----------------
+
+In the Monolog bridge, you'll find a processor that adds the request identifier in the context's tags of each log. The
+request identifier come from the resolver that you needs in inject in it.
+
+Checkout the `code of the processor <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Monolog/RequestIdentifier/RequestIdentifierProcessor.php>`_,
+`Monolog's documentation <https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md#adding-extra-data-in-the-records>`_ or
+the `Symfony Bridge documentation <bridges/symfony.html#request-identifier>`_ that automatically register the listener.
