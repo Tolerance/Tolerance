@@ -4,10 +4,12 @@ Operation runners
 Once you've created your `operation <operations.html>`_, you now have to run it using an operation runner.
 
 First of all, you've the set of operation runners that knows how to run the default operation:
+
 - `CallbackOperationRunner`_ that is able to run callback operations.
 - `ChainOperationRunner`_ that is able to chain operation runners that supports different operation types.
 
 In addition, there's few useful operation runners that decorates an existing one to add extra features:
+
 - `RetryOperationRunner`_ will retry the operation until it is successful or considered as failing too much.
 - `BufferedOperationRunner`_ will buffer operations and try to run them.
 
