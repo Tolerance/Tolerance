@@ -3,8 +3,9 @@ before_commands:
 
 filter:
     excluded_paths:
-        - Tests/
+        - tests/
         - vendor/
+        - specs/
 
 checks:
     php:
