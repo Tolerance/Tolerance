@@ -19,10 +19,11 @@ class Configuration implements ConfigurationInterface
         $root
             ->children()
                 ->arrayNode('request_identifier')
+                    ->addDefaultsIfNotSet()
                     ->canBeEnabled()
                     ->children()
                         ->scalarNode('header')
-                            ->isRequired()
+                            ->cannotBeEmpty()
                             ->defaultValue('X-Request-Id')
                         ->end()
                     ->end()
