@@ -1,7 +1,8 @@
 Wait strategies
 ===============
 
-Many different wait strategies can be used in order to retry things or simply wait for a circuit to be closed, etc...
+With a waiter you can wait. That's nice but that won't give you a grained waiting strategy.  Many different wait
+strategies can be used in order to retry things or simply wait for a circuit to be closed, etc...
 
 Exponential
 -----------
