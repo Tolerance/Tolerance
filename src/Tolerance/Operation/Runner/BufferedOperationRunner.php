@@ -37,7 +37,7 @@ class BufferedOperationRunner implements OperationRunner
     }
 
     /**
-     * @param Operation $operation
+     * {@inheritdoc}
      */
     public function run(Operation $operation)
     {
