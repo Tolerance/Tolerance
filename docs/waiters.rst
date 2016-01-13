@@ -7,7 +7,7 @@ or 3rd party APIs.
 SleepWaiter
 -----------
 
-That implementation will use PHP's :code:`sleep` function to actually pause your process for the given amount of time.
+This implementation will use PHP's :code:`sleep` function to actually pause your process for a given amount of time.
 
 .. code-block:: php
 
