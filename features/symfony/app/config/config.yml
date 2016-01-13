@@ -6,4 +6,18 @@ framework:
         storage_id:                    "session.storage.mock_file"
 
 tolerance:
+    operation_runners:
+        default:
+            retry:
+                runner:
+                    callback: ~
+
+                strategy:
+                    max:
+                        count: 10
+                        strategy:
+                            exponential:
+                                exponent: 1
+                                waiter: tolerance.waiter.null
+
     aop: ~

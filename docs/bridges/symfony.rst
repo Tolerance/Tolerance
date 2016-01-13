@@ -10,6 +10,45 @@ The Symfony bridge is a bundle that you can use in any Symfony application.
 **Note**: you can also *manually* use the classes in the :code:`Tolerance\Bridge\Symfony` namespace if you do not want
 to install this bundle in your Symfony application.
 
+Operation runner factory
+------------------------
+
+When using simple operation runners, you can create them using the YML configuration of the bundle. Each operation runner
+have a name (:code:`default` in the following example). The created operation runner will be available via the service named
+:code:`tolerance.operation_runner.default`.
+
+.. code-block:: yaml
+
+    tolerance:
+        operation_runners:
+            default:
+                retry:
+                    runner:
+                        callback: ~
+
+                    strategy:
+                        max:
+                            count: 10
+                            strategy:
+                                exponential:
+                                    exponent: 1
+                                    waiter: tolerance.waiter.null
+
+In that example, that will create a operation runner that is the retry operation runner decorating a callable operation runner.
+The following image represents the imbrication of the different runners.
+
+.. image:: ../_static/runner-factory.png
+
+.. note::
+
+    This YML factory do not support recursive operation runner. That means that you can't use a chain runner inside
+    another chain runner. If you need to create more complex operation runners, you should create your own service
+    with a simple factory like `the one that was in the tests before this YML factory <https://github.com/sroze/Tolerance/blob/f95bb3ae6a5f331a8d0579a991438f68e28f66f9/tests/Tolerance/Bridge/Symfony/Bundle/AppBundle/Operation/ThirdPartyRunnerFactory.php>`_.
+
+.. tip::
+
+    If you just need to add a decorator on a created operation runner, simply uses `Symfony DIC decorates features. <http://symfony.com/doc/current/components/dependency_injection/advanced.html#decorating-services>`_
+
 AOP
 ---
 
@@ -60,7 +99,7 @@ service's methods inside an operation runner.
             <service id="app.your_service" class="App\YourService">
                 <tag name="tolerance.operation_wrapper"
                      methods="getSomething"
-                     runner="operation_runner.service_name" />
+                     runner="tolerance.operation_runner.default" />
             </service>
         </services>
     </container>
