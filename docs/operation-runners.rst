@@ -3,12 +3,12 @@ Operation runners
 
 Once you've created your `operation <operations.html>`_, you now have to run it using an operation runner.
 
-First of all, you've the set of operation runners that knows how to run the default operation:
+First of all, there's a set of operation runners that know how to run the default operation:
 
 - `CallbackOperationRunner`_ that is able to run callback operations.
 - `ChainOperationRunner`_ that is able to chain operation runners that supports different operation types.
 
-In addition, there's few useful operation runners that decorates an existing one to add extra features:
+In addition, there's a few useful operation runners that decorate an existing one to add extra features:
 
 - `RetryOperationRunner`_ will retry the operation until it is successful or considered as failing too much.
 - `BufferedOperationRunner`_ will buffer operations and try to run them.
@@ -16,7 +16,7 @@ In addition, there's few useful operation runners that decorates an existing one
 CallbackOperationRunner
 -----------------------
 
-This runner is the runner that supports to run the Callback operations.
+This is the runner that runs the Callback operations.
 
 .. code-block:: php
 
@@ -77,8 +77,7 @@ This runner will retry to run the operation until it is successful or the wait s
 BufferedOperationRunner
 -----------------------
 
-This runner will try to run the operations but if one fail, then it'll buffer it and then will try to
-run it before the operation you'll add an other time.
+This runner will buffer failed operations and try to re-run them before any newly scheduled operations.
 
 .. code-block:: php
 
@@ -92,11 +91,11 @@ Then, you can try to run an operation:
 
 .. code-block:: php
 
-    // Let's say this operation will fail by throwing an exception
+    // Let's say this operation fails by throwing an exception
     $runner->run($operation);
 
 
-If this operation fails (ie throws an exception) then the runner will keep it in the buffer. So when you'll try to run
+If this operation fails (ie throws an exception) then the runner will keep it in the buffer. When you try to run
 another task, it'll **first** attempt to run the operation in the buffer.
 
 .. code-block:: php
@@ -109,7 +108,6 @@ another task, it'll **first** attempt to run the operation in the buffer.
 Create your own
 ---------------
 
-Despite the provided operation runners might be sufficient, you can easily create your own runner by implementing the
+Provided operation runners might be sufficient in many cases, but you can easily create your own runners by implementing the
 `OperationRunner interface <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Operation/Runner/OperationRunner.php>`_.
 
-All you need is to be able to run it and returns the operation.

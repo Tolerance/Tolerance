@@ -20,7 +20,7 @@ This operation can be created with the :code:`Callback` class, like this:
     });
 
 This class accepts any supported `PHP callable <http://php.net/manual/en/language.types.callable.php>`_, so you can also
-uses object methods for instance:
+use object methods. For instance:
 
 .. code-block:: php
 
