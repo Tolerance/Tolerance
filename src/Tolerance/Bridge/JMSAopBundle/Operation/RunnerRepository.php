@@ -20,12 +20,14 @@ class RunnerRepository
      */
     public function getRunnerByMethod(\ReflectionMethod $method)
     {
-        $className = $method->getDeclaringClass()->getName();
+        $class = new \ReflectionClass($method->class);
+        $className = $class->name;
+
         if (!array_key_exists($className, $this->runnerMappings)) {
             return;
         }
 
-        $methodName = $method->getName();
+        $methodName = $method->name;
         if (!array_key_exists($methodName, $this->runnerMappings[$className])) {
             return;
         }
@@ -40,7 +42,7 @@ class RunnerRepository
      */
     public function hasRunnerForClass(\ReflectionClass $class)
     {
-        return array_key_exists($class->getName(), $this->runnerMappings);
+        return array_key_exists($class->name, $this->runnerMappings);
     }
 
     /**
@@ -51,9 +53,11 @@ class RunnerRepository
      */
     public function addRunnerForMethod(\ReflectionMethod $method, OperationRunner $runner)
     {
+        $class = new \ReflectionClass($method->class);
+
         $this->addRunner(
-            $method->getDeclaringClass()->getName(),
-            $method->getName(),
+            $class->name,
+            $method->name,
             $runner
         );
     }
