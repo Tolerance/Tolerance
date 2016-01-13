@@ -13,6 +13,10 @@ class AopCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if (!$container->getParameter('tolerance.aop.enabled')) {
+            return;
+        }
+
         $taggedServices = $container->findTaggedServiceIds('tolerance.operation_wrapper');
 
         foreach ($taggedServices as $id => $tags) {

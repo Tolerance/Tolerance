@@ -13,4 +13,4 @@ before_script: travis_retry composer install --no-interaction
 script: 
   - vendor/bin/phpspec run -fpretty -v
   - vendor/bin/phpunit
-
+  - vendor/bin/behat -fprogress
