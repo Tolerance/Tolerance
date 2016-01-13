@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.api.client_operation_runner" class="Tolerance\Operation\Runner\OperationRunner">
+            <factory class="Tolerance\Bridge\Symfony\Bundle\AppBundle\Operation\ThirdPartyRunnerFactory" method="create" />
+        </service>
+
+        <service id="app.api.client" class="Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\StepByStepHookApiClient">
+            <tag name="tolerance.operation_wrapper" methods="get" runner="app.api.client_operation_runner" />
+        </service>
+    </services>
+</container>

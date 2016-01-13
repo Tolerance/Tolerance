@@ -38,6 +38,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.storage', $definitionArgument)->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.generator', $definitionArgument)->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.resolver', $definitionArgument)->shouldBeCalled();
@@ -55,6 +56,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter('tolerance.request_identifier.header', 'X-Request-Id')->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.headers_listener', Argument::that(function(Definition $definition) {
@@ -73,6 +75,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.monolog.processor', Argument::that(function(Definition $definition) {
@@ -93,6 +96,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
         $builder->setDefinition('tolerance.request_identifier.guzzle_middleware', Argument::that(function(Definition $definition) {
@@ -106,12 +110,30 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function test_it_throws_an_exception_if_aop_without_jms_bundle()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+
+        $this->extension->load([
+            'tolerance' => [
+                'aop' => null,
+            ]
+        ], $builder->reveal());
+    }
+
     private function createBuilder()
     {
         $builder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');
         $builder->hasExtension('http://symfony.com/schema/dic/services')->willReturn(false);
-        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), Argument::type('Symfony\Component\DependencyInjection\Definition'))->willReturn(null);
+        $builder->setParameter('tolerance.aop.enabled', Argument::any())->shouldBeCalled();
 
         return $builder;
     }
