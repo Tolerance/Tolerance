@@ -66,7 +66,7 @@ Symfony listener
 
 The Symfony bridge contains a request listeners that listeners to requests and gets the identifier from the header you
 want, then store it in the storage you've provided to it. You can have a look to the `code if the listener <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Symfony/RequestIdentifier/RequestHeadersListener.php>`_
-or checkout the `Symfony Bridge documentation <bridges/symfony.html>`_.
+or checkout the `Symfony Bridge documentation`_.
 
 Monolog processor
 -----------------
@@ -76,7 +76,7 @@ request identifier come from the resolver that you needs in inject in it.
 
 Checkout the `code of the processor <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Monolog/RequestIdentifier/RequestIdentifierProcessor.php>`_,
 `Monolog's documentation <https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md#adding-extra-data-in-the-records>`_ or
-the `Symfony Bridge documentation <bridges/symfony.html#request-identifier>`_ that automatically register the listener.
+the `Symfony Bridge documentation`_ that automatically register the listener.
 
 Guzzle middleware
 -----------------
@@ -86,4 +86,6 @@ that adds the current request identifier in the headers of the sent requests.
 
 Checkout the `code of the middleware factory <https://github.com/sroze/Tolerance/blob/master/src/Tolerance/Bridge/Guzzle/RequestIdentifier/MiddlewareFactory.php>`_,
 `Guzzle's documentation <http://docs.guzzlephp.org/en/latest/handlers-and-middleware.html#middleware>`_ or
-the `Symfony Bridge documentation <bridges/symfony.html#request-identifier>`_ that automatically register the middleware.
+the `Symfony Bridge documentation`_ that automatically register the middleware.
+
+.. _Symfony Bridge documentation: bridges/symfony.html#request-identifier

@@ -32,11 +32,15 @@ class Callback extends StateContainedOperation implements Operation
     }
 
     /**
-     * @return callable
+     * @return mixed
      */
-    public function getCallable()
+    public function call()
     {
-        return $this->callable;
+        $callable = $this->callable;
+
+        $this->result = $callable();
+
+        return $this->result;
     }
 
     /**
@@ -45,13 +49,5 @@ class Callback extends StateContainedOperation implements Operation
     public function getResult()
     {
         return $this->result;
-    }
-
-    /**
-     * @param mixed $result
-     */
-    public function setResult($result)
-    {
-        $this->result = $result;
     }
 }

@@ -1,0 +1,9 @@
+framework:
+    secret:                           "sroze.io"
+    trusted_proxies: ~
+    test: ~
+    session:
+        storage_id:                    "session.storage.mock_file"
+
+tolerance:
+    aop: ~
