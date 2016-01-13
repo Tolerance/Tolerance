@@ -22,13 +22,9 @@ class CallbackOperationRunner implements OperationRunner
             ));
         }
 
-        $callable = $operation->getCallable();
-
         try {
-            $result = $callable();
-
+            $operation->call();
             $operation->setState(StateContainedOperation::STATE_SUCCESSFUL);
-            $operation->setResult($result);
         } catch (\Exception $e) {
             $operation->setState(StateContainedOperation::STATE_FAILED);
 

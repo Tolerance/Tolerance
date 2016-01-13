@@ -1,0 +1,19 @@
+default:
+    autoload:
+        '': %paths.base%/features/symfony/bootstrap
+
+    suites:
+        default:
+            paths:    [ %paths.base%/features/symfony ]
+            contexts:
+                - FeatureContext:
+                    - @app.api.client
+                    - @app.api.client
+
+    extensions:
+        Behat\Symfony2Extension:
+            kernel:
+                env: "test"
+                debug: "true"
+                path: "features/symfony/app/AppKernel.php"
+                bootstrap: "features/symfony/app/bootstrap.php"

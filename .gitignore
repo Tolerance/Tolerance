@@ -2,4 +2,5 @@
 /docs/_build
 /docs/src
 /composer.lock
+features/symfony/app/cache/
 
