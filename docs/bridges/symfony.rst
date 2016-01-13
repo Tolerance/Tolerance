@@ -126,3 +126,12 @@ use the following configuration:
     tolerance:
         request_identifier:
             guzzle: false
+
+The test application
+--------------------
+
+In order to test the Symfony bridge we have an application that uses as much as possible the different features. You can
+find the application in Tolerance's repository at 2 different places:
+
+- :code:`features/symfony/app` contains the Kernel and the application configuration
+- :code:`tests/Tolerance/Bridge/Symfony/Bundle/AppBundle` contains the *AppBundle* bundle.
