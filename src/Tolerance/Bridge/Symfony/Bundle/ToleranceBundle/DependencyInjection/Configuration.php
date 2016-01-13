@@ -40,6 +40,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->booleanNode('aop')->defaultFalse()->end()
             ->end()
         ;
 

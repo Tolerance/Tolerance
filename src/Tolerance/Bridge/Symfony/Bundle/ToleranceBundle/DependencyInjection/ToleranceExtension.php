@@ -15,6 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection\CompilerPass\AopCompilerPass;
 
 class ToleranceExtension extends Extension
 {
@@ -37,6 +38,10 @@ class ToleranceExtension extends Extension
             if ($config['request_identifier']['monolog']) {
                 $loader->load('request-identifier/monolog.xml');
             }
+        }
+
+        if ($config['aop']) {
+            $container->addCompilerPass(new AopCompilerPass());
         }
     }
 }

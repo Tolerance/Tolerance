@@ -9,7 +9,8 @@
         "symfony/dependency-injection": "^3.0",
         "symfony/config": "^3.0",
         "phpunit/phpunit": "^5.1",
-        "csa/guzzle-bundle": "~2.0@dev"
+        "csa/guzzle-bundle": "~2.0@dev",
+        "jms/aop-bundle": "^1.2"
     },
 
     "autoload": {
