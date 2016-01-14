@@ -89,11 +89,11 @@ class Configuration implements ConfigurationInterface
             $retryNode = $builder->root('retry');
             $children = $retryNode
                 ->children()
-                    ->arrayNode('strategy')
+                    ->arrayNode('waiter')
                         ->isRequired()
                         ->children();
 
-            foreach ($this->getStrategyNodes() as $node) {
+            foreach ($this->getWaiterNodes() as $node) {
                 $children->append($node);
             }
 
@@ -118,37 +118,51 @@ class Configuration implements ConfigurationInterface
         return $nodes;
     }
 
-    private function getStrategyNodes(array $except = [])
+    private function getWaiterNodes(array $except = [])
     {
         $builder = new TreeBuilder();
         $nodes = [];
 
-        if (!in_array('max', $except)) {
-            $maxNode = $builder->root('max');
+        if (!in_array('count_limited', $except)) {
+            $maxNode = $builder->root('count_limited');
             $strategyChildren = $maxNode
                 ->children()
                     ->integerNode('count')->isRequired()->end()
-                    ->arrayNode('strategy')
+                    ->arrayNode('waiter')
                         ->isRequired()
                         ->children();
 
-            foreach ($this->getStrategyNodes($except + ['max']) as $node) {
+            array_push($except, 'count_limited');
+            foreach ($this->getWaiterNodes($except) as $node) {
                 $strategyChildren->append($node);
             }
 
             $nodes[] = $maxNode;
         }
 
-        if (!in_array('exponential', $except)) {
-            $exponentialNode = $builder->root('exponential');
-            $exponentialNode
+        if (!in_array('exponential_back_off', $except)) {
+            $exponentialNode = $builder->root('exponential_back_off');
+            $strategyChildren = $exponentialNode
                 ->children()
                     ->integerNode('exponent')->isRequired()->end()
-                    ->scalarNode('waiter')->isRequired()->end()
-                ->end()
-            ;
+                    ->arrayNode('waiter')
+                        ->isRequired()
+                        ->children();
+
+            array_push($except, 'exponential_back_off');
+            foreach ($this->getWaiterNodes($except) as $node) {
+                $strategyChildren->append($node);
+            }
 
             $nodes[] = $exponentialNode;
+        }
+
+        if (!in_array('null', $except)) {
+            $nodes[] = $builder->root('null');
+        }
+
+        if (!in_array('sleep', $except)) {
+            $nodes[] = $builder->root('sleep');
         }
 
         return $nodes;

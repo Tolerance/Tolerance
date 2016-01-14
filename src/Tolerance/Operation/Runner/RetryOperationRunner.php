@@ -13,7 +13,7 @@ namespace Tolerance\Operation\Runner;
 
 use Tolerance\Operation\Operation;
 use Tolerance\Waiter\WaiterException;
-use Tolerance\Waiter\Strategy\WaitStrategy;
+use Tolerance\Waiter\Waiter;
 
 class RetryOperationRunner implements OperationRunner
 {
@@ -23,15 +23,15 @@ class RetryOperationRunner implements OperationRunner
     private $runner;
 
     /**
-     * @var WaitStrategy
+     * @var \Tolerance\Waiter\Waiter
      */
     private $waitStrategy;
 
     /**
-     * @param OperationRunner $runner
-     * @param WaitStrategy    $waitStrategy
+     * @param OperationRunner          $runner
+     * @param \Tolerance\Waiter\Waiter $waitStrategy
      */
-    public function __construct(OperationRunner $runner, WaitStrategy $waitStrategy)
+    public function __construct(OperationRunner $runner, Waiter $waitStrategy)
     {
         $this->runner = $runner;
         $this->waitStrategy = $waitStrategy;

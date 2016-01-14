@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Waiter\Strategy;
+namespace Tolerance\Waiter\Exception;
 
 use Tolerance\Waiter\WaiterException;
 
-class MaxRetryException extends WaiterException
+class CountLimitReached extends WaiterException
 {
 }

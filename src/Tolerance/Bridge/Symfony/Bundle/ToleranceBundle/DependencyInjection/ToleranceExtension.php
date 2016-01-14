@@ -20,8 +20,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
-use Tolerance\Waiter\Strategy\Exponential;
-use Tolerance\Waiter\Strategy\Max;
+use Tolerance\Waiter\ExponentialBackOff;
+use Tolerance\Waiter\CountLimited;
+use Tolerance\Waiter\NullWaiter;
+use Tolerance\Waiter\SleepWaiter;
 
 class ToleranceExtension extends Extension
 {
@@ -92,11 +94,11 @@ class ToleranceExtension extends Extension
     private function createRetryOperationRunnerDefinition(ContainerBuilder $container, $name, array $config)
     {
         $decoratedRunnerName = $this->createOperationRunnerDefinition($container, $name.'.runner', $config['runner']);
-        $waitStrategyName = $this->createWaitStrategyDefinition($container, $name.'.wait_strategy', $config['strategy']);
+        $waiterName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
 
         $container->setDefinition($name,  new Definition(RetryOperationRunner::class, [
             new Reference($decoratedRunnerName),
-            new Reference($waitStrategyName),
+            new Reference($waiterName),
         ]));
 
         return $name;
@@ -109,12 +111,16 @@ class ToleranceExtension extends Extension
         return $name;
     }
 
-    private function createWaitStrategyDefinition(ContainerBuilder $container, $name, array $config)
+    private function createWaiterDefinition(ContainerBuilder $container, $name, array $config)
     {
-        if (array_key_exists('max', $config)) {
-            return $this->createMaxWaitStrategyDefinition($container, $name, $config['max']);
-        } elseif (array_key_exists('exponential', $config)) {
-            return $this->createExponentialWaitStrategyDefinition($container, $name, $config['exponential']);
+        if (array_key_exists('count_limited', $config)) {
+            return $this->createCouldLimitedWaiterDefinition($container, $name, $config['count_limited']);
+        } elseif (array_key_exists('exponential_back_off', $config)) {
+            return $this->createExponentialBackOffWaiterDefinition($container, $name, $config['exponential_back_off']);
+        } elseif (array_key_exists('sleep', $config)) {
+            return $this->createSleepWaiterDefinition($container, $name);
+        } elseif (array_key_exists('null', $config)) {
+            return $this->createNullWaiterDefinition($container, $name);
         }
 
         throw new \RuntimeException(sprintf(
@@ -123,11 +129,11 @@ class ToleranceExtension extends Extension
         ));
     }
 
-    private function createMaxWaitStrategyDefinition(ContainerBuilder $container, $name, array $config)
+    private function createCouldLimitedWaiterDefinition(ContainerBuilder $container, $name, array $config)
     {
-        $decoratedStrategyName = $this->createWaitStrategyDefinition($container, $name.'.strategy', $config['strategy']);
+        $decoratedStrategyName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
 
-        $container->setDefinition($name, new Definition(Max::class, [
+        $container->setDefinition($name, new Definition(CountLimited::class, [
             new Reference($decoratedStrategyName),
             $config['count'],
         ]));
@@ -135,12 +141,28 @@ class ToleranceExtension extends Extension
         return $name;
     }
 
-    private function createExponentialWaitStrategyDefinition(ContainerBuilder $container, $name, array $config)
+    private function createExponentialBackOffWaiterDefinition(ContainerBuilder $container, $name, array $config)
     {
-        $container->setDefinition($name, new Definition(Exponential::class, [
-            new Reference($config['waiter']),
+        $decoratedWaiterName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
+
+        $container->setDefinition($name, new Definition(ExponentialBackOff::class, [
+            new Reference($decoratedWaiterName),
             $config['exponent'],
         ]));
+
+        return $name;
+    }
+
+    private function createSleepWaiterDefinition(ContainerBuilder $container, $name)
+    {
+        $container->setDefinition($name, new Definition(SleepWaiter::class));
+
+        return $name;
+    }
+
+    private function createNullWaiterDefinition(ContainerBuilder $container, $name)
+    {
+        $container->setDefinition($name, new Definition(NullWaiter::class));
 
         return $name;
     }

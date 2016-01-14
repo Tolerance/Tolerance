@@ -12,12 +12,13 @@ tolerance:
                 runner:
                     callback: ~
 
-                strategy:
-                    max:
+                waiter:
+                    count_limited:
                         count: 10
-                        strategy:
-                            exponential:
+                        waiter:
+                            exponential_back_off:
                                 exponent: 1
-                                waiter: tolerance.waiter.null
+                                waiter:
+                                    'null': ~
 
     aop: ~

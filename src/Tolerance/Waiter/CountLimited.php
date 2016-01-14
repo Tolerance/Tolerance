@@ -9,14 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Waiter\Strategy;
+namespace Tolerance\Waiter;
 
-class Max implements WaitStrategy
+use Tolerance\Waiter\Exception\CountLimitReached;
+
+class CountLimited implements Waiter
 {
     /**
-     * @var \Tolerance\Waiter\Strategy\WaitStrategy
+     * @var Waiter
      */
-    private $waitStrategy;
+    private $waiter;
 
     /**
      * @var int
@@ -24,24 +26,24 @@ class Max implements WaitStrategy
     private $limit;
 
     /**
-     * @param WaitStrategy $waitStrategy
-     * @param int          $limit
+     * @param Waiter $waiter
+     * @param int    $limit
      */
-    public function __construct(WaitStrategy $waitStrategy, $limit)
+    public function __construct(Waiter $waiter, $limit)
     {
-        $this->waitStrategy = $waitStrategy;
+        $this->waiter = $waiter;
         $this->limit = $limit;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function wait()
+    public function wait($seconds = 0)
     {
         if ($this->limit-- <= 0) {
-            throw new MaxRetryException();
+            throw new CountLimitReached();
         }
 
-        $this->waitStrategy->wait();
+        $this->waiter->wait($seconds);
     }
 }
