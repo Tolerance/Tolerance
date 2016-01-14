@@ -20,8 +20,8 @@ class RequestIdentifierProcessorSpec extends ObjectBehavior
             'context' => [],
         ];
 
-        $identifier->get()->willReturn('1234');
-        $requestIdentifierResolver->get()->willReturn($identifier);
+        $identifier->__toString()->willReturn('1234');
+        $requestIdentifierResolver->resolve()->willReturn($identifier);
 
         $this($record)->shouldReturn([
             'context' => [

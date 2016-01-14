@@ -29,7 +29,7 @@ class RequestIdentifierProcessor
     public function __invoke(array $record)
     {
         $record['context']['tags'] = [
-            'request-identifier' => $this->requestIdentifierResolver->get()->get(),
+            'request-identifier' => (string) $this->requestIdentifierResolver->resolve(),
         ];
 
         return $record;

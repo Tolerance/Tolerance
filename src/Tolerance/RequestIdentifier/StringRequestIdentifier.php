@@ -29,7 +29,7 @@ class StringRequestIdentifier implements RequestIdentifier
     /**
      * {@inheritdoc}
      */
-    public function get()
+    public function __toString()
     {
         return $this->string;
     }
