@@ -2,7 +2,7 @@ Waiters
 =======
 
 In any loop, you'll probably want to wait between calls somehow, to prevent DDoSing your other services
-or 3rd party APIs. Tolerance come with 2 default _raw_ waiters:
+or 3rd party APIs. Tolerance come with 2 default *raw* waiters:
 
 - `SleepWaiter`_ that simply wait using PHP's `usleep` function
 - `NullWaiter`_ that do not wait and it mainly used for tests
