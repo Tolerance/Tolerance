@@ -30,7 +30,7 @@ class StoredOrGeneratedResolver implements RequestIdentifierResolver
     /**
      * {@inheritdoc}
      */
-    public function get()
+    public function resolve()
     {
         if (null === ($identifier = $this->storage->getRequestIdentifier())) {
             $identifier = $this->generator->generate();

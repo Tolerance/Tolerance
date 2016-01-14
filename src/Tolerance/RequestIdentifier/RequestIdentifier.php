@@ -5,9 +5,9 @@ namespace Tolerance\RequestIdentifier;
 interface RequestIdentifier
 {
     /**
-     * Get the string representation of the request UUID.
+     * Get the string representation of the request identifier.
      *
      * @return string
      */
-    public function get();
+    public function __toString();
 }

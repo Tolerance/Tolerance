@@ -25,7 +25,7 @@ class StoredOrGeneratedResolverSpec extends ObjectBehavior
     {
         $storage->getRequestIdentifier()->willReturn($identifier);
 
-        $this->get()->shouldReturn($identifier);
+        $this->resolve()->shouldReturn($identifier);
     }
 
     function it_generates_and_stores_the_identifier_if_nothing_in_storage(RequestIdentifierStorage $storage, RequestIdentifierGenerator $generator, RequestIdentifier $identifier)
@@ -34,6 +34,6 @@ class StoredOrGeneratedResolverSpec extends ObjectBehavior
         $storage->getRequestIdentifier()->willReturn(null);
         $storage->setRequestIdentifier($identifier)->shouldBeCalled();
 
-        $this->get()->shouldReturn($identifier);
+        $this->resolve()->shouldReturn($identifier);
     }
 }
