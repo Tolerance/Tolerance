@@ -23,7 +23,7 @@ class MiddlewareFactorySpec extends ObjectBehavior
     function its_middleware_adds_the_header_to_the_request(RequestIdentifierResolver $resolver, RequestInterface $request)
     {
         $identifier = StringRequestIdentifier::fromString('1234');
-        $resolver->get()->shouldBeCalled()->willReturn($identifier);
+        $resolver->resolve()->shouldBeCalled()->willReturn($identifier);
 
         $request->withAddedHeader('X-Request-Id', '1234')->shouldBeCalled();
 

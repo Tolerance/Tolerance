@@ -20,6 +20,6 @@ class StringRequestIdentifierSpec extends ObjectBehavior
 
     function it_returns_the_string()
     {
-        $this->get()->shouldReturn('foo');
+        $this->__toString()->shouldReturn('foo');
     }
 }
