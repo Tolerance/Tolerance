@@ -128,6 +128,38 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    public function test_it_registers_the_buffered_runner_termination_listener()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+        $builder->setDefinition('tolerance.operation_runner_listeners.buffered_termination', Argument::that(function(Definition $definition) {
+            return $definition->hasTag('kernel.event_listener');
+        }))->shouldBeCalled();
+
+        $this->extension->load([], $builder->reveal());
+    }
+
+    public function test_it_do_not_register_the_buffered_runner_termination_listener()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+        $builder->setDefinition('tolerance.operation_runner_listeners.buffered_termination', Argument::any())->shouldNotBeCalled();
+
+        $this->extension->load([
+            'tolerance' => [
+                'operation_runner_listener' => false,
+            ]
+        ], $builder->reveal());
+    }
+
     private function createBuilder()
     {
         $builder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');

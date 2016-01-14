@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.my_operation_buffer" class="Tolerance\Operation\Buffer\InMemoryOperationBuffer" />
+        <service id="app.my_buffered_operation_runner" class="Tolerance\Operation\Runner\BufferedOperationRunner">
+            <argument type="service" id="tolerance.operation_runners.default" />
+            <argument type="service" id="app.my_operation_buffer" />
+
+            <tag name="tolerance.operation_runner" />
+        </service>
+    </services>
+</container>

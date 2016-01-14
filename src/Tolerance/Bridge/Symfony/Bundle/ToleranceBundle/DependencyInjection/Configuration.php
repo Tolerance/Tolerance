@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->append($this->getRequestIdentifierNode())
                 ->append($this->getOperationRunnersNode())
+                ->booleanNode('operation_runner_listener')->defaultTrue()->end()
                 ->booleanNode('aop')->defaultFalse()->end()
             ->end()
         ;

@@ -33,11 +33,6 @@ class BufferedOperationRunner implements OperationRunner
     public function run(Operation $operation)
     {
         $this->buffer->add($operation);
-
-        while (null !== ($operation = $this->buffer->current())) {
-            $this->runner->run($operation);
-            $this->buffer->pop();
-        }
     }
 
     /**
@@ -46,5 +41,24 @@ class BufferedOperationRunner implements OperationRunner
     public function supports(Operation $operation)
     {
         return $this->runner->supports($operation);
+    }
+
+    /**
+     * Runs the buffered operations and return them.
+     *
+     * @return Operation[]
+     */
+    public function runBufferedOperations()
+    {
+        $ranOperations = [];
+
+        while (null !== ($operation = $this->buffer->current())) {
+            $this->runner->run($operation);
+            $this->buffer->pop();
+
+            $ranOperations[] = $operation;
+        }
+
+        return $ranOperations;
     }
 }
