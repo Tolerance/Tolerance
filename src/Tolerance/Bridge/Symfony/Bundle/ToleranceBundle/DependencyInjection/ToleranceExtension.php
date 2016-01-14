@@ -48,6 +48,10 @@ class ToleranceExtension extends Extension
             $this->loadAop($container, $loader);
         }
 
+        if ($config['operation_runner_listener']) {
+            $loader->load('operations/listeners.xml');
+        }
+
         foreach ($config['operation_runners'] as $name => $operationRunner) {
             $name = sprintf('tolerance.operation_runners.%s', $name);
 
@@ -74,7 +78,7 @@ class ToleranceExtension extends Extension
             throw new \RuntimeException('You need to add the JMSAopBundle is you want to use the AOP feature');
         }
 
-        $loader->load('aop.xml');
+        $loader->load('operations/aop.xml');
     }
 
     private function createOperationRunnerDefinition(ContainerBuilder $container, $name, array $config)
@@ -96,7 +100,7 @@ class ToleranceExtension extends Extension
         $decoratedRunnerName = $this->createOperationRunnerDefinition($container, $name.'.runner', $config['runner']);
         $waiterName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
 
-        $container->setDefinition($name,  new Definition(RetryOperationRunner::class, [
+        $container->setDefinition($name,  $this->createDefinition(RetryOperationRunner::class, [
             new Reference($decoratedRunnerName),
             new Reference($waiterName),
         ]));
@@ -106,7 +110,7 @@ class ToleranceExtension extends Extension
 
     private function createCallbackOperationRunnerDefinition(ContainerBuilder $container, $name)
     {
-        $container->setDefinition($name, new Definition(CallbackOperationRunner::class));
+        $container->setDefinition($name, $this->createDefinition(CallbackOperationRunner::class));
 
         return $name;
     }
@@ -165,5 +169,13 @@ class ToleranceExtension extends Extension
         $container->setDefinition($name, new Definition(NullWaiter::class));
 
         return $name;
+    }
+
+    private function createDefinition($className, array $arguments = [])
+    {
+        $definition = new Definition($className, $arguments);
+        $definition->addTag('tolerance.operation_runner');
+
+        return $definition;
     }
 }

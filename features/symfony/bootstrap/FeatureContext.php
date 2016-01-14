@@ -2,9 +2,13 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Kernel;
 use Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\ApiClient;
 use Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\ApiException;
 use Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\StepByStepHookApiClient;
+use Tolerance\Operation\Callback;
+use Tolerance\Operation\Runner\BufferedOperationRunner;
 
 class FeatureContext implements Context, SnippetAcceptingContext
 {
@@ -19,18 +23,31 @@ class FeatureContext implements Context, SnippetAcceptingContext
     private $client;
 
     /**
+     * @var Kernel
+     */
+    private $kernel;
+
+    /**
+     * @var BufferedOperationRunner
+     */
+    private $bufferedOperationRunner;
+
+    /**
      * @var mixed
      */
     private $response;
 
     /**
-     * @param StepByStepHookApiClient $stepByStepHookApiClient
-     * @param ApiClient               $client
+     * @param Kernel $kernel
+     * @param ApiClient $client
+     * @param BufferedOperationRunner $bufferedOperationRunner
      */
-    public function __construct(StepByStepHookApiClient $stepByStepHookApiClient, ApiClient $client)
+    public function __construct(Kernel $kernel, ApiClient $client, BufferedOperationRunner $bufferedOperationRunner)
     {
-        $this->stepByStepHookApiClient = $stepByStepHookApiClient;
+        $this->stepByStepHookApiClient = $client;
         $this->client = $client;
+        $this->kernel = $kernel;
+        $this->bufferedOperationRunner = $bufferedOperationRunner;
     }
 
     /**
@@ -54,11 +71,61 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given there is an operation in a buffered runner
+     */
+    public function thereIsAnOperationInABufferedRunner()
+    {
+        $this->bufferedOperationRunner->run(new Callback(function() {
+            $this->response = 'Buffered operation ran!';
+        }));
+    }
+
+    /**
      * @When I call my local client service
      */
     public function iCallMyLocalClientService()
     {
         $this->response = $this->client->get();
+    }
+
+    /**
+     * @When I send a request
+     */
+    public function iSendARequest()
+    {
+        $request = Request::create('/', 'GET');
+        $this->response = $this->kernel->handle($request);
+    }
+
+    /**
+     * @When the kernel terminates
+     */
+    public function theKernelTerminates()
+    {
+        $request = Request::create('/', 'GET');
+        $response = $this->kernel->handle($request);
+
+        $this->kernel->terminate($request, $response);
+    }
+
+    /**
+     * @Then the buffered operation should have been run
+     */
+    public function theBufferedOperationShouldHaveBeenRun()
+    {
+        if ($this->response != 'Buffered operation ran!') {
+            throw new \RuntimeException('The buffered operation seems to be not run');
+        }
+    }
+
+    /**
+     * @Then the buffered operation should not have been run
+     */
+    public function theBufferedOperationShouldNotHaveBeenRun()
+    {
+        if ($this->response == 'Buffered operation ran!') {
+            throw new \RuntimeException('The buffered operation seems to be not run');
+        }
     }
 
     /**

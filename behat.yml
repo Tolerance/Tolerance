@@ -7,8 +7,9 @@ default:
             paths:    [ %paths.base%/features/symfony ]
             contexts:
                 - FeatureContext:
+                    - @kernel
                     - @app.api.client
-                    - @app.api.client
+                    - @app.my_buffered_operation_runner
 
     extensions:
         Behat\Symfony2Extension:

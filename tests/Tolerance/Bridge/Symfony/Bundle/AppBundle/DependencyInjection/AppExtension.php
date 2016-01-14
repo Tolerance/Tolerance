@@ -16,5 +16,6 @@ class AppExtension extends Extension
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('api-aop.xml');
+        $loader->load('runners.xml');
     }
 }

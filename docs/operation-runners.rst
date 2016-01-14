@@ -1,20 +1,22 @@
 Operation runners
 =================
 
-Once you've created your `operation <operations.html>`_, you now have to run it using an operation runner.
+Once you've created an `operation <operations.html>`_, you now have to run it using an operation runner. First of all,
+there's a set of *raw* operation runners that know how to run the default operations:
 
-First of all, there's a set of operation runners that know how to run the default operation:
+- The `callback runner`_ that is able to run callback operations.
+- The `chain runner`_ that is able to chain operation runners that supports different operation types.
 
-- `CallbackOperationRunner`_ that is able to run callback operations.
-- `ChainOperationRunner`_ that is able to chain operation runners that supports different operation types.
+In addition, there's a few useful operation runners that decorate an existing one to add extra *behaviour*:
 
-In addition, there's a few useful operation runners that decorate an existing one to add extra features:
+- The `retry runner`_ will retry the operation until it is successful or considered as failing too much.
+- The `buffered runner`_ will buffer operations until you decide the run them.
 
-- `RetryOperationRunner`_ will retry the operation until it is successful or considered as failing too much.
-- `BufferedOperationRunner`_ will buffer operations and try to run them.
+*Raw* runners
+-------------
 
-CallbackOperationRunner
------------------------
+Callback runner
+~~~~~~~~~~~~~~~
 
 This is the runner that runs the Callback operations.
 
@@ -25,11 +27,10 @@ This is the runner that runs the Callback operations.
     $runner = new CallbackOperationRunner();
     $runner->run($operation);
 
-ChainOperationRunner
---------------------
+Chain runner
+~~~~~~~~~~~~
 
-Construct the runner with a bunch of runners that knows how to run the different type of operations you want to run
-and it'll ask the good one.
+Constructed by other runners, usually the *raw* ones, it uses the first one that supports to run the operation.
 
 .. code-block:: php
 
@@ -44,8 +45,11 @@ and it'll ask the good one.
 
 Also, the :code:`addOperationRunner` method allows you to add another runner on the fly.
 
-RetryOperationRunner
---------------------
+*Behavioural* runners
+---------------------
+
+Retry runner
+~~~~~~~~~~~~
 
 This runner will retry to run the operation until it is successful or the wait strategy decide to fail.
 
@@ -74,10 +78,10 @@ This runner will retry to run the operation until it is successful or the wait s
     $runner->run($operation);
 
 
-BufferedOperationRunner
------------------------
+Buffered runner
+~~~~~~~~~~~~~~~
 
-This runner will buffer failed operations and try to re-run them before any newly scheduled operations.
+This runner will buffer all the operations to post-pone their execution.
 
 .. code-block:: php
 
@@ -85,25 +89,22 @@ This runner will buffer failed operations and try to re-run them before any newl
     use Tolerance\Operation\Runner\BufferedOperationRunner;
 
     $buffer = new InMemoryOperationBuffer();
-    $runner = new BufferedOperationRunner($runner, $buffer);
+    $bufferedRunner = new BufferedOperationRunner($runner, $buffer);
 
-Then, you can try to run an operation:
+    // These 2 operations will be buffered
+    $bufferedRunner->run($firstOperation);
+    $bufferedRunner->run($secondOperation);
 
-.. code-block:: php
-
-    // Let's say this operation fails by throwing an exception
-    $runner->run($operation);
-
-
-If this operation fails (ie throws an exception) then the runner will keep it in the buffer. When you try to run
-another task, it'll **first** attempt to run the operation in the buffer.
+Once you've decided that you want to run all the operations, you need to call the :code:`runBufferedOperations` method.
 
 .. code-block:: php
 
-    $runner->run($secondOperation);
+    $bufferedRunner->runBufferedOperations();
 
-    // That will actually run the first one first,
-    // and then the second one
+.. tip::
+
+    The Symfony Bridge automatically run all the buffered operations when the kernel terminates. Checkout the
+    `Symfony Bridge documentation <bridges/symfony.html>`_
 
 Create your own
 ---------------
