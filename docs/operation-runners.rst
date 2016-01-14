@@ -54,11 +54,11 @@ This runner will retry to run the operation until it is successful or the wait s
     use Tolerance\Operation\Runner\CallbackOperationRunner;
     use Tolerance\Operation\Runner\RetryOperationRunner;
     use Tolerance\Waiter\Waiter\SleepWaiter;
-    use Tolerance\Waiter\Strategy\WaitStrategy\Exponential;
+    use Tolerance\Waiter\Waiter\ExponentialBackOff;
 
     // Creates the strategy used to wait between failing calls
-    $waitStrategy = new Max(
-        new Exponential(
+    $waitStrategy = new CountLimited(
+        new ExponentialBackOff(
             new SleepWaiter(),
             1
         ),

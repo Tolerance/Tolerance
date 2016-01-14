@@ -7,7 +7,7 @@ class NullWaiter implements Waiter
     /**
      * {@inheritdoc}
      */
-    public function wait($seconds)
+    public function wait($seconds = 0)
     {
     }
 }
