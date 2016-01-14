@@ -26,13 +26,14 @@ have a name (:code:`default` in the following example). The created operation ru
                     runner:
                         callback: ~
 
-                    strategy:
-                        max:
+                    waiter:
+                        count_limited:
                             count: 10
-                            strategy:
-                                exponential:
+                            waiter:
+                                exponential_back_off:
                                     exponent: 1
-                                    waiter: tolerance.waiter.null
+                                    waiter:
+                                        sleep: ~
 
 In that example, that will create a operation runner that is the retry operation runner decorating a callable operation runner.
 The following image represents the imbrication of the different runners.
