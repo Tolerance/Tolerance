@@ -20,5 +20,5 @@ interface RequestIdentifierResolver
      *
      * @return RequestIdentifier
      */
-    public function get();
+    public function resolve();
 }

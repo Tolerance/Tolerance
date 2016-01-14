@@ -43,9 +43,9 @@ class MiddlewareFactory
     {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
-                $identifier = $this->resolver->get();
+                $identifier = $this->resolver->resolve();
 
-                $request = $request->withAddedHeader($this->headerName, $identifier->get());
+                $request = $request->withAddedHeader($this->headerName, (string) $identifier);
 
                 return $handler($request, $options);
             };
