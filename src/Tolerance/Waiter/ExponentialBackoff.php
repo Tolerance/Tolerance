@@ -1,10 +1,8 @@
 <?php
 
-namespace Tolerance\Waiter\Strategy;
+namespace Tolerance\Waiter;
 
-use Tolerance\Waiter\Waiter;
-
-class Exponential implements WaitStrategy
+class ExponentialBackOff implements Waiter
 {
     /**
      * @var Waiter
@@ -17,8 +15,8 @@ class Exponential implements WaitStrategy
     private $exponent;
 
     /**
-     * @param \Tolerance\Waiter\Waiter $waiter
-     * @param int                      $exponent
+     * @param Waiter $waiter
+     * @param int    $exponent
      */
     public function __construct(Waiter $waiter, $exponent)
     {
@@ -29,9 +27,9 @@ class Exponential implements WaitStrategy
     /**
      * {@inheritdoc}
      */
-    public function wait()
+    public function wait($seconds = 0)
     {
-        $time = exp($this->exponent++);
+        $time = $seconds + exp($this->exponent++);
 
         $this->waiter->wait($time);
     }

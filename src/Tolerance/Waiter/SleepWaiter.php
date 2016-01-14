@@ -7,7 +7,7 @@ class SleepWaiter implements Waiter
     /**
      * {@inheritdoc}
      */
-    public function wait($seconds)
+    public function wait($seconds = 1)
     {
         usleep($seconds * 1000000);
     }
