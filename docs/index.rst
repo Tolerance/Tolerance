@@ -10,7 +10,6 @@ Contents:
     operations
     operation-runners
     waiters
-    wait-strategies
     request-identifier
     bridges/symfony
 
