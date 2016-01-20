@@ -1,7 +1,6 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\SnippetAcceptingContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 use Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\ApiClient;
@@ -10,7 +9,7 @@ use Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\StepByStepHookApiClient
 use Tolerance\Operation\Callback;
 use Tolerance\Operation\Runner\BufferedOperationRunner;
 
-class FeatureContext implements Context, SnippetAcceptingContext
+class FeatureContext implements Context
 {
     /**
      * @var StepByStepHookApiClient
