@@ -44,9 +44,7 @@ class LeakyBucketSpec extends ObjectBehavior
         $measure->getTime()->willReturn(new \DateTime());
         $measure->getRate()->willReturn($rate);
         $storage->find('id')->willReturn($measure);
-        $storage->save('id', Argument::that(function(RateMeasure $measure) {
-            return $measure->getRate()->getTicks() == 2;
-        }))->shouldBeCalled();
+        $storage->save('id', Argument::type(RateMeasure::class))->shouldBeCalled();
 
         $this->tick('id');
     }

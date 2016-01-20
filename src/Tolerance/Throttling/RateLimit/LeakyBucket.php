@@ -52,7 +52,7 @@ class LeakyBucket implements RateLimit
      */
     public function getTicksBeforeUnderLimit($identifier)
     {
-        $rate = $this->computeRate($identifier);
+        $rate = $this->computeCurrentRate($identifier);
 
         $wait = $rate > 1000 ? $rate : 0;
 
@@ -64,7 +64,7 @@ class LeakyBucket implements RateLimit
      */
     public function tick($identifier)
     {
-        $rate = $this->computeRate($identifier);
+        $rate = $this->computeCurrentRate($identifier);
 
         $this->storage->save($identifier, new ImmutableRateMeasure(
             new CounterRate($rate),
@@ -89,7 +89,14 @@ class LeakyBucket implements RateLimit
         return $measure;
     }
 
-    private function computeRate($identifier)
+    /**
+     * Create the current rate.
+     *
+     * @param string $identifier
+     *
+     * @return float
+     */
+    private function computeCurrentRate($identifier)
     {
         $measure = $this->getMeasure($identifier);
         $lastRequest = (double) $measure->getTime()->format('U.u');
@@ -97,9 +104,9 @@ class LeakyBucket implements RateLimit
 
         $difference = (microtime(true) - $lastRequest) * 1000;
 
-        $newRatio = max(0, $lastRatio - $difference);
-        $newRatio += 1000 / $this->rate->getTicks();
+        $rate = max(0, $lastRatio - $difference);
+        $rate += 1000 / $this->rate->getTicks();
 
-        return $newRatio;
+        return $rate;
     }
 }

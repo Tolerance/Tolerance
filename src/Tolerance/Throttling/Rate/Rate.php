@@ -13,5 +13,10 @@ namespace Tolerance\Throttling\Rate;
 
 interface Rate
 {
+    /**
+     * Get the number of ticks represented by this rate.
+     *
+     * @return int
+     */
     public function getTicks();
 }
