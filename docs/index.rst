@@ -11,6 +11,7 @@ Contents:
     operation-runners
     waiters
     request-identifier
+    throttling
     bridges/symfony
 
 Indices and tables
