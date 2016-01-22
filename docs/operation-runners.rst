@@ -12,6 +12,11 @@ In addition, there's a few useful operation runners that decorate an existing on
 - The `retry runner`_ will retry the operation until it is successful or considered as failing too much.
 - The `buffered runner`_ will buffer operations until you decide the run them.
 
+.. note::
+
+    The `Throttling component <throttling.html>`_ also come with a `Rate Limited Operation Runner <throttling.html#operation-runner>`_
+
+
 *Raw* runners
 -------------
 

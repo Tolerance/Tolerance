@@ -14,6 +14,11 @@ such as an exponential back-off.
   to multiplicatively increase the amount of time of wait time.
 - The `count limited`_ waiter simply adds a limit in the number of times it can be called.
 
+.. note::
+
+    The `Throttling component <throttling.html>`_ also come with a `Rate Limiting Waiter <throttling.html#waiter>`_
+
+
 SleepWaiter
 -----------
 
