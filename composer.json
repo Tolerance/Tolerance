@@ -25,5 +25,8 @@
         "psr-0": {
             "Tolerance\\": "tests/"
         }
+    },
+    "require": {
+        "ramsey/uuid": "^3.1"
     }
 }
