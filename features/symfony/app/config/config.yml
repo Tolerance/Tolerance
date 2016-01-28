@@ -8,6 +8,10 @@ framework:
     session:
         storage_id:                    "session.storage.mock_file"
 
+csa_guzzle:
+    clients:
+        3rd_party: ~
+
 tolerance:
     operation_runners:
         default:
@@ -25,3 +29,4 @@ tolerance:
                                     'null': ~
 
     aop: ~
+    message_profile: ~

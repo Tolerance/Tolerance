@@ -13,7 +13,9 @@
         "phpunit/phpunit": "^5.1",
         "csa/guzzle-bundle": "~2.0@dev",
         "jms/aop-bundle": "^1.2",
-        "symfony/browser-kit": "~2.8"
+        "symfony/browser-kit": "~2.8",
+        "ruflin/elastica": "^3.0",
+        "symfony/twig-bundle": "~2.8"
     },
 
     "autoload": {

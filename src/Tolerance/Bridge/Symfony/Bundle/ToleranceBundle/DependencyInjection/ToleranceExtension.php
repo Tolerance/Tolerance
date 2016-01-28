@@ -52,11 +52,29 @@ class ToleranceExtension extends Extension
             $loader->load('operations/listeners.xml');
         }
 
+        if ($config['message_profile']['enabled']) {
+            $this->loadMessageProfile($container, $loader, $config['message_profile']);
+        }
+
         foreach ($config['operation_runners'] as $name => $operationRunner) {
             $name = sprintf('tolerance.operation_runners.%s', $name);
 
             $this->createOperationRunnerDefinition($container, $name, $operationRunner);
         }
+    }
+
+    private function loadMessageProfile(ContainerBuilder $container, LoaderInterface $loader, array $config)
+    {
+        $container->setParameter('tolerance.message_profile.header', $config['header']);
+
+        $loader->load('message-profile/listener.xml');
+        $loader->load('message-profile/storage.xml');
+
+        if ($config['monolog']) {
+            $loader->load('message-profile/monolog.xml');
+        }
+
+        $loader->load('message-profile/guzzle.xml');
     }
 
     private function loadRequestIdentifier(ContainerBuilder $container, LoaderInterface $loader, array $config)
@@ -65,10 +83,6 @@ class ToleranceExtension extends Extension
 
         $loader->load('request-identifier/request.xml');
         $loader->load('request-identifier/listener.xml');
-
-        if ($config['monolog']) {
-            $loader->load('request-identifier/monolog.xml');
-        }
     }
 
     private function loadAop(ContainerBuilder $container, LoaderInterface $loader)

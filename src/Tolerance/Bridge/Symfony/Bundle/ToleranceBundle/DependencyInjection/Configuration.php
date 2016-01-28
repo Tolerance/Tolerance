@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface
         $root
             ->children()
                 ->append($this->getRequestIdentifierNode())
+                ->append($this->getMessageProfileNode())
                 ->append($this->getOperationRunnersNode())
                 ->booleanNode('operation_runner_listener')->defaultTrue()->end()
                 ->booleanNode('aop')->defaultFalse()->end()
@@ -50,9 +51,23 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('X-Request-Id')
                 ->end()
-                ->booleanNode('monolog')
-                    ->defaultTrue()
-                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getMessageProfileNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('message_profile');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->canBeEnabled()
+            ->children()
+                ->scalarNode('header')->cannotBeEmpty()->defaultValue('X-Request-Id')->end()
+                ->booleanNode('monolog')->defaultTrue()->end()
             ->end()
         ;
 

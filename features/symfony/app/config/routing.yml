@@ -1,3 +1,7 @@
 app_index:
-    path:      /
+    path: /
     defaults:  { _controller: AppBundle:Default:index }
+
+app_will_throw_an_exception:
+    path: /will-throw-an-exception
+    defaults: { _controller: AppBundle:Default:willThrowAnException }

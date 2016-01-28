@@ -14,14 +14,17 @@ namespace Tolerance\MessageProfile\HttpRequest\HttpFoundation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
+use Tolerance\MessageProfile\Peer\MessagePeer;
 
 interface HttpFoundationProfileFactory
 {
     /**
-     * @param Request  $request
-     * @param Response $response
+     * @param Request     $request
+     * @param Response    $response
+     * @param MessagePeer $sender
+     * @param MessagePeer $recipient
      *
      * @return HttpMessageProfile
      */
-    public function fromRequestAndResponse(Request $request, Response $response);
+    public function fromRequestAndResponse(Request $request, Response $response = null, MessagePeer $sender = null, MessagePeer $recipient = null);
 }

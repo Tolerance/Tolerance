@@ -10,12 +10,13 @@ use Tolerance\MessageProfile\HttpRequest\HttpFoundation\HttpFoundationProfileFac
 use Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\RequestIdentifierResolver;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\Identifier\MessageIdentifier;
+use Tolerance\MessageProfile\Peer\Resolver\PeerResolver;
 
 class SimpleHttpFoundationProfileFactorySpec extends ObjectBehavior
 {
-    function let(RequestIdentifierResolver $requestIdentifierResolver)
+    function let(RequestIdentifierResolver $requestIdentifierResolver, PeerResolver $peerResolver)
     {
-        $this->beConstructedWith($requestIdentifierResolver);
+        $this->beConstructedWith($requestIdentifierResolver, $peerResolver);
     }
 
     function it_is_an_http_foundation_profile_factory()

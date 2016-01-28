@@ -10,6 +10,11 @@ default:
                     - "@kernel"
                     - "@app.api.client"
                     - "@app.my_buffered_operation_runner"
+                - RequestIdentifierContext:
+                    - "@tolerance.message_profile.storage.in_memory"
+                - GuzzleContext:
+                    - "@app.guzzle.middleware.hookable_factory"
+                    - "@app.api.guzzle_client"
 
     extensions:
         Behat\Symfony2Extension:

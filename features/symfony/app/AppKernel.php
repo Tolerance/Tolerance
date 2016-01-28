@@ -1,7 +1,9 @@
 <?php
 
+use Csa\Bundle\GuzzleBundle\CsaGuzzleBundle;
 use JMS\AopBundle\JMSAopBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Tolerance\Bridge\Symfony\Bundle\AppBundle\AppBundle;
@@ -16,8 +18,10 @@ class AppKernel extends Kernel
     {
         return [
             new FrameworkBundle(),
+            new TwigBundle(),
             new JMSAopBundle(),
             new ToleranceBundle(),
+            new CsaGuzzleBundle(),
             new AppBundle(),
         ];
     }

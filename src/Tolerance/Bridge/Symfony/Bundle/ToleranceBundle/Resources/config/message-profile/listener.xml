@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.message_profile.identifier.generator.uuid" class="Tolerance\MessageProfile\Identifier\Generator\UuidIdentifierGenerator" />
+
+        <service id="tolerance.message_profile.peer.resolver.current" class="Tolerance\MessageProfile\Peer\Resolver\CurrentPeerResolver" />
+
+        <service id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\HeaderRequestIdentifierResolver">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+        </service>
+        <service id="tolerance.message_profile.http_foundation.profile_factory" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\SimpleHttpFoundationProfileFactory">
+            <argument type="service" id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" />
+        </service>
+
+        <service id="tolerance.message_profile.psr7.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\Psr7\RequestIdentifier\HeaderRequestIdentifierResolver">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+        </service>
+        <service id="tolerance.message_profile.psr7.profile_factory" class="Tolerance\MessageProfile\HttpRequest\Psr7\SimplePsrProfileFactory">
+            <argument type="service" id="tolerance.message_profile.psr7.header_request_identifier_resolver" />
+        </service>
+
+        <service id="tolerance.message_profile.stores_profile" class="Tolerance\Bridge\Symfony\MessageProfile\StoresRequestProfileWhenKernelTerminates">
+            <argument type="service" id="tolerance.message_profile.http_foundation.profile_factory" />
+            <argument type="service" id="tolerance.message_profile.storage.in_memory" />
+            <argument type="service" id="tolerance.message_profile.peer.resolver.current" />
+
+            <tag name="kernel.event_listener" event="kernel.terminate" />
+        </service>
+    </services>
+</container>

@@ -106,11 +106,22 @@ final class SimpleMessageProfile implements MessageProfile
     /**
      * {@inheritdoc}
      */
-    public function withContext(array $context)
+    public function withMergedContext(array $context)
     {
-        $context = clone $this;
-        $context->context = $context;
+        $profile = clone $this;
+        $profile->context = array_merge($profile->context, $context);
 
-        return $context;
+        return $profile;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function withTiming(MessageTiming $timing)
+    {
+        $profile = clone $this;
+        $profile->timing = $timing;
+
+        return $profile;
     }
 }

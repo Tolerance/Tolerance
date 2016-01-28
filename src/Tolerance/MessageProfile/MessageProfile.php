@@ -38,14 +38,21 @@ interface MessageProfile
     public function getContext();
 
     /**
+     * @param array $context
+     *
+     * @return MessageProfile
+     */
+    public function withMergedContext(array $context);
+
+    /**
      * @return MessageTiming
      */
     public function getTiming();
 
     /**
-     * @param array $context
+     * @param MessageTiming $timing
      *
      * @return MessageProfile
      */
-    public function withContext(array $context);
+    public function withTiming(MessageTiming $timing);
 }

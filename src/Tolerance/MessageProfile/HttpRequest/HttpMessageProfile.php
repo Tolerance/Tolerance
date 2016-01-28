@@ -12,6 +12,7 @@
 namespace Tolerance\MessageProfile\HttpRequest;
 
 use Tolerance\MessageProfile\MessageProfile;
+use Tolerance\MessageProfile\Timing\MessageTiming;
 
 final class HttpMessageProfile implements MessageProfile
 {
@@ -116,8 +117,29 @@ final class HttpMessageProfile implements MessageProfile
     /**
      * {@inheritdoc}
      */
-    public function withContext(array $context)
+    public function withMergedContext(array $context)
     {
-        return $this->decorated->withContext($context);
+        return $this->with($this->decorated->withMergedContext($context));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function withTiming(MessageTiming $timing)
+    {
+        return $this->with($this->decorated->withTiming($timing));
+    }
+
+    /**
+     * @param MessageProfile $decorated
+     *
+     * @return HttpMessageProfile
+     */
+    private function with(MessageProfile $decorated)
+    {
+        $profile = clone $this;
+        $profile->decorated = $decorated;
+
+        return $profile;
     }
 }

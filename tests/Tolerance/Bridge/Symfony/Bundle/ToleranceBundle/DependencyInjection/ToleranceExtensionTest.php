@@ -78,13 +78,13 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
-        $builder->setDefinition('tolerance.request_identifier.monolog.processor', Argument::that(function(Definition $definition) {
+        $builder->setDefinition('tolerance.message_profile.monolog.request_identifier_processor', Argument::that(function(Definition $definition) {
             return $definition->hasTag('kernel.event_listener');
         }));
 
         $this->extension->load([
             'tolerance' => [
-                'request_identifier' => [
+                'message_profile' => [
                     'monolog' => true,
                 ],
             ]
