@@ -40,10 +40,6 @@ class ToleranceExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('waiter.xml');
 
-        if ($config['request_identifier']['enabled']) {
-            $this->loadRequestIdentifier($container, $loader, $config['request_identifier']);
-        }
-
         if ($config['aop']) {
             $this->loadAop($container, $loader);
         }
@@ -75,14 +71,6 @@ class ToleranceExtension extends Extension
         }
 
         $loader->load('message-profile/guzzle.xml');
-    }
-
-    private function loadRequestIdentifier(ContainerBuilder $container, LoaderInterface $loader, array $config)
-    {
-        $container->setParameter('tolerance.request_identifier.header', $config['header']);
-
-        $loader->load('request-identifier/request.xml');
-        $loader->load('request-identifier/listener.xml');
     }
 
     private function loadAop(ContainerBuilder $container, LoaderInterface $loader)

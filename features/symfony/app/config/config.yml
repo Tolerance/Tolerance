@@ -5,6 +5,7 @@ framework:
         strict_requirements:          "%kernel.debug%"
     trusted_proxies: ~
     test: ~
+    assets: ~
     session:
         storage_id:                    "session.storage.mock_file"
 

@@ -5,17 +5,13 @@
 
     "require-dev": {
         "phpspec/phpspec": "~2.0",
-        "symfony/http-kernel": "~2.8",
-        "symfony/dependency-injection": "~2.8",
-        "symfony/config": "~2.8",
-        "behat/behat": "^3.0",
+        "behat/behat": "~3.1.0rc1",
         "behat/symfony2-extension": "^2.1",
         "phpunit/phpunit": "^5.1",
         "csa/guzzle-bundle": "~2.0@dev",
         "jms/aop-bundle": "^1.2",
-        "symfony/browser-kit": "~2.8",
         "ruflin/elastica": "^3.0",
-        "symfony/twig-bundle": "~2.8"
+        "symfony/symfony": "~2.8|~3.0"
     },
 
     "autoload": {

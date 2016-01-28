@@ -27,7 +27,6 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->append($this->getRequestIdentifierNode())
                 ->append($this->getMessageProfileNode())
                 ->append($this->getOperationRunnersNode())
                 ->booleanNode('operation_runner_listener')->defaultTrue()->end()
@@ -36,25 +35,6 @@ class Configuration implements ConfigurationInterface
         ;
 
         return $builder;
-    }
-
-    private function getRequestIdentifierNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('request_identifier');
-
-        $node
-            ->addDefaultsIfNotSet()
-            ->canBeEnabled()
-            ->children()
-                ->scalarNode('header')
-                    ->cannotBeEmpty()
-                    ->defaultValue('X-Request-Id')
-                ->end()
-            ->end()
-        ;
-
-        return $node;
     }
 
     private function getMessageProfileNode()
