@@ -6,4 +6,3 @@ Tolerance\MessageProfile\HttpRequest\HttpMessageProfile:
             type: string
         statusCode:
             type: integer
-            serialized_name: statusCOde

@@ -46,7 +46,7 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->canBeEnabled()
             ->children()
-                ->scalarNode('header')->cannotBeEmpty()->defaultValue('X-Request-Id')->end()
+                ->scalarNode('header')->cannotBeEmpty()->defaultValue('x-request-id')->end()
                 ->booleanNode('monolog')->defaultTrue()->end()
                 ->arrayNode('storage')
                     ->isRequired()

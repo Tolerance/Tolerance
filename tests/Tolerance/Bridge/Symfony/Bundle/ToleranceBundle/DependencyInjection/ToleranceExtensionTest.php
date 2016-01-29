@@ -40,7 +40,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder = $this->createBuilder();
         $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
-        $builder->setParameter('tolerance.message_profile.header', 'X-Request-Id')->shouldBeCalled();
+        $builder->setParameter('tolerance.message_profile.header', 'x-request-id')->shouldBeCalled();
         $builder->setDefinition('tolerance.message_profile.stores_profile', Argument::that(function(Definition $definition) {
             return $definition->hasTag('kernel.event_listener');
         }));

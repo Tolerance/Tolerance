@@ -31,7 +31,7 @@ final class HeaderRequestIdentifierResolver implements RequestIdentifierResolver
      * @param MessageIdentifierGenerator $identifierGenerator
      * @param string                     $headerName
      */
-    public function __construct(MessageIdentifierGenerator $identifierGenerator, $headerName = 'X-Request-Id')
+    public function __construct(MessageIdentifierGenerator $identifierGenerator, $headerName)
     {
         $this->identifierGenerator = $identifierGenerator;
         $this->headerName = $headerName;

@@ -32,5 +32,12 @@
 
             <tag name="kernel.event_listener" event="kernel.terminate" />
         </service>
+
+        <service id="tolerance.message_profile.generate_request_identifier" class="Tolerance\Bridge\Symfony\MessageProfile\GenerateRequestIdentifierIfNotInHeaders">
+            <argument type="service" id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" />
+            <argument>%tolerance.message_profile.header%</argument>
+
+            <tag name="kernel.event_listener" event="kernel.request" priority="1000" />
+        </service>
     </services>
 </container>
