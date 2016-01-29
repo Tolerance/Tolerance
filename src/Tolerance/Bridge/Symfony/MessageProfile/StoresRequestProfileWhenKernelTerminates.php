@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Tolerance\MessageProfile\HttpRequest\HttpFoundation\HttpFoundationProfileFactory;
 use Tolerance\MessageProfile\Peer\Resolver\PeerResolver;
 use Tolerance\MessageProfile\Storage\ProfileStorage;
+use Tolerance\MessageProfile\Timing\SimpleMessageTiming;
 
 final class StoresRequestProfileWhenKernelTerminates
 {
@@ -53,7 +54,26 @@ final class StoresRequestProfileWhenKernelTerminates
         $receiver = $this->peerResolver->resolve();
 
         $profile = $this->profileFactory->fromRequestAndResponse($event->getRequest(), $event->getResponse(), null, $receiver);
+        $profile = $profile->withTiming($this->generateTiming());
 
         $this->profileStorage->store($profile);
+    }
+
+    /**
+     * @return SimpleMessageTiming
+     */
+    private function generateTiming()
+    {
+        $start = array_key_exists('REQUEST_TIME_FLOAT', $_SERVER) ?
+            \DateTime::createFromFormat('U.u', (double) $_SERVER['REQUEST_TIME_FLOAT']) :
+            (array_key_exists('REQUEST_TIME', $_SERVER) ?
+                \DateTime::createFromFormat('U', (int) $_SERVER['REQUEST_TIME']) :
+                new \DateTime()
+            )
+        ;
+
+        $end = \DateTime::createFromFormat('U.u', microtime(true));
+
+        return SimpleMessageTiming::fromRange($start, $end);
     }
 }

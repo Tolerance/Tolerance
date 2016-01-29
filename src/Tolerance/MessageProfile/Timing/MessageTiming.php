@@ -14,9 +14,16 @@ namespace Tolerance\MessageProfile\Timing;
 interface MessageTiming
 {
     /**
-     * Amount of time, in milliseconds.
+     * Beginning of the request.
      *
-     * @return float
+     * @return \DateTime
      */
-    public function getTotal();
+    public function getStart();
+
+    /**
+     * Beginning of the request.
+     *
+     * @return \DateTime
+     */
+    public function getEnd();
 }

@@ -14,23 +14,38 @@ namespace Tolerance\MessageProfile\Timing;
 class SimpleMessageTiming implements MessageTiming
 {
     /**
+     * @var \DateTime
+     */
+    private $start;
+
+    /**
+     * @var \DateTime
+     */
+    private $end;
+
+    /**
+     * Duration, in seconds.
+     *
      * @var float
      */
-    private $milliseconds;
+    private $duration;
 
     private function __construct()
     {
     }
 
     /**
-     * @param float $milliseconds
+     * @param \DateTime $start
+     * @param \DateTime $end
      *
      * @return SimpleMessageTiming
      */
-    public static function fromMilliseconds($milliseconds)
+    public static function fromRange(\DateTime $start, \DateTime $end)
     {
         $timing = new self();
-        $timing->milliseconds = $milliseconds;
+        $timing->start = $start;
+        $timing->end = $end;
+        $timing->duration = ((double) $end->format('U.u') - (double) $start->format('U.u')) * 1000;
 
         return $timing;
     }
@@ -38,8 +53,24 @@ class SimpleMessageTiming implements MessageTiming
     /**
      * {@inheritdoc}
      */
-    public function getTotal()
+    public function getStart()
     {
-        return $this->milliseconds;
+        return $this->start;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnd()
+    {
+        return $this->end;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDuration()
+    {
+        return $this->duration;
     }
 }

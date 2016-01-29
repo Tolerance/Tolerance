@@ -110,7 +110,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
                     new Reference($config['elastica']),
                 ]
             ));
-        } else if (false !== $config['in_memory']) {
+        } elseif (false !== $config['in_memory']) {
             $storage = 'tolerance.message_profile.storage.in_memory';
         } else {
             throw new \RuntimeException('Unable to configure Request Identifier storage');

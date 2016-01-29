@@ -56,18 +56,18 @@ final class StoresRequestProfileMiddlewareFactory
     {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
-                $start = microtime(true);
+                $start = \DateTime::createFromFormat('U.u', microtime(true));
 
                 return $handler($request, $options)->then(function (ResponseInterface $response) use ($start, $request) {
-                    $timing = SimpleMessageTiming::fromMilliseconds((microtime(true) - $start) * 1000);
-                    $this->storeProfile($request, $response, $timing);
+                    $end = \DateTime::createFromFormat('U.u', microtime(true));
+                    $this->storeProfile($request, $response, SimpleMessageTiming::fromRange($start, $end));
 
                     return $response;
                 }, function ($reason) use ($start, $request) {
                     $response = $reason instanceof RequestException ? $reason->getResponse() : null;
 
-                    $timing = SimpleMessageTiming::fromMilliseconds((microtime(true) - $start) * 1000);
-                    $this->storeProfile($request, $response, $timing);
+                    $end = \DateTime::createFromFormat('U.u', microtime(true));
+                    $this->storeProfile($request, $response, SimpleMessageTiming::fromRange($start, $end));
 
                     throw $reason;
                 });

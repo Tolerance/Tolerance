@@ -19,7 +19,7 @@ class GenerateRequestIdentifierIfNotInHeaders
 
     /**
      * @param RequestIdentifierResolver $requestIdentifierResolver
-     * @param string $headerName
+     * @param string                    $headerName
      */
     public function __construct(RequestIdentifierResolver $requestIdentifierResolver, $headerName)
     {

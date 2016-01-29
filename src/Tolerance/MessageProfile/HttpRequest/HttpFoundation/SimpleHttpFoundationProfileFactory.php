@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\RequestIdentifierResolver;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\Peer\MessagePeer;
-use Tolerance\MessageProfile\Timing\SimpleMessageTiming;
 
 final class SimpleHttpFoundationProfileFactory implements HttpFoundationProfileFactory
 {
@@ -43,30 +42,10 @@ final class SimpleHttpFoundationProfileFactory implements HttpFoundationProfileF
             $sender,
             $recipient,
             [],
-            $this->generateTiming(),
+            null,
             $request->getMethod(),
-            $request->getRequestUri(),
+            $request->getUri(),
             null !== $response ? $response->getStatusCode() : 0
         );
-    }
-
-    /**
-     * @return SimpleMessageTiming
-     */
-    private function generateTiming()
-    {
-        $start = array_key_exists('REQUEST_TIME_FLOAT', $_SERVER) ?
-            \DateTime::createFromFormat('U.u', (double) $_SERVER['REQUEST_TIME_FLOAT']) :
-            (array_key_exists('REQUEST_TIME', $_SERVER) ?
-                \DateTime::createFromFormat('U', (int) $_SERVER['REQUEST_TIME']) :
-                new \DateTime()
-            )
-        ;
-
-        $end = \DateTime::createFromFormat('U.u', microtime(true));
-
-        $difference = ((double) $end->format('U.u')) - ((double) $start->format('U.u'));
-
-        return SimpleMessageTiming::fromMilliseconds($difference * 1000);
     }
 }

@@ -12,6 +12,7 @@ use Tolerance\MessageProfile\MessageProfile;
 use Tolerance\MessageProfile\Peer\MessagePeer;
 use Tolerance\MessageProfile\Peer\Resolver\PeerResolver;
 use Tolerance\MessageProfile\Storage\ProfileStorage;
+use Tolerance\MessageProfile\Timing\MessageTiming;
 
 
 class StoresRequestProfileWhenKernelTerminatesSpec extends ObjectBehavior
@@ -23,6 +24,8 @@ class StoresRequestProfileWhenKernelTerminatesSpec extends ObjectBehavior
 
     function it_stores_the_request_profile_when_the_kernel_terminates(PostResponseEvent $event, HttpFoundationProfileFactory $httpFoundationProfileFactory, ProfileStorage $profileStorage, MessageProfile $messageProfile, PeerResolver $peerResolver, MessagePeer $messagePeer)
     {
+        $messageProfile->withTiming(Argument::type(MessageTiming::class))->willReturn($messageProfile);
+
         $request = Request::create('/');
         $response = Response::create(null, 200);
 

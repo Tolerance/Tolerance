@@ -46,6 +46,7 @@ class ElasticaStorage implements ProfileStorage
     {
         $documentUuid = Uuid::uuid4()->toString();
         $normalized = $this->normalizer->normalize($profile);
+        $normalized['@timestamp'] = (int) ((double) $profile->getTiming()->getStart()->format('U.u')) * 1000;
 
         $this->type->addDocument(new Document($documentUuid, $normalized));
     }
