@@ -84,6 +84,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
     private function loadMessageProfile(ContainerBuilder $container, LoaderInterface $loader, array $config)
     {
         $container->setParameter('tolerance.message_profile.header', $config['header']);
+        $container->setParameter('tolerance.message_profile.current_peer', $config['current_peer']);
 
         $loader->load('message-profile/listener.xml');
         $loader->load('message-profile/storage.xml');

@@ -56,6 +56,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('elastica')->cannotBeEmpty()->end()
                     ->end()
                 ->end()
+                ->variableNode('current_peer')->defaultValue([])->end()
             ->end()
         ;
 

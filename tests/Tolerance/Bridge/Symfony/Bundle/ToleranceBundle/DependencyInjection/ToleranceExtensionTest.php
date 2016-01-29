@@ -162,7 +162,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->hasExtension('http://symfony.com/schema/dic/services')->willReturn(false);
         $builder->setDefinition(Argument::any(), Argument::type('Symfony\Component\DependencyInjection\Definition'))->willReturn(null);
         $builder->setAlias(Argument::any(), Argument::any())->willReturn(null);
-        $builder->setParameter('tolerance.aop.enabled', Argument::any())->shouldBeCalled();
+        $builder->setParameter(Argument::any(), Argument::any())->willReturn(null);
 
         return $builder;
     }

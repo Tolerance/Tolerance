@@ -7,7 +7,9 @@
     <services>
         <service id="tolerance.message_profile.identifier.generator.uuid" class="Tolerance\MessageProfile\Identifier\Generator\UuidIdentifierGenerator" />
 
-        <service id="tolerance.message_profile.peer.resolver.current" class="Tolerance\MessageProfile\Peer\Resolver\CurrentPeerResolver" />
+        <service id="tolerance.message_profile.peer.resolver.current" class="Tolerance\MessageProfile\Peer\Resolver\CurrentPeerResolver">
+            <argument>%tolerance.message_profile.current_peer%</argument>
+        </service>
 
         <service id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\HeaderRequestIdentifierResolver">
             <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
