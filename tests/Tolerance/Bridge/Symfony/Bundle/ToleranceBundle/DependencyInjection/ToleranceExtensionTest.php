@@ -47,7 +47,11 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->extension->load([
             'tolerance' => [
-                'message_profile' => null,
+                'message_profile' => [
+                    'storage' => [
+                        'in_memory' => null
+                    ],
+                ],
             ]
         ], $builder->reveal());
     }
@@ -68,6 +72,9 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
             'tolerance' => [
                 'message_profile' => [
                     'monolog' => true,
+                    'storage' => [
+                        'in_memory' => null
+                    ],
                 ],
             ]
         ], $builder->reveal());
@@ -90,7 +97,11 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->extension->load([
             'tolerance' => [
-                'message_profile' => null,
+                'message_profile' => [
+                    'storage' => [
+                        'in_memory' => null
+                    ],
+                ],
             ]
         ], $builder->reveal());
     }

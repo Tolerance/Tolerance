@@ -34,3 +34,4 @@ tolerance:
     message_profile:
         storage:
             buffered: false
+            in_memory: true

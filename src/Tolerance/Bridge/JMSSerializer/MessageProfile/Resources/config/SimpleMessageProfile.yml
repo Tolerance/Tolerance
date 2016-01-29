@@ -1,10 +1,4 @@
 Tolerance\MessageProfile\SimpleMessageProfile:
-    discriminator:
-        field_name: type
-        map:
-            simple: Tolerance\MessageProfile\SimpleMessageProfile
-            http: Tolerance\MessageProfile\HttpRequest\HttpMessageProfile
-
     properties:
         identifier:
             type: Tolerance\MessageProfile\Identifier\MessageIdentifier

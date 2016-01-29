@@ -15,6 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
@@ -26,8 +27,28 @@ use Tolerance\Waiter\CountLimited;
 use Tolerance\Waiter\NullWaiter;
 use Tolerance\Waiter\SleepWaiter;
 
-class ToleranceExtension extends Extension
+class ToleranceExtension extends Extension implements PrependExtensionInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+        if (array_key_exists('JMSSerializerBundle', $bundles)) {
+            $container->prependExtensionConfig('jms_serializer', [
+                'metadata' => [
+                    'directories' => [
+                        'ToleranceMessageProfile' => [
+                            'namespace_prefix' => 'Tolerance\\MessageProfile\\',
+                            'path' => '%kernel.root_dir%/../vendor/sroze/tolerance/src/Tolerance/Bridge/JMSSerializer/MessageProfile/Resources/config',
+                        ],
+                    ],
+                ],
+            ]);
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -72,11 +93,7 @@ class ToleranceExtension extends Extension
             $loader->load('message-profile/monolog.xml');
         }
 
-        if (array_key_exists('storage', $config)) {
-            $this->configureMessageProfileStorage($container, $loader, $config['storage']);
-        } else {
-            $container->setAlias('tolerance.message_profile.storage', 'tolerance.message_profile.storage.in_memory');
-        }
+        $this->configureMessageProfileStorage($container, $loader, $config['storage']);
     }
 
     private function configureMessageProfileStorage(ContainerBuilder $container, LoaderInterface $loader, array $config)
@@ -92,9 +109,13 @@ class ToleranceExtension extends Extension
                     new Reference($config['elastica']),
                 ]
             ));
-
-            $container->setAlias('tolerance.message_profile.storage', $storage);
+        } else if (false !== $config['in_memory']) {
+            $storage = 'tolerance.message_profile.storage.in_memory';
+        } else {
+            throw new \RuntimeException('Unable to configure Request Identifier storage');
         }
+
+        $container->setAlias('tolerance.message_profile.storage', $storage);
 
         if ($config['buffered']) {
             $loader->load('message-profile/storage/buffered.xml');
