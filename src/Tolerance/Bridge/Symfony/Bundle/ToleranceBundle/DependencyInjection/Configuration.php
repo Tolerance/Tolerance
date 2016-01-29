@@ -48,6 +48,12 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('header')->cannotBeEmpty()->defaultValue('X-Request-Id')->end()
                 ->booleanNode('monolog')->defaultTrue()->end()
+                ->arrayNode('storage')
+                    ->children()
+                        ->booleanNode('buffered')->defaultTrue()->end()
+                        ->scalarNode('elastica')->cannotBeEmpty()->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

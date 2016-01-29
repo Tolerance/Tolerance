@@ -1,0 +1,18 @@
+Tolerance\MessageProfile\SimpleMessageProfile:
+    discriminator:
+        field_name: type
+        map:
+            simple: Tolerance\MessageProfile\SimpleMessageProfile
+            http: Tolerance\MessageProfile\HttpRequest\HttpMessageProfile
+
+    properties:
+        identifier:
+            type: Tolerance\MessageProfile\Identifier\MessageIdentifier
+        sender:
+            type: Tolerance\MessageProfile\Peer\MessagePeer
+        recipient:
+            type: Tolerance\MessageProfile\Peer\MessagePeer
+        context:
+            type: array
+        timing:
+            type: Tolerance\MessageProfile\Timing\MessageTiming

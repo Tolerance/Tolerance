@@ -30,4 +30,7 @@ tolerance:
                                     'null': ~
 
     aop: ~
-    message_profile: ~
+
+    message_profile:
+        storage:
+            buffered: false

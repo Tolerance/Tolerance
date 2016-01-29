@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\RequestIdentifierResolver;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\Peer\MessagePeer;
-use Tolerance\MessageProfile\SimpleMessageProfile;
 use Tolerance\MessageProfile\Timing\SimpleMessageTiming;
 
 final class SimpleHttpFoundationProfileFactory implements HttpFoundationProfileFactory
@@ -40,13 +39,11 @@ final class SimpleHttpFoundationProfileFactory implements HttpFoundationProfileF
     public function fromRequestAndResponse(Request $request, Response $response = null, MessagePeer $sender = null, MessagePeer $recipient = null)
     {
         return new HttpMessageProfile(
-            new SimpleMessageProfile(
-                $this->requestIdentifierResolver->resolve($request),
-                $sender,
-                $recipient,
-                [],
-                $this->generateTiming()
-            ),
+            $this->requestIdentifierResolver->resolve($request),
+            $sender,
+            $recipient,
+            [],
+            $this->generateTiming(),
             $request->getMethod(),
             $request->getRequestUri(),
             null !== $response ? $response->getStatusCode() : 0

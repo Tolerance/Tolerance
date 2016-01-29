@@ -16,7 +16,6 @@ use Psr\Http\Message\ResponseInterface;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\HttpRequest\Psr7\RequestIdentifier\RequestIdentifierResolver;
 use Tolerance\MessageProfile\Peer\MessagePeer;
-use Tolerance\MessageProfile\SimpleMessageProfile;
 
 class SimplePsrProfileFactory implements Psr7ProfileFactory
 {
@@ -39,13 +38,13 @@ class SimplePsrProfileFactory implements Psr7ProfileFactory
     public function fromRequestAndResponse(RequestInterface $request, ResponseInterface $response = null, MessagePeer $sender = null, MessagePeer $recipient = null)
     {
         return new HttpMessageProfile(
-            new SimpleMessageProfile(
-                $this->requestIdentifierResolver->resolve($request),
-                $sender,
-                $recipient
-            ),
+            $this->requestIdentifierResolver->resolve($request),
+            $sender,
+            $recipient,
+            [],
+            null,
             $request->getMethod(),
-            $request->getUri(),
+            (string) $request->getUri(),
             null !== $response ? $response->getStatusCode() : 0
         );
     }

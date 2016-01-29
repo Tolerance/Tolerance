@@ -43,7 +43,11 @@ class HeaderRequestIdentifierResolver implements RequestIdentifierResolver
     public function resolve(RequestInterface $request)
     {
         if ($request->hasHeader($this->headerName)) {
-            return StringMessageIdentifier::fromString($request->getHeader($this->headerName[0]));
+            $value = $request->getHeader($this->headerName[0]);
+
+            if (!empty($value)) {
+                return StringMessageIdentifier::fromString($value);
+            }
         }
 
         return $this->identifierGenerator->generate();

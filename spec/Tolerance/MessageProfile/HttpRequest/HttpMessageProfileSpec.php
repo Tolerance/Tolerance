@@ -5,13 +5,14 @@ namespace spec\Tolerance\MessageProfile\HttpRequest;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\HttpFoundation\Request;
+use Tolerance\MessageProfile\Identifier\MessageIdentifier;
 use Tolerance\MessageProfile\MessageProfile;
 
 class HttpMessageProfileSpec extends ObjectBehavior
 {
-    function let(MessageProfile $decorated)
+    function let(MessageIdentifier $messageIdentifier)
     {
-        $this->beConstructedWith($decorated, 'GET', '/path', 200);
+        $this->beConstructedWith($messageIdentifier, null, null, [], null, 'GET', '/path', 200);
     }
 
     function it_is_a_message_profile()

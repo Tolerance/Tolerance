@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Storage decorator -->
+        <service id="tolerance.message_profile.storage.buffered"
+                 class="Tolerance\MessageProfile\Storage\BufferedStorage"
+                 decorates="tolerance.message_profile.storage">
+            <argument type="service" id="tolerance.message_profile.storage.buffered.inner" />
+        </service>
+
+        <!-- Flush listener -->
+        <service id="tolerance.message_profile.flush_buffered_storage" class="Tolerance\Bridge\Symfony\MessageProfile\FlushBufferedStorageWhenKernelTerminates">
+            <argument type="service" id="tolerance.message_profile.storage.buffered" />
+
+            <tag name="kernel.event_listener" event="kernel.terminate" />
+        </service>
+    </services>
+</container>

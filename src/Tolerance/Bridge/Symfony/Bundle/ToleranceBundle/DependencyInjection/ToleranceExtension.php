@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Tolerance\MessageProfile\Storage\ElasticaStorage;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
 use Tolerance\Waiter\ExponentialBackOff;
@@ -65,12 +66,39 @@ class ToleranceExtension extends Extension
 
         $loader->load('message-profile/listener.xml');
         $loader->load('message-profile/storage.xml');
+        $loader->load('message-profile/guzzle.xml');
 
         if ($config['monolog']) {
             $loader->load('message-profile/monolog.xml');
         }
 
-        $loader->load('message-profile/guzzle.xml');
+        if (array_key_exists('storage', $config)) {
+            $this->configureMessageProfileStorage($container, $loader, $config['storage']);
+        } else {
+            $container->setAlias('tolerance.message_profile.storage', 'tolerance.message_profile.storage.in_memory');
+        }
+    }
+
+    private function configureMessageProfileStorage(ContainerBuilder $container, LoaderInterface $loader, array $config)
+    {
+        if (array_key_exists('elastica', $config)) {
+            $loader->load('message-profile/jms_serializer.xml');
+
+            $storage = 'tolerance.message_profile.storage.elastica';
+            $container->setDefinition($storage, new Definition(
+                ElasticaStorage::class,
+                [
+                    new Reference('tolerance.message_profile.storage.normalizer.jms_serializer'),
+                    new Reference($config['elastica']),
+                ]
+            ));
+
+            $container->setAlias('tolerance.message_profile.storage', $storage);
+        }
+
+        if ($config['buffered']) {
+            $loader->load('message-profile/storage/buffered.xml');
+        }
     }
 
     private function loadAop(ContainerBuilder $container, LoaderInterface $loader)

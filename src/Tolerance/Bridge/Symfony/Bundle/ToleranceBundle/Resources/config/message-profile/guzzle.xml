@@ -19,7 +19,7 @@
 
         <!-- Request Profile middleware -->
         <service id="tolerance.message_profile.guzzle.middleware.store_profile_factory" class="Tolerance\Bridge\Guzzle\MessageProfile\StoresRequestProfileMiddlewareFactory">
-            <argument type="service" id="tolerance.message_profile.storage.in_memory" />
+            <argument type="service" id="tolerance.message_profile.storage" />
             <argument type="service" id="tolerance.message_profile.psr7.profile_factory" />
             <argument type="service" id="tolerance.message_profile.peer.resolver.current" />
         </service>

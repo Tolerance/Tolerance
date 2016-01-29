@@ -15,7 +15,7 @@ use Tolerance\MessageProfile\Identifier\MessageIdentifier;
 use Tolerance\MessageProfile\Peer\MessagePeer;
 use Tolerance\MessageProfile\Timing\MessageTiming;
 
-final class SimpleMessageProfile implements MessageProfile
+class SimpleMessageProfile implements MessageProfile
 {
     /**
      * @var MessageIdentifier

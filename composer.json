@@ -11,7 +11,8 @@
         "csa/guzzle-bundle": "~2.0@dev",
         "jms/aop-bundle": "^1.2",
         "ruflin/elastica": "^3.0",
-        "symfony/symfony": "~2.8|~3.0"
+        "symfony/symfony": "~2.8|~3.0",
+        "jms/serializer-bundle": "^1.1"
     },
 
     "autoload": {

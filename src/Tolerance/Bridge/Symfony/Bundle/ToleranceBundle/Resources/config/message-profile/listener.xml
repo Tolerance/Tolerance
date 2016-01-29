@@ -27,7 +27,7 @@
 
         <service id="tolerance.message_profile.stores_profile" class="Tolerance\Bridge\Symfony\MessageProfile\StoresRequestProfileWhenKernelTerminates">
             <argument type="service" id="tolerance.message_profile.http_foundation.profile_factory" />
-            <argument type="service" id="tolerance.message_profile.storage.in_memory" />
+            <argument type="service" id="tolerance.message_profile.storage" />
             <argument type="service" id="tolerance.message_profile.peer.resolver.current" />
 
             <tag name="kernel.event_listener" event="kernel.terminate" />

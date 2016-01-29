@@ -11,16 +11,13 @@
 
 namespace Tolerance\MessageProfile\HttpRequest;
 
-use Tolerance\MessageProfile\MessageProfile;
+use Tolerance\MessageProfile\Identifier\MessageIdentifier;
+use Tolerance\MessageProfile\Peer\MessagePeer;
+use Tolerance\MessageProfile\SimpleMessageProfile;
 use Tolerance\MessageProfile\Timing\MessageTiming;
 
-final class HttpMessageProfile implements MessageProfile
+class HttpMessageProfile extends SimpleMessageProfile
 {
-    /**
-     * @var MessageProfile
-     */
-    private $decorated;
-
     /**
      * @var string
      */
@@ -37,14 +34,27 @@ final class HttpMessageProfile implements MessageProfile
     private $statusCode;
 
     /**
-     * @param MessageProfile $decorated
-     * @param string         $method
-     * @param string         $path
-     * @param int|null       $statusCode
+     * @param MessageIdentifier $identifier
+     * @param MessagePeer       $sender
+     * @param MessagePeer       $recipient
+     * @param array             $context
+     * @param MessageTiming     $timing
+     * @param string            $method
+     * @param string            $path
+     * @param int               $statusCode
      */
-    public function __construct(MessageProfile $decorated, $method, $path, $statusCode = null)
-    {
-        $this->decorated = $decorated;
+    public function __construct(
+        MessageIdentifier $identifier,
+        MessagePeer $sender = null,
+        MessagePeer $recipient = null,
+        array $context = [],
+        MessageTiming $timing = null,
+        $method = null,
+        $path = null,
+        $statusCode = null
+    ) {
+        parent::__construct($identifier, $sender, $recipient, $context, $timing);
+
         $this->method = $method;
         $this->path = $path;
         $this->statusCode = $statusCode;
@@ -72,74 +82,5 @@ final class HttpMessageProfile implements MessageProfile
     public function getStatusCode()
     {
         return $this->statusCode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIdentifier()
-    {
-        return $this->decorated->getIdentifier();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSender()
-    {
-        return $this->decorated->getSender();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRecipient()
-    {
-        return $this->decorated->getRecipient();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getContext()
-    {
-        return $this->decorated->getContext();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTiming()
-    {
-        return $this->decorated->getTiming();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withMergedContext(array $context)
-    {
-        return $this->with($this->decorated->withMergedContext($context));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withTiming(MessageTiming $timing)
-    {
-        return $this->with($this->decorated->withTiming($timing));
-    }
-
-    /**
-     * @param MessageProfile $decorated
-     *
-     * @return HttpMessageProfile
-     */
-    private function with(MessageProfile $decorated)
-    {
-        $profile = clone $this;
-        $profile->decorated = $decorated;
-
-        return $profile;
     }
 }
