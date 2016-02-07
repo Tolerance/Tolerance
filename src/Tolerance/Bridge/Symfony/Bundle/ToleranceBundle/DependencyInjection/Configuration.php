@@ -54,6 +54,7 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('in_memory')->defaultFalse()->end()
                         ->booleanNode('buffered')->defaultTrue()->end()
                         ->scalarNode('elastica')->cannotBeEmpty()->end()
+                        ->scalarNode('neo4j')->cannotBeEmpty()->end()
                     ->end()
                 ->end()
                 ->variableNode('current_peer')->defaultValue([])->end()

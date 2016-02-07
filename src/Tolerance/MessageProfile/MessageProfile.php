@@ -55,4 +55,11 @@ interface MessageProfile
      * @return MessageProfile
      */
     public function withTiming(MessageTiming $timing);
+
+    /**
+     * @param MessagePeer $recipient
+     *
+     * @return MessageProfile
+     */
+    public function withRecipient(MessagePeer $recipient);
 }

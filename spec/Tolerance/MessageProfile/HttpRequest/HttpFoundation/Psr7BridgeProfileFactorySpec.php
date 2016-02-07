@@ -35,7 +35,9 @@ class Psr7BridgeProfileFactorySpec extends ObjectBehavior
 
         $psr7ProfileFactory->fromRequestAndResponse(
             Argument::type(RequestInterface::class),
-            Argument::type(ResponseInterface::class)
+            Argument::type(ResponseInterface::class),
+            Argument::any(),
+            Argument::any()
         )->willReturn($messageProfile);
 
         $this->fromRequestAndResponse($request, $response)->shouldReturn($messageProfile);

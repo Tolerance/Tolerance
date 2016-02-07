@@ -20,6 +20,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Tolerance\MessageProfile\Storage\ElasticaStorage;
+use Tolerance\MessageProfile\Storage\Neo4jStorage;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
 use Tolerance\Waiter\ExponentialBackOff;
@@ -108,6 +109,14 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
                 [
                     new Reference('tolerance.message_profile.storage.normalizer.jms_serializer'),
                     new Reference($config['elastica']),
+                ]
+            ));
+        } elseif (array_key_exists('neo4j', $config)) {
+            $storage = 'tolerance.message_profile.storage.neo4j';
+            $container->setDefinition($storage, new Definition(
+                Neo4jStorage::class,
+                [
+                    new Reference($config['neo4j']),
                 ]
             ));
         } elseif (false !== $config['in_memory']) {

@@ -124,4 +124,15 @@ class SimpleMessageProfile extends AbstractMessageProfile
 
         return $profile;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function withRecipient(MessagePeer $recipient)
+    {
+        $profile = clone $this;
+        $profile->recipient = $recipient;
+
+        return $profile;
+    }
 }
