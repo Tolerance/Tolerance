@@ -11,12 +11,8 @@
             <argument>%tolerance.message_profile.current_peer%</argument>
         </service>
 
-        <service id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\HeaderRequestIdentifierResolver">
-            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
-            <argument>%tolerance.message_profile.header%</argument>
-        </service>
-        <service id="tolerance.message_profile.http_foundation.profile_factory" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\SimpleHttpFoundationProfileFactory">
-            <argument type="service" id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" />
+        <service id="tolerance.message_profile.http_foundation.profile_factory" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\Psr7BridgeProfileFactory">
+            <argument type="service" id="tolerance.message_profile.psr7.profile_factory" />
         </service>
 
         <service id="tolerance.message_profile.psr7.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\Psr7\RequestIdentifier\HeaderRequestIdentifierResolver">
