@@ -11,7 +11,12 @@
 
 namespace Tolerance\MessageProfile\Peer\Resolver;
 
+use Tolerance\MessageProfile\Peer\MessagePeer;
+
 interface PeerResolver
 {
+    /**
+     * @return MessagePeer
+     */
     public function resolve();
 }
