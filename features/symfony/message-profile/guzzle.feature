@@ -16,4 +16,4 @@ Feature:
   Scenario: It creates a request ID
     Given the 3rd party API will succeed
     When I send a request to the 3rd party API
-    Then the sent request should contain an "X-Request-Id" header
+    Then the sent request should contain an "x-message-id" header
