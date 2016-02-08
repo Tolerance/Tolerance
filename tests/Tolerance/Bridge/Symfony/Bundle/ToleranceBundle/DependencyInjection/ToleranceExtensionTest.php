@@ -4,6 +4,8 @@ namespace Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection;
 
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\Definition;
+use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
+use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
 
 class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +42,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder = $this->createBuilder();
         $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
-        $builder->setParameter('tolerance.message_profile.header', 'x-request-id')->shouldBeCalled();
+        $builder->setParameter('tolerance.message_profile.header', 'x-message-id')->shouldBeCalled();
         $builder->setDefinition('tolerance.message_profile.stores_profile', Argument::that(function(Definition $definition) {
             return $definition->hasTag('kernel.event_listener');
         }));
@@ -71,7 +73,9 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $this->extension->load([
             'tolerance' => [
                 'message_profile' => [
-                    'monolog' => true,
+                    'integrations' => [
+                        'monolog' => true,
+                    ],
                     'storage' => [
                         'in_memory' => null
                     ],
@@ -156,6 +160,73 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    public function test_it_register_decorators_for_rabbitmq_producers()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+
+        $builder->findTaggedServiceIds('old_sound_rabbit_mq.producer')->shouldBeCalled()->willReturn([
+            'service.id' => [[]],
+        ]);
+
+        $builder->setDefinition('service.id.tolerance_decorator', Argument::that(function(Definition $definition) {
+            return $definition->getDecoratedService()[0] == 'service.id' &&
+            $definition->getClass() == StoreMessageProfileProducer::class;
+        }));
+
+        $this->extension->load([
+            'tolerance' => [
+                'message_profile' => [
+                    'integrations' => [
+                        'rabbitmq' => true,
+                    ],
+                    'storage' => [
+                        'in_memory' => null
+                    ],
+                ],
+            ]
+        ], $builder->reveal());
+    }
+
+    public function test_it_register_decorators_for_rabbitmq_consumers()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
+
+        $builder->findTaggedServiceIds('old_sound_rabbit_mq.consumer')->shouldBeCalled()->willReturn([
+            'service.id' => [[]],
+        ]);
+
+        $builder->setDefinition('service.id.tolerance_decorator', Argument::that(function(Definition $definition) {
+            return $definition->getDecoratedService()[0] == 'service.id' &&
+            $definition->getClass() == StoreMessageProfileConsumer::class;
+        }));
+
+        $this->extension->load([
+            'tolerance' => [
+                'message_profile' => [
+                    'integrations' => [
+                        'rabbitmq' => true,
+                    ],
+                    'storage' => [
+                        'in_memory' => null
+                    ],
+                ],
+            ]
+        ], $builder->reveal());
+    }
+
+    /**
+     * @return \Symfony\Component\DependencyInjection\ContainerBuilder
+     */
     private function createBuilder()
     {
         $builder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');
@@ -163,6 +234,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->setDefinition(Argument::any(), Argument::type('Symfony\Component\DependencyInjection\Definition'))->willReturn(null);
         $builder->setAlias(Argument::any(), Argument::any())->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->willReturn(null);
+        $builder->findTaggedServiceIds(Argument::any())->willReturn([]);
 
         return $builder;
     }

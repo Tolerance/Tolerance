@@ -16,9 +16,12 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
+use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
 use Tolerance\MessageProfile\Storage\ElasticaStorage;
 use Tolerance\MessageProfile\Storage\Neo4jStorage;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
@@ -91,11 +94,50 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         $loader->load('message-profile/storage.xml');
         $loader->load('message-profile/guzzle.xml');
 
+        $this->configureMessageProfileStorage($container, $loader, $config['storage']);
+        $this->loadMessageProfileIntegrations($container, $loader, $config['integrations']);
+    }
+
+    private function loadMessageProfileIntegrations(ContainerBuilder $container, LoaderInterface $loader, array $config)
+    {
         if ($config['monolog']) {
             $loader->load('message-profile/monolog.xml');
         }
 
-        $this->configureMessageProfileStorage($container, $loader, $config['storage']);
+        if ($config['rabbitmq']) {
+            $this->decorateRabbitMqConsumersAndProducers($container, $loader);
+        }
+    }
+
+    private function decorateRabbitMqConsumersAndProducers(ContainerBuilder $container, LoaderInterface $loader)
+    {
+        foreach ($container->findTaggedServiceIds('old_sound_rabbit_mq.producer') as $id => $attributes) {
+            $decoratorId = $id.'.tolerance_decorator';
+            $decoratorDefinition = new Definition(StoreMessageProfileProducer::class, [
+                new Reference($decoratorId.'.inner'),
+                new Reference('tolerance.message_profile.storage'),
+                new Reference('tolerance.message_profile.identifier.generator.uuid'),
+                new Reference('tolerance.message_profile.peer.resolver.current'),
+                new Parameter('tolerance.message_profile.header'),
+            ]);
+
+            $decoratorDefinition->setDecoratedService($id);
+            $container->setDefinition($decoratorId, $decoratorDefinition);
+        }
+
+        foreach ($container->findTaggedServiceIds('old_sound_rabbit_mq.consumer') as $id => $attributes) {
+            $decoratorId = $id.'.tolerance_decorator';
+            $decoratorDefinition = new Definition(StoreMessageProfileConsumer::class, [
+                new Reference($decoratorId.'.inner'),
+                new Reference('tolerance.message_profile.storage'),
+                new Reference('tolerance.message_profile.identifier.generator.uuid'),
+                new Reference('tolerance.message_profile.peer.resolver.current'),
+                new Parameter('tolerance.message_profile.header'),
+            ]);
+
+            $decoratorDefinition->setDecoratedService($id);
+            $container->setDefinition($decoratorId, $decoratorDefinition);
+        }
     }
 
     private function configureMessageProfileStorage(ContainerBuilder $container, LoaderInterface $loader, array $config)
