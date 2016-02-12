@@ -15,6 +15,8 @@ use Neoxygen\NeoClient\Client;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\MessageProfile;
 use Tolerance\MessageProfile\Peer\MessagePeer;
+use Tolerance\MessageProfile\Storage\Neo4j\Labels;
+use Tolerance\MessageProfile\Storage\Neo4j\RelationshipTypes;
 
 class Neo4jStorage implements ProfileStorage
 {
@@ -56,21 +58,27 @@ class Neo4jStorage implements ProfileStorage
      */
     private function createPeerMessageRelation(MessagePeer $peer, MessageProfile $profile, $relationType)
     {
-        $this->client->sendCypherQuery(
-            sprintf(
-                'MATCH (p:Peer %s), (m:Message %s)'.
-                'MERGE (p)-[:%s %s]->(m)',
-                $this->arrayToAttributes($peer->getArray()),
-                $this->arrayToAttributes([
-                    'identifier' => (string) $profile->getIdentifier(),
-                ]),
-                $relationType,
-                null !== $profile->getTiming() ? $this->arrayToAttributes([
-                    'start' => $profile->getTiming()->getStart()->format('Y-m-d\TH:i:s.uO'),
-                    'end' => $profile->getTiming()->getEnd()->format('Y-m-d\TH:i:s.uO'),
-                ]) : ''
-            )
+        $peerArray = $peer->getArray();
+        $peerId = isset($peerArray['id']) ? $peerArray['id'] : md5(json_encode($peerArray));
+        $relProps = null !== $profile->getTiming() ? [
+            'start' => $profile->getTiming()->getStart()->format('Y-m-d\TH:i:s.uO'),
+            'end' => $profile->getTiming()->getEnd()->format('Y-m-d\TH:i:s.uO')
+        ] : [];
+
+        $query = sprintf(
+            'MATCH (p:%s {id: {peerId} }), (m:%s { identifier: {messageId} }) '.
+            'MERGE (p)-[r:%s]->(m) '.
+            'SET r += {relProps} ',
+            Labels::PEER,
+            Labels::MESSAGE,
+            $relationType
         );
+        $params = [
+            'peerId' => $peerId,
+            'messageId' => (string) $profile->getIdentifier(),
+            'relProps' => $relProps
+        ];
+        $this->client->sendCypherQuery($query, $params);
     }
 
     /**
@@ -78,12 +86,15 @@ class Neo4jStorage implements ProfileStorage
      */
     private function createPeer(MessagePeer $peer)
     {
-        $this->client->sendCypherQuery(
-            sprintf(
-                'MERGE (p:Peer %s) RETURN p',
-                $this->arrayToAttributes($peer->getArray())
-            )
-        );
+        $array = $peer->getArray();
+        $identifier = isset($array['id']) ? $array['id'] : md5(json_encode($array));
+        $query = sprintf(
+            'MERGE (p:%s {id: {identifier} }) '.
+            'ON CREATE SET p += {props} '.
+            'RETURN p',
+            Labels::PEER);
+
+        $this->client->sendCypherQuery($query, ['identifier' => $identifier, 'props' => $array]);
     }
 
     /**
@@ -93,12 +104,8 @@ class Neo4jStorage implements ProfileStorage
     {
         $message = $this->normalizeMessage($profile);
 
-        $this->client->sendCypherQuery(
-            sprintf(
-                'CREATE (m:Message %s) RETURN m',
-                $this->arrayToAttributes($message)
-            )
-        );
+        $query = sprintf('CREATE (m:%s) SET m += {props}', Labels::MESSAGE);
+        $this->client->sendCypherQuery($query, ['props' => $message]);
     }
 
     /**
