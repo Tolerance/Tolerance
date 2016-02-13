@@ -43,6 +43,11 @@ class SimpleMessageProfile extends AbstractMessageProfile
     private $timing;
 
     /**
+     * @var MessageIdentifier|null
+     */
+    private $parentIdentifier;
+
+    /**
      * @param MessageIdentifier $identifier
      * @param MessagePeer       $sender
      * @param MessagePeer       $recipient
@@ -106,10 +111,10 @@ class SimpleMessageProfile extends AbstractMessageProfile
     /**
      * {@inheritdoc}
      */
-    public function withMergedContext(array $context)
+    public function withContext(array $context)
     {
         $profile = clone $this;
-        $profile->context = array_merge($profile->context, $context);
+        $profile->context = $context;
 
         return $profile;
     }
@@ -132,6 +137,25 @@ class SimpleMessageProfile extends AbstractMessageProfile
     {
         $profile = clone $this;
         $profile->recipient = $recipient;
+
+        return $profile;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentIdentifier()
+    {
+        return $this->parentIdentifier;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function withParentIdentifier(MessageIdentifier $parentIdentifier)
+    {
+        $profile = clone $this;
+        $profile->parentIdentifier = $parentIdentifier;
 
         return $profile;
     }

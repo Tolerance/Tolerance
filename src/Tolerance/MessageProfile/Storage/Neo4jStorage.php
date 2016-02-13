@@ -12,6 +12,7 @@
 namespace Tolerance\MessageProfile\Storage;
 
 use Neoxygen\NeoClient\Client;
+use Neoxygen\NeoClient\Transaction\Transaction;
 use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\MessageProfile;
 use Tolerance\MessageProfile\Peer\MessagePeer;
@@ -38,31 +39,36 @@ class Neo4jStorage implements ProfileStorage
      */
     public function store(MessageProfile $profile)
     {
-        $this->createMessage($profile);
+        $transaction = $this->client->createTransaction();
+
+        $this->createMessage($transaction, $profile);
 
         if (null !== ($recipient = $profile->getRecipient())) {
-            $this->createPeer($recipient);
-            $this->createPeerMessageRelation($recipient, $profile, 'RECEIVED_MESSAGE');
+            $this->createPeer($transaction, $recipient);
+            $this->createPeerMessageRelation($transaction, $recipient, $profile, 'RECEIVED_MESSAGE');
         }
 
         if (null !== ($sender = $profile->getSender())) {
-            $this->createPeer($sender);
-            $this->createPeerMessageRelation($sender, $profile, 'SENT_MESSAGE');
+            $this->createPeer($transaction, $sender);
+            $this->createPeerMessageRelation($transaction, $sender, $profile, 'SENT_MESSAGE');
         }
+
+        $transaction->commit();
     }
 
     /**
+     * @param Transaction    $transaction
      * @param MessagePeer    $peer
      * @param MessageProfile $profile
      * @param string         $relationType
      */
-    private function createPeerMessageRelation(MessagePeer $peer, MessageProfile $profile, $relationType)
+    private function createPeerMessageRelation(Transaction $transaction, MessagePeer $peer, MessageProfile $profile, $relationType)
     {
         $peerArray = $peer->getArray();
         $peerId = isset($peerArray['id']) ? $peerArray['id'] : md5(json_encode($peerArray));
         $relProps = null !== $profile->getTiming() ? [
             'start' => $profile->getTiming()->getStart()->format('Y-m-d\TH:i:s.uO'),
-            'end' => $profile->getTiming()->getEnd()->format('Y-m-d\TH:i:s.uO')
+            'end' => $profile->getTiming()->getEnd()->format('Y-m-d\TH:i:s.uO'),
         ] : [];
 
         $query = sprintf(
@@ -76,36 +82,66 @@ class Neo4jStorage implements ProfileStorage
         $params = [
             'peerId' => $peerId,
             'messageId' => (string) $profile->getIdentifier(),
-            'relProps' => $relProps
+            'relProps' => $relProps,
         ];
-        $this->client->sendCypherQuery($query, $params);
+
+        $transaction->pushQuery($query, $params);
     }
 
     /**
+     * @param Transaction $transaction
      * @param MessagePeer $peer
      */
-    private function createPeer(MessagePeer $peer)
+    private function createPeer(Transaction $transaction, MessagePeer $peer)
     {
         $array = $peer->getArray();
         $identifier = isset($array['id']) ? $array['id'] : md5(json_encode($array));
         $query = sprintf(
             'MERGE (p:%s {id: {identifier} }) '.
-            'ON CREATE SET p += {props} '.
-            'RETURN p',
+            'ON CREATE SET p += {props} ',
             Labels::PEER);
 
-        $this->client->sendCypherQuery($query, ['identifier' => $identifier, 'props' => $array]);
+        $transaction->pushQuery($query, ['identifier' => $identifier, 'props' => $array]);
     }
 
     /**
+     * @param Transaction    $transaction
      * @param MessageProfile $profile
+     *
+     * @throws \Neoxygen\NeoClient\Exception\Neo4jException
      */
-    private function createMessage(MessageProfile $profile)
+    private function createMessage(Transaction $transaction, MessageProfile $profile)
     {
         $message = $this->normalizeMessage($profile);
 
-        $query = sprintf('CREATE (m:%s) SET m += {props}', Labels::MESSAGE);
-        $this->client->sendCypherQuery($query, ['props' => $message]);
+        $transaction->pushQuery(sprintf(
+            'MERGE (m:%s {identifier: {identifier} }) '.
+            'SET m += {props}',
+            Labels::MESSAGE
+        ), [
+            'identifier' => (string) $profile->getIdentifier(),
+            'props' => $message,
+        ]);
+
+        if (null !== ($parentIdentifier = $profile->getParentIdentifier()) && $parentIdentifier != $profile->getIdentifier()) {
+            $transaction->pushQuery(sprintf(
+                'MERGE (p:%s {identifier: {parentId} })',
+                Labels::MESSAGE
+            ), [
+                'parentId' => (string) $parentIdentifier,
+            ]);
+
+            $transaction->pushQuery(sprintf(
+                'MATCH (p:%s { identifier: {parentId} }), (m:%s { identifier: {messageId} }) '.
+                'MERGE (m)-[r:%s]->(p) ',
+                Labels::MESSAGE,
+                Labels::MESSAGE,
+                RelationshipTypes::PARENT_MESSAGE
+            ), [
+                'parentId' => (string) $parentIdentifier,
+                'messageId' => (string) $profile->getIdentifier(),
+            ]);
+        }
     }
 
     /**
@@ -126,42 +162,5 @@ class Neo4jStorage implements ProfileStorage
         }
 
         return $normalized;
-    }
-
-    /**
-     * @param array $array
-     *
-     * @return string
-     */
-    private function arrayToAttributes(array $array)
-    {
-        $array = $this->flattenArray($array);
-        $pairs = array_map(function ($key, $value) {
-            return sprintf('%s: \'%s\'', $key, $value);
-        }, array_keys($array), $array);
-
-        return '{'.implode(', ', $pairs).'}';
-    }
-
-    /**
-     * @param array $array
-     *
-     * @return array
-     */
-    private function flattenArray(array $array)
-    {
-        $flatten = [];
-
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                foreach ($this->flattenArray($value) as $subKey => $subValue) {
-                    $flatten[$key.'.'.$subKey] = $subValue;
-                }
-            } else {
-                $flatten[$key] = $value;
-            }
-        }
-
-        return $flatten;
     }
 }

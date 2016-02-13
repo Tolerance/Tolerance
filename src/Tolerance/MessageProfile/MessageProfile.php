@@ -38,11 +38,18 @@ interface MessageProfile
     public function getContext();
 
     /**
+     * @param MessagePeer $recipient
+     *
+     * @return MessageProfile
+     */
+    public function withRecipient(MessagePeer $recipient);
+
+    /**
      * @param array $context
      *
      * @return MessageProfile
      */
-    public function withMergedContext(array $context);
+    public function withContext(array $context);
 
     /**
      * @return MessageTiming
@@ -57,9 +64,14 @@ interface MessageProfile
     public function withTiming(MessageTiming $timing);
 
     /**
-     * @param MessagePeer $recipient
+     * @return MessageIdentifier|null
+     */
+    public function getParentIdentifier();
+
+    /**
+     * @param MessageIdentifier $parentIdentifier
      *
      * @return MessageProfile
      */
-    public function withRecipient(MessagePeer $recipient);
+    public function withParentIdentifier(MessageIdentifier $parentIdentifier);
 }

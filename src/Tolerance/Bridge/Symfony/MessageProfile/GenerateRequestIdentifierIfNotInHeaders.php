@@ -1,16 +1,25 @@
 <?php
 
+/*
+ * This file is part of the Tolerance package.
+ *
+ * (c) Samuel ROZE <samuel.roze@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tolerance\Bridge\Symfony\MessageProfile;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\RequestIdentifierResolver;
+use Tolerance\MessageProfile\Identifier\Generator\MessageIdentifierGenerator;
 
 class GenerateRequestIdentifierIfNotInHeaders
 {
     /**
-     * @var RequestIdentifierResolver
+     * @var MessageIdentifierGenerator
      */
-    private $requestIdentifierResolver;
+    private $messageIdentifierGenerator;
 
     /**
      * @var string
@@ -18,12 +27,12 @@ class GenerateRequestIdentifierIfNotInHeaders
     private $headerName;
 
     /**
-     * @param RequestIdentifierResolver $requestIdentifierResolver
-     * @param string                    $headerName
+     * @param MessageIdentifierGenerator $messageIdentifierGenerator
+     * @param string                     $headerName
      */
-    public function __construct(RequestIdentifierResolver $requestIdentifierResolver, $headerName)
+    public function __construct(MessageIdentifierGenerator $messageIdentifierGenerator, $headerName)
     {
-        $this->requestIdentifierResolver = $requestIdentifierResolver;
+        $this->messageIdentifierGenerator = $messageIdentifierGenerator;
         $this->headerName = $headerName;
     }
 
@@ -41,7 +50,6 @@ class GenerateRequestIdentifierIfNotInHeaders
             return;
         }
 
-        $identifier = (string) $this->requestIdentifierResolver->resolve($request);
-        $request->headers->set($this->headerName, $identifier);
+        $request->headers->set($this->headerName, (string) $this->messageIdentifierGenerator->generate());
     }
 }

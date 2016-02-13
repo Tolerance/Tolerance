@@ -5,6 +5,7 @@ namespace spec\Tolerance\Bridge\RabbitMqBundle\MessageProfile;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Tolerance\MessageProfile\Context\MessageContext;
 use Tolerance\MessageProfile\Identifier\Generator\MessageIdentifierGenerator;
 use Tolerance\MessageProfile\Identifier\StringMessageIdentifier;
 use Tolerance\MessageProfile\MessageProfile;
@@ -13,9 +14,9 @@ use Tolerance\MessageProfile\Storage\ProfileStorage;
 
 class StoreMessageProfileProducerSpec extends ObjectBehavior
 {
-    function let(ProducerInterface $producer, ProfileStorage $profileStorage, MessageIdentifierGenerator $messageIdentifierGenerator, PeerResolver $peerResolver)
+    function let(ProducerInterface $producer, ProfileStorage $profileStorage, MessageIdentifierGenerator $messageIdentifierGenerator, MessageContext $messageContext, PeerResolver $peerResolver)
     {
-        $this->beConstructedWith($producer, $profileStorage, $messageIdentifierGenerator, $peerResolver, 'x-message-id');
+        $this->beConstructedWith($producer, $profileStorage, $messageIdentifierGenerator, $peerResolver, $messageContext, 'x-message-id');
 
         $messageIdentifierGenerator->generate()->willReturn(StringMessageIdentifier::fromString('1234'));
     }

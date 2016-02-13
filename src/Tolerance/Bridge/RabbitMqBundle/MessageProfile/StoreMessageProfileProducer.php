@@ -12,6 +12,7 @@
 namespace Tolerance\Bridge\RabbitMqBundle\MessageProfile;
 
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
+use Tolerance\MessageProfile\Context\MessageContext;
 use Tolerance\MessageProfile\Identifier\Generator\MessageIdentifierGenerator;
 use Tolerance\MessageProfile\Identifier\MessageIdentifier;
 use Tolerance\MessageProfile\Identifier\StringMessageIdentifier;
@@ -43,6 +44,11 @@ class StoreMessageProfileProducer implements ProducerInterface
     private $currentPeerResolver;
 
     /**
+     * @var MessageContext
+     */
+    private $messageContext;
+
+    /**
      * @var string
      */
     private $headerName;
@@ -52,15 +58,17 @@ class StoreMessageProfileProducer implements ProducerInterface
      * @param ProfileStorage             $profileStorage
      * @param MessageIdentifierGenerator $messageIdentifierGenerator
      * @param PeerResolver               $currentPeerResolver
+     * @param MessageContext             $messageContext
      * @param string                     $headerName
      */
-    public function __construct(ProducerInterface $decoratedProducer, ProfileStorage $profileStorage, MessageIdentifierGenerator $messageIdentifierGenerator, PeerResolver $currentPeerResolver, $headerName)
+    public function __construct(ProducerInterface $decoratedProducer, ProfileStorage $profileStorage, MessageIdentifierGenerator $messageIdentifierGenerator, PeerResolver $currentPeerResolver, MessageContext $messageContext, $headerName)
     {
         $this->decoratedProducer = $decoratedProducer;
         $this->profileStorage = $profileStorage;
         $this->headerName = $headerName;
         $this->messageIdentifierGenerator = $messageIdentifierGenerator;
         $this->currentPeerResolver = $currentPeerResolver;
+        $this->messageContext = $messageContext;
     }
 
     /**
@@ -88,7 +96,7 @@ class StoreMessageProfileProducer implements ProducerInterface
      */
     private function generateProfile(array $additionalProperties)
     {
-        return new SimpleMessageProfile(
+        $profile = new SimpleMessageProfile(
             $this->getOrGenerateIdentifier($additionalProperties),
             null,
             $this->currentPeerResolver->resolve(),
@@ -96,6 +104,12 @@ class StoreMessageProfileProducer implements ProducerInterface
                 'type' => 'amqp',
             ]
         );
+
+        if (null !== ($parentIdentifier = $this->messageContext->getIdentifier())) {
+            $profile = $profile->withParentIdentifier($parentIdentifier);
+        }
+
+        return $profile;
     }
 
     /**
