@@ -14,6 +14,11 @@ namespace Tolerance\MessageProfile\Peer;
 final class ArbitraryPeer implements MessagePeer
 {
     /**
+     * @var string
+     */
+    private $identifier;
+
+    /**
      * @var array
      */
     private $array;
@@ -23,13 +28,15 @@ final class ArbitraryPeer implements MessagePeer
     }
 
     /**
-     * @param array $array
+     * @param array       $array
+     * @param string|null $identifier
      *
      * @return ArbitraryPeer
      */
-    public static function fromArray(array $array)
+    public static function fromArray(array $array, $identifier = null)
     {
         $arbitraryPeer = new self();
+        $arbitraryPeer->identifier = $identifier ?: md5(json_encode($array));
         $arbitraryPeer->array = $array;
 
         return $arbitraryPeer;
@@ -41,5 +48,13 @@ final class ArbitraryPeer implements MessagePeer
     public function getArray()
     {
         return $this->array;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 }

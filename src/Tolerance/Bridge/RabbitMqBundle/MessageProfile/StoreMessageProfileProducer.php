@@ -98,8 +98,8 @@ class StoreMessageProfileProducer implements ProducerInterface
     {
         $profile = new SimpleMessageProfile(
             $this->getOrGenerateIdentifier($additionalProperties),
-            null,
             $this->currentPeerResolver->resolve(),
+            null,
             [
                 'type' => 'amqp',
             ]

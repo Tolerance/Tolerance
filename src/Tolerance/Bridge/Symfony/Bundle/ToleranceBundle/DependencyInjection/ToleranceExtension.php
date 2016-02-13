@@ -159,6 +159,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
                 Neo4jStorage::class,
                 [
                     new Reference($config['neo4j']),
+                    new Reference('tolerance.message_profile.storage.profile_normalizer.simple'),
                 ]
             ));
         } elseif (false !== $config['in_memory']) {

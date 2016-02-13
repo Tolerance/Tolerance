@@ -15,5 +15,10 @@ use Tolerance\MessageProfile\MessageProfile;
 
 interface ProfileStorage
 {
+    /**
+     * Store the given message profile.
+     *
+     * @param MessageProfile $profile
+     */
     public function store(MessageProfile $profile);
 }

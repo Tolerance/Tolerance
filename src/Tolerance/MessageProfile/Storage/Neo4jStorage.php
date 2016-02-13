@@ -13,11 +13,10 @@ namespace Tolerance\MessageProfile\Storage;
 
 use Neoxygen\NeoClient\Client;
 use Neoxygen\NeoClient\Transaction\Transaction;
-use Tolerance\MessageProfile\HttpRequest\HttpMessageProfile;
 use Tolerance\MessageProfile\MessageProfile;
+use Tolerance\MessageProfile\Peer\ArbitraryPeer;
 use Tolerance\MessageProfile\Peer\MessagePeer;
-use Tolerance\MessageProfile\Storage\Neo4j\Labels;
-use Tolerance\MessageProfile\Storage\Neo4j\RelationshipTypes;
+use Tolerance\MessageProfile\Storage\Normalizer\ProfileNormalizer;
 
 class Neo4jStorage implements ProfileStorage
 {
@@ -27,11 +26,18 @@ class Neo4jStorage implements ProfileStorage
     private $client;
 
     /**
-     * @param Client $client
+     * @var ProfileNormalizer
      */
-    public function __construct(Client $client)
+    private $profileNormalizer;
+
+    /**
+     * @param Client            $client
+     * @param ProfileNormalizer $profileNormalizer
+     */
+    public function __construct(Client $client, ProfileNormalizer $profileNormalizer)
     {
         $this->client = $client;
+        $this->profileNormalizer = $profileNormalizer;
     }
 
     /**
@@ -64,28 +70,26 @@ class Neo4jStorage implements ProfileStorage
      */
     private function createPeerMessageRelation(Transaction $transaction, MessagePeer $peer, MessageProfile $profile, $relationType)
     {
-        $peerArray = $peer->getArray();
-        $peerId = isset($peerArray['id']) ? $peerArray['id'] : md5(json_encode($peerArray));
-        $relProps = null !== $profile->getTiming() ? [
-            'start' => $profile->getTiming()->getStart()->format('Y-m-d\TH:i:s.uO'),
-            'end' => $profile->getTiming()->getEnd()->format('Y-m-d\TH:i:s.uO'),
-        ] : [];
+        if (null === ($timing = $profile->getTiming())) {
+            return;
+        }
 
-        $query = sprintf(
-            'MATCH (p:%s {id: {peerId} }), (m:%s { identifier: {messageId} }) '.
-            'MERGE (p)-[r:%s]->(m) '.
-            'SET r += {relProps} ',
-            Labels::PEER,
-            Labels::MESSAGE,
-            $relationType
+        $transaction->pushQuery(
+            sprintf(
+                'MATCH (p:Peer {id: {peerId} }), (m:Message { identifier: {messageId} }) '.
+                'MERGE (p)-[r:%s]->(m) '.
+                'SET r += {relationProperties} ',
+                $relationType
+            ),
+            [
+                'peerId' => $peer->getIdentifier(),
+                'messageId' => (string) $profile->getIdentifier(),
+                'relationProperties' => [
+                    'start' => (int) ($this->getUnixTimestamp($timing->getStart()) * 1000),
+                    'end' => (int) ($this->getUnixTimestamp($timing->getEnd()) * 1000),
+                ],
+            ]
         );
-        $params = [
-            'peerId' => $peerId,
-            'messageId' => (string) $profile->getIdentifier(),
-            'relProps' => $relProps,
-        ];
-
-        $transaction->pushQuery($query, $params);
     }
 
     /**
@@ -94,14 +98,21 @@ class Neo4jStorage implements ProfileStorage
      */
     private function createPeer(Transaction $transaction, MessagePeer $peer)
     {
-        $array = $peer->getArray();
-        $identifier = isset($array['id']) ? $array['id'] : md5(json_encode($array));
-        $query = sprintf(
-            'MERGE (p:%s {id: {identifier} }) '.
-            'ON CREATE SET p += {props} ',
-            Labels::PEER);
+        $peerProperties = [
+            'identifier' => $peer->getIdentifier(),
+        ];
 
-        $transaction->pushQuery($query, ['identifier' => $identifier, 'props' => $array]);
+        if ($peer instanceof ArbitraryPeer) {
+            $peerProperties = array_merge($peerProperties, $peer->getArray());
+        }
+
+        $transaction->pushQuery(
+            'MERGE (p:Peer {id: {identifier} }) ON CREATE SET p += {peerProperties} ',
+            [
+                'identifier' => $peer->getIdentifier(),
+                'peerProperties' => $peerProperties,
+            ]
+        );
     }
 
     /**
@@ -112,55 +123,37 @@ class Neo4jStorage implements ProfileStorage
      */
     private function createMessage(Transaction $transaction, MessageProfile $profile)
     {
-        $message = $this->normalizeMessage($profile);
+        $message = $this->profileNormalizer->normalize($profile);
 
-        $transaction->pushQuery(sprintf(
-            'MERGE (m:%s {identifier: {identifier} }) '.
-            'SET m += {props}',
-            Labels::MESSAGE
-        ), [
-            'identifier' => (string) $profile->getIdentifier(),
-            'props' => $message,
-        ]);
+        $transaction->pushQuery(
+            'MERGE (m:Message {identifier: {identifier} }) SET m += {messageProperties}',
+            [
+                'identifier' => (string) $profile->getIdentifier(),
+                'messageProperties' => $message,
+            ]
+        );
 
         if (null !== ($parentIdentifier = $profile->getParentIdentifier()) && $parentIdentifier != $profile->getIdentifier()) {
-            $transaction->pushQuery(sprintf(
-                'MERGE (p:%s {identifier: {parentId} })',
-                Labels::MESSAGE
-            ), [
-                'parentId' => (string) $parentIdentifier,
-            ]);
+            $transaction->pushQuery('MERGE (p:Message {identifier: {parentId} })', ['parentId' => (string) $parentIdentifier]);
 
-            $transaction->pushQuery(sprintf(
-                'MATCH (p:%s { identifier: {parentId} }), (m:%s { identifier: {messageId} }) '.
-                'MERGE (m)-[r:%s]->(p) ',
-                Labels::MESSAGE,
-                Labels::MESSAGE,
-                RelationshipTypes::PARENT_MESSAGE
-            ), [
-                'parentId' => (string) $parentIdentifier,
-                'messageId' => (string) $profile->getIdentifier(),
-            ]);
+            $transaction->pushQuery(
+                'MATCH (p:Message { identifier: {parentId} }), (m:Message { identifier: {messageId} }) '.
+                'MERGE (m)-[r:PARENT_MESSAGE]->(p) ',
+                [
+                    'parentId' => (string) $parentIdentifier,
+                    'messageId' => (string) $profile->getIdentifier(),
+                ]
+            );
         }
     }
 
     /**
-     * @param MessageProfile $profile
+     * @param \DateTimeInterface $date
      *
-     * @return array
+     * @return float
      */
-    private function normalizeMessage(MessageProfile $profile)
+    private function getUnixTimestamp(\DateTimeInterface $date)
     {
-        $normalized = [
-            'identifier' => (string) $profile->getIdentifier(),
-            'context' => $profile->getContext(),
-        ];
-
-        if ($profile instanceof HttpMessageProfile) {
-            $normalized['method'] = $profile->getMethod();
-            $normalized['path'] = $profile->getPath();
-        }
-
-        return $normalized;
+        return (double) $date->format('U.u');
     }
 }

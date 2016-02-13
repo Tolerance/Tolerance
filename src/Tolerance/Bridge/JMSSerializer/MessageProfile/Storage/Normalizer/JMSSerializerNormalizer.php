@@ -9,11 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\MessageProfile\Storage\Normalizer;
+namespace Tolerance\Bridge\JMSSerializer\MessageProfile\Storage\Normalizer;
 
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Tolerance\MessageProfile\MessageProfile;
+use Tolerance\MessageProfile\Storage\Normalizer\ProfileNormalizer;
 
 class JMSSerializerNormalizer implements ProfileNormalizer
 {

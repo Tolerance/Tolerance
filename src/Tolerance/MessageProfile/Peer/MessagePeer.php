@@ -14,7 +14,7 @@ namespace Tolerance\MessageProfile\Peer;
 interface MessagePeer
 {
     /**
-     * @return array
+     * @return string
      */
-    public function getArray();
+    public function getIdentifier();
 }

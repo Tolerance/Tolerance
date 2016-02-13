@@ -56,6 +56,7 @@ final class HttpRecipientEnhancer implements Psr7ProfileFactory
     {
         return ArbitraryPeer::fromArray([
             'host' => $request->getUri()->getHost(),
+            'virtual' => 1,
         ]);
     }
 }
