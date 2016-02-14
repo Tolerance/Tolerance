@@ -38,6 +38,12 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container)
     {
+        $configs = $container->getExtensionConfig($this->getAlias());
+        $config = $this->processConfiguration(new Configuration(), $configs);
+        if (!$config['message_profile']['enabled'] || !$config['message_profile']['integrations']['jms_serializer']) {
+            return;
+        }
+
         $bundles = $container->getParameter('kernel.bundles');
         if (array_key_exists('JMSSerializerBundle', $bundles)) {
             $container->prependExtensionConfig('jms_serializer', [

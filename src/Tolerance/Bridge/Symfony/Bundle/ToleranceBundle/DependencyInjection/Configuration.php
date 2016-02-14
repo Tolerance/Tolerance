@@ -52,6 +52,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->booleanNode('monolog')->defaultTrue()->end()
                         ->booleanNode('rabbitmq')->defaultTrue()->end()
+                        ->booleanNode('jms_serializer')->defaultTrue()->end()
                     ->end()
                 ->end()
                 ->arrayNode('storage')
