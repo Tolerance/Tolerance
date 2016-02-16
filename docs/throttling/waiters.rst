@@ -13,11 +13,11 @@ such as an exponential back-off.
 - The `exponential back-off`_ waiter uses the well-known `Exponential backoff algorithm <https://en.wikipedia.org/wiki/Exponential_backoff>`_
   to multiplicatively increase the amount of time of wait time.
 - The `count limited`_ waiter simply adds a limit in the number of times it can be called.
+- The `rate limit`_ waiter will wait the required amount of time to satisfy a rate limit.
 
 .. note::
 
-    The `Throttling component <throttling.html>`_ also come with a `Rate Limiting Waiter <throttling.html#waiter>`_
-
+    The Throttling component also come with a `Rate Limited Operation Runner <integrations.html#operation-runner>`_
 
 SleepWaiter
 -----------
@@ -86,3 +86,30 @@ throw the :code:`CountLimitReached` exception.
 
     // Wait for a maximum amount of 10 times
     $waitingStrategy = new CountLimited($waitingStrategy, 10);
+
+Rate Limit
+----------
+
+Using the Rate Limit Waiter, you will just have to call the :code:`wait()` method of the waiter at the end of all your
+iterations in a loop for instance, to ensure that each the iteration rate will match the rate limit you've defined.
+
+.. code-block:: php
+
+    use Tolerance\Throttling\Rate\TimeRate;
+    use Tolerance\Throttling\RateLimit\LeakyBucket;
+    use Tolerance\Throttling\RateMeasureStorage\InMemoryStorage;
+    use Tolerance\Throttling\Waiter\RateLimitWaiter;
+    use Tolerance\Waiter\SleepWaiter;
+
+    $rate = new TimeRate(10, TimeRate::PER_SECOND);
+    $rateLimit = new LeakyBucket(new InMemoryStorage(), $rate);
+    $waiter = new RateLimitWaiter($rateLimit, new SleepWaiter());
+
+    for ($i = 0; $i < 100; $i++) {
+        echo microtime(true)."\n";
+
+        $waiter->wait('id');
+    }
+
+The *optional* argument of the :code:`wait` method is the identifier of the operation you want to isolate. That means
+that you can use the same waiter/rate limit for different type of operations if you want.
