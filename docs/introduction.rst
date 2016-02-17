@@ -34,5 +34,5 @@ to the different components.
 Contributing
 ------------
 
-Everything is open-source and therefore use the `GitHub repository <https://github.com/sroze/Tolerance>`_ to open an issue
+Everything is open-source and therefore use the `GitHub repository <https://github.com/Tolerance/Tolerance>`_ to open an issue
 or a pull-request.

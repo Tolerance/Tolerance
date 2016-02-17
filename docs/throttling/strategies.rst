@@ -35,5 +35,5 @@ exceed a rate on a given **rolling time frame**.
         new TimeRate(10, TimeRate::PER_SECOND)
     );
 
-You can have a look to the `LeakyBucket unit tests <https://github.com/sroze/Tolerance/blob/master/tests/Tolerance/Throttling/RateLimit/LeakyBucketTest.php>`_
+You can have a look to the `LeakyBucket unit tests <https://github.com/Tolerance/Tolerance/blob/master/tests/Tolerance/Throttling/RateLimit/LeakyBucketTest.php>`_
 to have a better idea of how you can use it directly.

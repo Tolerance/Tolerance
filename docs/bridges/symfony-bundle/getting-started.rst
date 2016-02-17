@@ -7,4 +7,4 @@ Simply add the :code:`ToleranceBundle` in your Symfony's AppKernel.
 
     $bundles[] = new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle();
 
-You can also checkout the `example Symfony service <https://github.com/Tolerance/ExampleSymfonyService>`_ and the `test application <https://github.com/sroze/Tolerance/tree/master/features/symfony/app>`_.
+You can also checkout the `example Symfony service <https://github.com/Tolerance/ExampleSymfonyService>`_ and the `test application <https://github.com/Tolerance/Tolerance/tree/master/features/symfony/app>`_.
