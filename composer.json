@@ -2,6 +2,7 @@
     "name": "sroze/tolerance",
     "type": "library",
     "license": "MIT",
+    "description": "Fault tolerance library and micro-services helpers",
 
     "require": {
         "ramsey/uuid": "^3.1",
