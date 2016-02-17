@@ -1,6 +1,16 @@
 *Behavioural* runners
 =====================
 
+These operation runners decorates an existing one to add extra *behaviour*:
+
+- The `retry runner`_ will retry the operation until it is successful or considered as failing too much.
+- The `buffered runner`_ will buffer operations until you decide the run them.
+
+.. note::
+
+    The `Throttling component <../throttling/intro.html>`_ also come with a `Rate Limited Operation Runner <../throttling/integrations.html#operation-runner>`_
+
+
 Retry runner
 ------------
 

@@ -1,6 +1,11 @@
 *Raw* runners
 =============
 
+There's a set of *raw* operation runners that know how to run the default operations:
+
+- The `callback runner`_ that is able to run callback operations.
+- The `chain runner`_ that is able to chain operation runners that supports different operation types.
+
 Callback runner
 ~~~~~~~~~~~~~~~
 

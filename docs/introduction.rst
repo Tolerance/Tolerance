@@ -4,26 +4,18 @@ Introduction
 Tolerance is a PHP library that provides fault tolerance and microservices related tools in order to be able
 to solve some of the problems introduced by microservices.
 
-Fault tolerance
+Why ?
+-----
+
+Software fails. Software communicates with other softwares. Software can be distributed or a set of services, which
+makes it even more subject to faults and monitoring/tracing problems.
+
+Tolerance helps to `run fault-tolerant operations <operation-runner/intro.html>`_, `throttle <throttling/intro.html>`_
+(ie rate limiting) your outgoing or incoming messages, `track messages across services and protocols <message-profile/intro.html>`_
+and more.
+
+Getting started
 ---------------
-
-When running complex and large architectures, it is inevitable that some faults will arrive, whatever the hosting
-infrastructure you are relying on.
-
-Tolerance introduces a notion of operations that can be run by some operation runners that supports to automatically
-retry these operations, buffer them or fallback them to a controlled error.
-
-Monitoring
-----------
-
-Many services talking each other means an extremely hard investigation task when something goes wrong, or simply
-when you have to have an idea of the different calls implied by one "primary call".
-
-The request identifier component helps to keep a trace of the request and the Symfony, Guzzle, Monolog and other
-bridges enhance the simplicity of using it in your application.
-
-Installation
-------------
 
 The recommended way is to use Composer to install the `sroze/tolerance` package.
 
@@ -31,3 +23,16 @@ The recommended way is to use Composer to install the `sroze/tolerance` package.
 
     $ composer require sroze/tolerance
 
+
+If you are using Symfony, then checkout the `Symfony Bridge <bridges/symfony/intro.html>`_. Else, you should have a look
+to the different components.
+
+- `Operation runners <operation-runner/intro.html>`_
+- `Message profile <message-profile/intro.html>`_
+- `Throttling <throttling/intro.html>`_
+
+Contributing
+------------
+
+Everything is open-source and therefore use the `GitHub repository <https://github.com/sroze/Tolerance>`_ to open an issue
+or a pull-request.

@@ -1,20 +1,9 @@
 Operation runners
 =================
 
-Once you've created an `operation <operations.html>`_, you now have to run it using an operation runner. First of all,
-there's a set of *raw* operation runners that know how to run the default operations:
-
-- The `callback runner <raw-runners.html#callback-runner>`_ that is able to run callback operations.
-- The `chain runner <raw-runners.html#chain-runner>`_ that is able to chain operation runners that supports different operation types.
-
-In addition, there's a few useful operation runners that decorate an existing one to add extra *behaviour*:
-
-- The `retry runner <behavioural-runners.html#retry-runner>`_ will retry the operation until it is successful or considered as failing too much.
-- The `buffered runner  <behavioural-runners.html#buffered-runner>`_ will buffer operations until you decide the run them.
-
-.. note::
-
-    The `Throttling component <../throttling/intro.html>`_ also come with a `Rate Limited Operation Runner <../throttling/integrations.html#operation-runner>`_
+This component aims to run atomic tasks (called *operations*) by using different operation runners. They can
+`retry <behavioural-runners.html#retry-runner>`_ in case of a temporary fault, `buffer the operations <behavioural-runners.html#buffered-runner>`_,
+fallback them with a default result, `rate limit <../throttling/integrations.html#operation-runner>`_ the throughput of operations and more.
 
 .. toctree::
     :maxdepth: 2
