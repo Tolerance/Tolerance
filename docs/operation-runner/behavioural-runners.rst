@@ -67,4 +67,4 @@ Once you've decided that you want to run all the operations, you need to call th
 .. tip::
 
     The Symfony Bridge automatically run all the buffered operations when the kernel terminates. Checkout the
-    `Symfony Bridge documentation <../bridges/symfony/intro.html>`_
+    `Symfony Bridge documentation <../bridges/symfony-bundle/intro.html>`_

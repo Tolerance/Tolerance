@@ -1,4 +1,4 @@
-Symfony Bridge
+Symfony Bundle
 ==============
 
 The Tolerance library comes with a Symfony Bundle that automatically integrates most of the features

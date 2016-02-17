@@ -7,3 +7,8 @@ messages.
 
 .. image:: ../_static/tolerance-viewer-preview-1.gif
 
+You can checkout the Viewer application in its own `GitHub repository <https://github.com/Tolerance/Viewer>`_.
+
+.. note::
+
+    In order to use the Viewer, you need to use the Neo4j storage.

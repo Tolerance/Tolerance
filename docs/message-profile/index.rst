@@ -6,6 +6,5 @@ Message Profile
 
     intro
     messages
-    peers
     storage
     viewer

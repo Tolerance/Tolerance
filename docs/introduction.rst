@@ -24,7 +24,7 @@ The recommended way is to use Composer to install the `sroze/tolerance` package.
     $ composer require sroze/tolerance
 
 
-If you are using Symfony, then checkout the `Symfony Bridge <bridges/symfony/intro.html>`_. Else, you should have a look
+If you are using Symfony, then checkout the `Symfony Bundle <bridges/symfony-bundle/intro.html>`_. Else, you should have a look
 to the different components.
 
 - `Operation runners <operation-runner/intro.html>`_
