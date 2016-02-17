@@ -10,6 +10,7 @@ or 3rd party APIs. Tolerance come with 2 default *raw* waiters:
 Once you are able to wait an amount of time, you may want to surcharge the waiters to apply different wait strategies
 such as an exponential back-off.
 
+- The `linear` waiter simply waits a predefined amount of time.
 - The `exponential back-off`_ waiter uses the well-known `Exponential backoff algorithm <https://en.wikipedia.org/wiki/Exponential_backoff>`_
   to multiplicatively increase the amount of time of wait time.
 - The `count limited`_ waiter simply adds a limit in the number of times it can be called.
@@ -45,6 +46,19 @@ using it in production.
     use Tolerance\Waiter\Waiter\NullWaiter;
 
     $waiter = new NullWaiter();
+
+Linear
+------
+
+How to simply always wait a predefined amount of time? There's the linear waiter. The following example show how
+it can be used to have a waiter that will always wait 0.1 seconds.
+
+.. code-block:: php
+
+    use Tolerance\Waiter\Waiter\SleepWaiter;
+    use Tolerance\Waiter\Waiter\Linear;
+
+    $waiter = new Linear(new SleepWaiter(), 0.1);
 
 
 Exponential back-off
