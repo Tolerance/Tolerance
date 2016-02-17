@@ -35,7 +35,7 @@ The following image represents the imbrication of the different runners.
 
     This YML factory do not support recursive operation runner. That means that you can't use a chain runner inside
     another chain runner. If you need to create more complex operation runners, you should create your own service
-    with a simple factory like `the one that was in the tests before this YML factory <https://github.com/sroze/Tolerance/blob/f95bb3ae6a5f331a8d0579a991438f68e28f66f9/tests/Tolerance/Bridge/Symfony/Bundle/AppBundle/Operation/ThirdPartyRunnerFactory.php>`_.
+    with a simple factory like `the one that was in the tests before this YML factory <https://github.com/Tolerance/Tolerance/blob/f95bb3ae6a5f331a8d0579a991438f68e28f66f9/tests/Tolerance/Bridge/Symfony/Bundle/AppBundle/Operation/ThirdPartyRunnerFactory.php>`_.
 
 .. tip::
 
