@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.message_profile.identifier.generator.uuid" class="Tolerance\MessageProfile\Identifier\Generator\UuidIdentifierGenerator" />
+
+        <service id="tolerance.message_profile.peer.resolver.current" class="Tolerance\MessageProfile\Peer\Resolver\CurrentPeerResolver">
+            <argument>%tolerance.message_profile.current_peer%</argument>
+        </service>
+
+        <service id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\RequestIdentifier\HeaderRequestIdentifierResolver">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+        </service>
+        <service id="tolerance.message_profile.http_foundation.profile_factory" class="Tolerance\MessageProfile\HttpRequest\HttpFoundation\Psr7BridgeProfileFactory">
+            <argument type="service" id="tolerance.message_profile.psr7.profile_factory" />
+        </service>
+
+        <service id="tolerance.message_profile.psr7.header_request_identifier_resolver" class="Tolerance\MessageProfile\HttpRequest\Psr7\RequestIdentifier\HeaderRequestIdentifierResolver">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+        </service>
+        <service id="tolerance.message_profile.psr7.profile_factory" class="Tolerance\MessageProfile\HttpRequest\Psr7\SimplePsrProfileFactory">
+            <argument type="service" id="tolerance.message_profile.psr7.header_request_identifier_resolver" />
+        </service>
+        <service id="tolerance.message_profile.psr7.profile_factory.recipient_enhancer"
+                 class="Tolerance\MessageProfile\HttpRequest\Psr7\ProfileEnhancer\HttpRecipientEnhancer"
+                 decorates="tolerance.message_profile.psr7.profile_factory">
+            <argument type="service" id="tolerance.message_profile.psr7.profile_factory.recipient_enhancer.inner" />
+        </service>
+        <service id="tolerance.message_profile.psr7.profile_factory.parent_enhancer"
+                 class="Tolerance\MessageProfile\HttpRequest\Psr7\ProfileEnhancer\ParentMessageEnhancer"
+                 decorates="tolerance.message_profile.psr7.profile_factory">
+            <argument type="service" id="tolerance.message_profile.psr7.profile_factory.parent_enhancer.inner" />
+            <argument type="service" id="tolerance.message_profile.context.in_memory" />
+        </service>
+
+        <service id="tolerance.message_profile.stores_profile" class="Tolerance\Bridge\Symfony\MessageProfile\StoresRequestProfileWhenKernelTerminates">
+            <argument type="service" id="tolerance.message_profile.http_foundation.profile_factory" />
+            <argument type="service" id="tolerance.message_profile.storage" />
+            <argument type="service" id="tolerance.message_profile.peer.resolver.current" />
+
+            <tag name="kernel.event_listener" event="kernel.terminate" />
+        </service>
+
+        <service id="tolerance.message_profile.context.in_memory" class="Tolerance\MessageProfile\Context\InMemoryMessageContext" />
+        <service id="tolerance.message_profile.generate_request_identifier" class="Tolerance\Bridge\Symfony\MessageProfile\GenerateRequestIdentifierIfNotInHeaders">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+
+            <tag name="kernel.event_listener" event="kernel.request" priority="1000" />
+        </service>
+
+        <service id="tolerance.message_profile.populate_context_on_request" class="Tolerance\Bridge\Symfony\MessageProfile\PopulateMessageContextFromRequest">
+            <argument type="service" id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" />
+            <argument type="service" id="tolerance.message_profile.context.in_memory" />
+
+            <tag name="kernel.event_listener" event="kernel.request" priority="900" />
+        </service>
+    </services>
+</container>

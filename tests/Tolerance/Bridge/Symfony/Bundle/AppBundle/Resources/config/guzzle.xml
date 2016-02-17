@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.guzzle.middleware.hookable_factory" class="Tolerance\Bridge\Guzzle\HookableMiddlewareFactory">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+        </service>
+
+        <service id="app.guzzle.middleware.hookable" class="Closure">
+            <factory service="app.guzzle.middleware.hookable_factory" method="create" />
+
+            <tag name="csa_guzzle.middleware" alias="hookable" />
+        </service>
+
+        <service id="app.api.guzzle_client" class="Tolerance\Bridge\Symfony\Bundle\AppBundle\ThirdParty\GuzzleBasedApiClient">
+            <argument type="service" id="csa_guzzle.client.3rd_party" />
+        </service>
+    </services>
+</container>

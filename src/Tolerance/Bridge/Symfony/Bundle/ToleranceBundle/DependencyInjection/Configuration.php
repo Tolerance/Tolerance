@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->append($this->getRequestIdentifierNode())
+                ->append($this->getMessageProfileNode())
                 ->append($this->getOperationRunnersNode())
                 ->booleanNode('operation_runner_listener')->defaultTrue()->end()
                 ->booleanNode('aop')->defaultFalse()->end()
@@ -37,22 +37,34 @@ class Configuration implements ConfigurationInterface
         return $builder;
     }
 
-    private function getRequestIdentifierNode()
+    private function getMessageProfileNode()
     {
         $builder = new TreeBuilder();
-        $node = $builder->root('request_identifier');
+        $node = $builder->root('message_profile');
 
         $node
             ->addDefaultsIfNotSet()
             ->canBeEnabled()
             ->children()
-                ->scalarNode('header')
-                    ->cannotBeEmpty()
-                    ->defaultValue('X-Request-Id')
+                ->scalarNode('header')->cannotBeEmpty()->defaultValue('x-message-id')->end()
+                ->arrayNode('integrations')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('monolog')->defaultTrue()->end()
+                        ->booleanNode('rabbitmq')->defaultTrue()->end()
+                        ->booleanNode('jms_serializer')->defaultTrue()->end()
+                    ->end()
                 ->end()
-                ->booleanNode('monolog')
-                    ->defaultTrue()
+                ->arrayNode('storage')
+                    ->isRequired()
+                    ->children()
+                        ->booleanNode('in_memory')->defaultFalse()->end()
+                        ->booleanNode('buffered')->defaultTrue()->end()
+                        ->scalarNode('elastica')->cannotBeEmpty()->end()
+                        ->scalarNode('neo4j')->cannotBeEmpty()->end()
+                    ->end()
                 ->end()
+                ->variableNode('current_peer')->defaultValue([])->end()
             ->end()
         ;
 

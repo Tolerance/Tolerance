@@ -1,0 +1,12 @@
+Tolerance\MessageProfile\SimpleMessageProfile:
+    properties:
+        identifier:
+            type: Tolerance\MessageProfile\Identifier\MessageIdentifier
+        sender:
+            type: Tolerance\MessageProfile\Peer\MessagePeer
+        recipient:
+            type: Tolerance\MessageProfile\Peer\MessagePeer
+        context:
+            type: array
+        timing:
+            type: Tolerance\MessageProfile\Timing\MessageTiming

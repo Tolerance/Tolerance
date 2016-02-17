@@ -5,8 +5,13 @@ framework:
         strict_requirements:          "%kernel.debug%"
     trusted_proxies: ~
     test: ~
+    assets: ~
     session:
         storage_id:                    "session.storage.mock_file"
+
+csa_guzzle:
+    clients:
+        3rd_party: ~
 
 tolerance:
     operation_runners:
@@ -25,3 +30,8 @@ tolerance:
                                     'null': ~
 
     aop: ~
+
+    message_profile:
+        storage:
+            buffered: false
+            in_memory: true

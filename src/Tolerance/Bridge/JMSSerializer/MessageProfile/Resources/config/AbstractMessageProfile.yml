@@ -1,0 +1,6 @@
+Tolerance\MessageProfile\AbstractMessageProfile:
+    discriminator:
+        field_name: type
+        map:
+            simple: Tolerance\MessageProfile\SimpleMessageProfile
+            http: Tolerance\MessageProfile\HttpRequest\HttpMessageProfile

@@ -10,4 +10,9 @@ class DefaultController
     {
         return new Response('OK');
     }
+
+    public function willThrowAnExceptionAction()
+    {
+        throw new \RuntimeException('My exception');
+    }
 }

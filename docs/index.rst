@@ -6,13 +6,11 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    intro
-    operations
-    operation-runners
-    waiters
-    request-identifier
-    throttling
-    bridges/symfony
+    introduction
+    operation-runner/intro
+    message-profile/index
+    throttling/intro
+    bridges/symfony-bundle/intro
 
 Indices and tables
 ==================

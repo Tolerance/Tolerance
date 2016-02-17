@@ -92,7 +92,15 @@ class FeatureContext implements Context
      */
     public function iSendARequest()
     {
-        $request = Request::create('/', 'GET');
+        $this->iSendARequestTo('/');
+    }
+
+    /**
+     * @When I send a request to :path
+     */
+    public function iSendARequestTo($path)
+    {
+        $request = Request::create($path, 'GET');
         $this->response = $this->kernel->handle($request);
     }
 

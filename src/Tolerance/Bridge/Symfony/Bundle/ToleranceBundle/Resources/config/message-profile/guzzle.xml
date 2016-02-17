@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Message Identifier middleware -->
+        <service id="tolerance.message_profile.guzzle.middleware.message_identifier_factory" class="Tolerance\Bridge\Guzzle\MessageProfile\MessageIdentifierMiddlewareFactory">
+            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
+            <argument>%tolerance.message_profile.header%</argument>
+        </service>
+
+        <service id="tolerance.message_profile.guzzle.middleware.message_identifier" class="Closure">
+            <factory service="tolerance.message_profile.guzzle.middleware.message_identifier_factory" method="create" />
+
+            <tag name="csa_guzzle.middleware" alias="tolerance.message_profile.message_identifier" />
+        </service>
+
+        <!-- Request Profile middleware -->
+        <service id="tolerance.message_profile.guzzle.middleware.store_profile_factory" class="Tolerance\Bridge\Guzzle\MessageProfile\StoresRequestProfileMiddlewareFactory">
+            <argument type="service" id="tolerance.message_profile.storage" />
+            <argument type="service" id="tolerance.message_profile.psr7.profile_factory" />
+            <argument type="service" id="tolerance.message_profile.peer.resolver.current" />
+        </service>
+
+        <service id="tolerance.message_profile.guzzle.middleware.store_profile" class="Closure">
+            <factory service="tolerance.message_profile.guzzle.middleware.store_profile_factory" method="create" />
+
+            <tag name="csa_guzzle.middleware" alias="tolerance.message_profile.store_profile" />
+        </service>
+    </services>
+</container>

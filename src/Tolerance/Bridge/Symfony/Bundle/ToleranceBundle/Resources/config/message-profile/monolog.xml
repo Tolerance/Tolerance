@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.message_profile.monolog.request_identifier_processor" class="Tolerance\Bridge\Monolog\MessageProfile\RequestIdentifierProcessor">
+            <argument type="service" id="tolerance.message_profile.http_foundation.header_request_identifier_resolver" />
+            <argument type="service" id="request_stack" />
+
+            <tag name="monolog.processor" />
+        </service>
+    </services>
+</container>
