@@ -14,7 +14,6 @@ namespace Tolerance\Operation\Runner;
 use Tolerance\Operation\Callback;
 use Tolerance\Operation\Exception\UnsupportedOperation;
 use Tolerance\Operation\Operation;
-use Tolerance\Operation\StateContainedOperation;
 
 class CallbackOperationRunner implements OperationRunner
 {
@@ -31,16 +30,7 @@ class CallbackOperationRunner implements OperationRunner
             ));
         }
 
-        try {
-            $operation->call();
-            $operation->setState(StateContainedOperation::STATE_SUCCESSFUL);
-        } catch (\Exception $e) {
-            $operation->setState(StateContainedOperation::STATE_FAILED);
-
-            throw $e;
-        }
-
-        return $operation;
+        return $operation->call();
     }
 
     /**

@@ -38,7 +38,7 @@ This runner will retry to run the operation until it is successful or the wait s
         $waitStrategy
     );
 
-    $runner->run($operation);
+    $result = $runner->run($operation);
 
 
 Buffered runner
@@ -62,7 +62,9 @@ Once you've decided that you want to run all the operations, you need to call th
 
 .. code-block:: php
 
-    $bufferedRunner->runBufferedOperations();
+    $results = $bufferedRunner->runBufferedOperations();
+
+The :code:`$results` variable will be an array containing the result of each ran operation.
 
 .. tip::
 

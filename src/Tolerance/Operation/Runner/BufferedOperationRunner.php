@@ -53,21 +53,22 @@ class BufferedOperationRunner implements OperationRunner
     }
 
     /**
-     * Runs the buffered operations and return them.
+     * Runs the buffered operations.
      *
-     * @return Operation[]
+     * It returns an array of results.
+     *
+     * @return mixed[]
      */
     public function runBufferedOperations()
     {
-        $ranOperations = [];
+        $results = [];
 
         while (null !== ($operation = $this->buffer->current())) {
-            $this->runner->run($operation);
-            $this->buffer->pop();
+            $results[] = $this->runner->run($operation);
 
-            $ranOperations[] = $operation;
+            $this->buffer->pop();
         }
 
-        return $ranOperations;
+        return $results;
     }
 }
