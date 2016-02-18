@@ -23,7 +23,7 @@ interface OperationRunner
      *
      * @throws UnsupportedOperation
      *
-     * @return Operation
+     * @return mixed
      */
     public function run(Operation $operation);
 

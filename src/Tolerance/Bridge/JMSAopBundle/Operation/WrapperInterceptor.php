@@ -43,8 +43,6 @@ class WrapperInterceptor implements MethodInterceptorInterface
             return $operation->call();
         }
 
-        $runner->run($operation);
-
-        return $operation->getResult();
+        return $runner->run($operation);
     }
 }

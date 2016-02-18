@@ -11,7 +11,7 @@
 
 namespace Tolerance\Operation;
 
-class Callback extends StateContainedOperation implements Operation
+class Callback implements Operation
 {
     /**
      * @var callable
