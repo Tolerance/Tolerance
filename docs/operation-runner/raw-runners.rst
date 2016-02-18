@@ -16,7 +16,7 @@ This is the runner that runs the Callback operations.
     use Tolerance\Operation\Runner\CallbackOperationRunner;
 
     $runner = new CallbackOperationRunner();
-    $runner->run($operation);
+    $result = $runner->run($operation);
 
 Chain runner
 ~~~~~~~~~~~~
@@ -32,6 +32,6 @@ Constructed by other runners, usually the *raw* ones, it uses the first one that
         new CallbackOperationRunner(),
     ]);
 
-    $runner->run($operation);
+    $result = $runner->run($operation);
 
 Also, the :code:`addOperationRunner` method allows you to add another runner on the fly.
