@@ -2,6 +2,13 @@
     "name": "sroze/tolerance",
     "type": "library",
     "license": "MIT",
+    "description": "Fault tolerance library and micro-services helpers",
+
+    "require": {
+        "ramsey/uuid": "^3.1",
+        "symfony/psr-http-message-bridge": "^0.2.0",
+        "zendframework/zend-diactoros": "^1.3"
+    },
 
     "require-dev": {
         "phpspec/phpspec": "~2.0",
@@ -13,8 +20,6 @@
         "ruflin/elastica": "^3.0",
         "symfony/symfony": "~2.8|~3.0",
         "jms/serializer-bundle": "^1.1",
-        "symfony/psr-http-message-bridge": "^0.2.0",
-        "zendframework/zend-diactoros": "^1.3",
         "oldsound/rabbitmq-bundle": "^1.8"
     },
 
@@ -23,12 +28,10 @@
             "Tolerance\\": "src/"
         }
     },
+
     "autoload-dev": {
         "psr-0": {
             "Tolerance\\": "tests/"
         }
-    },
-    "require": {
-        "ramsey/uuid": "^3.1"
     }
 }
