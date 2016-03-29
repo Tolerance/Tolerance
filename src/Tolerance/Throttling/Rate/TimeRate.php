@@ -79,6 +79,6 @@ class TimeRate implements Rate
      */
     public function getTicks()
     {
-        return $this->ticks * self::$unitMap[$this->unit];
+        return $this->ticks / self::$unitMap[$this->unit];
     }
 }
