@@ -27,6 +27,6 @@ class TimeRateSpec extends ObjectBehavior
     function it_can_be_constructed_with_minutes()
     {
         $this->beConstructedWith(1, TimeRate::PER_MINUTE);
-        $this->getTicks()->shouldReturn(60);
+        $this->getTicks()->shouldReturn(1/60);
     }
 }
