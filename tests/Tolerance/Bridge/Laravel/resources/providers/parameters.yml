@@ -1,0 +1,28 @@
+imports:
+    - { resource: 'parameters_imported.yml' }
+
+parameters:
+    null_param: ~
+    other_config_val_before: %env_val%
+    env_val: %app.url%
+    true_param: true
+    int_param: 2000
+    application.class: Fidry\LaravelYaml\Functional\App\Application
+    config_value: %app.locale%
+    other_config_val: %application.class%
+    fooo: %%bar%%
+    fooobar: %%%bar2%%%%
+    lang:
+        - en
+        - fr
+        - %env_val%
+        - %true_param%
+    weirdName: hello
+    another-weird-name: dummy
+    'SPACED ?!& name': dummy
+    array_param:
+        something:
+            somethingElseWithWeirdName: true
+            foo:
+                - bar
+    expression_param: '@=constant("\DateTime::ATOM")'

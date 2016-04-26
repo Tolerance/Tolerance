@@ -1,0 +1,2 @@
+parameters:
+    application.class: Fidry\LaravelYaml\Test\Foundation\ApplicationMock
