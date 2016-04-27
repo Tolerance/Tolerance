@@ -29,7 +29,7 @@ class TimeRate implements Rate
     const PER_YEAR = 'year';
 
     /**
-     * @var double[] Mapping between units and seconds
+     * @var float[] Mapping between units and seconds
      */
     private static $unitMap = [
         self::PER_MICROSECOND => 0.000001,

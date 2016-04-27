@@ -2,6 +2,7 @@
 
 namespace spec\Tolerance\Operation\Runner;
 
+use Tolerance\Operation\ExceptionCatcher\ExceptionCatcherVoter;
 use Tolerance\Operation\Operation;
 use Tolerance\Operation\Runner\OperationRunner;
 use Tolerance\Waiter\WaiterException;
@@ -41,6 +42,21 @@ class RetryOperationRunnerSpec extends ObjectBehavior
         });
 
         $waitStrategy->wait()->willThrow(new WaiterException('Retried to many times'));
+        $this->shouldThrow(\RuntimeException::class)->duringRun($operation);
+    }
+
+    function it_should_not_retry_if_the_optional_catcher_voter_says_no(OperationRunner $runner, Operation $operation, Waiter $waitStrategy, ExceptionCatcherVoter $exceptionCatcherVoter)
+    {
+        $this->beConstructedWith($runner, $waitStrategy, $exceptionCatcherVoter);
+
+        $exceptionCatcherVoter->shouldCatch(Argument::any())->willReturn(false);
+        $runner->run($operation)->will(function() use ($operation) {
+            $this->run($operation)->willReturn(new \stdClass());
+
+            throw new \RuntimeException('Operation failed');
+        });
+
+        $runner->run($operation)->shouldBeCalledTimes(1);
         $this->shouldThrow(\RuntimeException::class)->duringRun($operation);
     }
 }
