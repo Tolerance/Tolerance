@@ -11,6 +11,8 @@
 
 namespace Tolerance\Operation\Runner;
 
+use Tolerance\Operation\ExceptionCatcher\ExceptionCatcherVoter;
+use Tolerance\Operation\ExceptionCatcher\WildcardExceptionVoter;
 use Tolerance\Operation\Operation;
 use Tolerance\Waiter\WaiterException;
 use Tolerance\Waiter\Waiter;
@@ -28,13 +30,20 @@ class RetryOperationRunner implements OperationRunner
     private $waitStrategy;
 
     /**
+     * @var ExceptionCatcherVoter
+     */
+    private $exceptionCatcherVoter;
+
+    /**
      * @param OperationRunner          $runner
      * @param \Tolerance\Waiter\Waiter $waitStrategy
+     * @param ExceptionCatcherVoter    $exceptionCatcherVoter
      */
-    public function __construct(OperationRunner $runner, Waiter $waitStrategy)
+    public function __construct(OperationRunner $runner, Waiter $waitStrategy, ExceptionCatcherVoter $exceptionCatcherVoter = null)
     {
         $this->runner = $runner;
         $this->waitStrategy = $waitStrategy;
+        $this->exceptionCatcherVoter = $exceptionCatcherVoter ?: new WildcardExceptionVoter();
     }
 
     /**
@@ -45,6 +54,10 @@ class RetryOperationRunner implements OperationRunner
         try {
             return $this->runner->run($operation);
         } catch (\Exception $e) {
+            if (!$this->exceptionCatcherVoter->shouldCatch($e)) {
+                throw $e;
+            }
+
             try {
                 $this->waitStrategy->wait();
             } catch (WaiterException $waiterException) {
