@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Fidry\LaravelYaml\Functional\App;
+namespace Tolerance\Bridge\Laravel\Functional;
 
 use Illuminate\Foundation\Application as IlluminateFoundationApplication;
 

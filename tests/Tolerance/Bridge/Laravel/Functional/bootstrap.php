@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-$app = new Fidry\LaravelYaml\Functional\App\Application(
+$app = new Tolerance\Bridge\Laravel\Functional\Application(
     realpath(__DIR__)
 );
 
 $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
-    \Fidry\LaravelYaml\Test\Foundation\ConsoleKernel::class
+    \Tolerance\Bridge\Laravel\Functional\ConsoleKernel::class
 );
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
