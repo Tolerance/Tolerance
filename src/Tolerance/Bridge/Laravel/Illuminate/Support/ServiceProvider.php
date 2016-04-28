@@ -13,13 +13,18 @@ abstract class ServiceProvider extends IlluminateServiceProvider
      * Helper to have a more concise service declaration.
      *
      * @param string        $id
-     * @param string        $class   FQCN of the service
-     * @param \Closure      $closure Closure returning the service instance
+     * @param string        $class        FQCN of the service
+     * @param \Closure      $instantiator Closure returning the service instance
      * @param string[]|null $tags
      */
-    final public function registerService($id, $class, \Closure $closure, array $tags = null)
+    final public function registerService($id, $class, \Closure $instantiator = null, array $tags = null)
     {
-        $this->app->bind($id, $closure);
+        if (null === $instantiator) {
+            $instantiator = function () use ($class) {
+                return new $class();
+            };
+        }
+        $this->app->singleton($id, $instantiator);
         $this->app->bind($class, $id);
 
         if (null !== $tags) {

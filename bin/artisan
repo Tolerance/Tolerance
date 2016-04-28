@@ -12,7 +12,7 @@
 
 define('LARAVEL_PATH', __DIR__.'/../tests/Tolerance/Bridge/Laravel/Functional');
 
-require LARAVEL_PATH.'/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $app = require_once LARAVEL_PATH.'/bootstrap.php';
 /* @var \Illuminate\Contracts\Console\Kernel $kernel */

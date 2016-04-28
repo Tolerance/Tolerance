@@ -11,7 +11,7 @@ final class AopProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
+        $this->registerService(
             'tolerance.aop.runner_repository',
             \Tolerance\Bridge\JMSAopBundle\Operation\RunnerRepository::class
         );

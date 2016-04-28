@@ -11,7 +11,7 @@ final class ListenerProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
+        $this->registerService(
             'tolerance.operation_runner_registry',
             \Tolerance\Bridge\Symfony\Operation\OperationRunnerRegistry::class
         );

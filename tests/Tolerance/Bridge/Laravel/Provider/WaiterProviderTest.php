@@ -2,21 +2,18 @@
 
 namespace Tolerance\Bridge\Laravel\Provider;
 
-use Tolerance\Bridge\Laravel\Illuminate\Support\ServiceProvider;
+use PHPUnit\IlluminateTestCase;
 
-final class WaiterProvider extends ServiceProvider
+class WaiterProviderTest extends IlluminateTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function register()
+    public function test_services_are_registered_and_instantiables()
     {
-        $this->registerService(
+        $this->assertServiceIsRegistered(
             'tolerance.waiter.null',
             \Tolerance\Waiter\NullWaiter::class
         );
 
-        $this->registerService(
+        $this->assertServiceIsRegistered(
             'tolerance.waiter.sleep',
             \Tolerance\Waiter\SleepWaiter::class
         );

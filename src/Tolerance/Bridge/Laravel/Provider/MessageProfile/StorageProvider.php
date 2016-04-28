@@ -11,12 +11,12 @@ final class StorageProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
+        $this->registerService(
             'tolerance.message_profile.storage.profile_normalizer.simple',
             \Tolerance\MessageProfile\Storage\Normalizer\SimpleProfileNormalizer::class
         );
 
-        $this->app->bind(
+        $this->registerService(
             'tolerance.message_profile.storage.in_memory',
             \Tolerance\MessageProfile\Storage\InMemoryStorage::class
         );

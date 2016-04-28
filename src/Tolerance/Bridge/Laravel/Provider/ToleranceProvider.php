@@ -6,11 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 final class ToleranceProvider extends ServiceProvider
 {
-
     /**
-     * Register the service provider.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function register()
     {
