@@ -7,6 +7,16 @@ use Illuminate\Support\ServiceProvider;
 final class ToleranceProvider extends ServiceProvider
 {
     /**
+     * Performs post-registration booting of services.
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/../Resources/config/tolerance.php' => config_path('courier.php'),
+        ]);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function register()
