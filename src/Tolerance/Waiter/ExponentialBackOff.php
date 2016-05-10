@@ -38,8 +38,23 @@ class ExponentialBackOff implements Waiter
      */
     public function wait($seconds = 0)
     {
-        $time = $seconds + exp($this->exponent++);
+        $time = $this->getNextTime($seconds);
 
         $this->waiter->wait($time);
+
+        $this->exponent++;
+    }
+
+    /**
+     * Return the amount of time that will be waited the next `wait` call.
+     *
+     * @param int $seconds
+     *
+     * @return int
+     */
+    public function getNextTime($seconds = 0)
+    {
+        return $seconds + exp($this->exponent);
     }
 }
+
