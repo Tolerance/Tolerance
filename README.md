@@ -5,7 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/tolerance/badge/?version=latest)](http://tolerance.io/en/latest/?badge=latest)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Tolerance/Tolerance/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Tolerance/Tolerance/?branch=master)
 
-Tolerance is a PHP library that gives microservices related tools.
+Tolerance is a PHP library that provides fault tolerance and microservices related tools.
 
 ## Getting started
 
