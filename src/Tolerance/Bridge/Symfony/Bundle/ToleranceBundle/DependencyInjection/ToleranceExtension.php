@@ -185,7 +185,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
     {
         $bundles = $container->getParameter('kernel.bundles');
         if (!array_key_exists('JMSAopBundle', $bundles)) {
-            throw new \RuntimeException('You need to add the JMSAopBundle is you want to use the AOP feature');
+            throw new \RuntimeException('You need to add the JMSAopBundle if you want to use the AOP feature');
         }
 
         $loader->load('operations/aop.xml');
