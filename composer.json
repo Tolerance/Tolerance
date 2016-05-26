@@ -11,7 +11,7 @@
     },
 
     "require-dev": {
-        "phpspec/phpspec": "~2.0",
+        "phpspec/phpspec": "~2.5",
         "behat/behat": "~3.1.0rc1",
         "behat/symfony2-extension": "^2.1",
         "phpunit/phpunit": "^5.1",
