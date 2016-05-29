@@ -1,5 +1,5 @@
 {
-    "name": "sroze/tolerance",
+    "name": "tolerance/tolerance",
     "type": "library",
     "license": "MIT",
     "description": "Fault tolerance library and micro-services helpers",
