@@ -17,11 +17,11 @@ and more.
 Getting started
 ---------------
 
-The recommended way is to use Composer to install the `sroze/tolerance` package.
+The recommended way is to use Composer to install the `tolerance/tolerance` package.
 
 .. code-block:: bash
 
-    $ composer require sroze/tolerance
+    $ composer require tolerance/tolerance
 
 
 If you are using Symfony, then checkout the `Symfony Bundle <bridges/symfony-bundle/intro.html>`_. Else, you should have a look
