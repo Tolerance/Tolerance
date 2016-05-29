@@ -33,5 +33,9 @@
         "psr-0": {
             "Tolerance\\": "tests/"
         }
+    },
+    
+    "replace": {
+        "sroze/tolerance": "self.version"
     }
 }
