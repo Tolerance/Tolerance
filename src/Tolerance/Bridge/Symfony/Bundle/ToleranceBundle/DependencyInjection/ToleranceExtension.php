@@ -51,7 +51,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
                     'directories' => [
                         'ToleranceMessageProfile' => [
                             'namespace_prefix' => 'Tolerance\\MessageProfile\\',
-                            'path' => '%kernel.root_dir%/../vendor/sroze/tolerance/src/Tolerance/Bridge/JMSSerializer/MessageProfile/Resources/config',
+                            'path' => '%kernel.root_dir%/../vendor/tolerance/tolerance/src/Tolerance/Bridge/JMSSerializer/MessageProfile/Resources/config',
                         ],
                     ],
                 ],
