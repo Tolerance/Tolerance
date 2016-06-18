@@ -11,13 +11,21 @@
 
 namespace Tolerance\Operation\ExceptionCatcher;
 
-final class WildcardExceptionVoter implements ExceptionCatcherVoter
+final class WildcardExceptionVoter implements ThrowableCatcherVoter
 {
     /**
      * {@inheritdoc}
      */
     public function shouldCatch(\Exception $e)
     {
-        return true;
+        return $this->shouldCatchThrowable($e);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function shouldCatchThrowable($throwable)
+    {
+        return $throwable instanceof \Throwable || $throwable instanceof \Exception;
     }
 }
