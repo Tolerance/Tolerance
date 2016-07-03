@@ -62,7 +62,7 @@ class ConditionalOperationRunner extends ChainOperationRunner
     {
         foreach ($this->conditionalOperations as $conditionalOperation) {
             if (true !== $this->run($conditionalOperation)) {
-                throw new UnsatisfiedCondition(sprintf('The operation %s did not statisfy.', get_class($conditionalOperation)));
+                throw new UnsatisfiedCondition(sprintf('The conditional operation %s did not statisfy.', get_class($conditionalOperation)));
             }
         }
 
