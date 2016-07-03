@@ -47,9 +47,9 @@ class ConditionalOperationRunner extends ChainOperationRunner
     public function run(Operation $operation)
     {
         $this->checkConditions();
+
         return parent::run($operation);
     }
-
 
     /**
      * Checks that all given <code>conditionalOperation</code> return true.
@@ -68,5 +68,4 @@ class ConditionalOperationRunner extends ChainOperationRunner
 
         return true;
     }
-
 }
