@@ -11,6 +11,6 @@
 
 namespace Tolerance\Operation\Exception;
 
-class UnsatisifiedCondition extends \Exception
+class UnsatisfiedCondition extends \Exception
 {
 }
