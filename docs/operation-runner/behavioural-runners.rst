@@ -41,24 +41,24 @@ This runner will retry to run the operation until it is successful or the wait s
     $result = $runner->run($operation);
 
 By default, the retry runner will catch all the exception. If you want to be able to catch only unexpected exceptions
-or only some, you can inject a :code:`ExceptionCatcherVoter` implementation as the third argument
+or only some, you can inject a :code:`ThrowableCatcherVoter` implementation as the third argument
 of the :code:`RetryOperationRunner`. For instance, you can catch every exception but Guzzle's :code:`ClientException` ones.
 
 .. code-block:: php
 
-    use Tolerance\Operation\ExceptionCatcher\ExceptionCatcherVoter;
+    use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
 
-    $exceptionCatcherVoter = new class() implements ExceptionCatcherVoter {
-        public function shouldCatch(\Exception $e)
+    $throwableCatcherVoter = new class() implements ThrowableCatcherVoter {
+        public function shouldCatchThrowable(\Throwable $t)
         {
-            return !$e instanceof ClientException;
+            return !$t instanceof ClientException;
         }
     };
 
     $runner = new RetryOperationRunner(
         new CallbackOperationRunner(),
         $waitStrategy,
-        $exceptionCatcherVoter
+        $throwableCatcherVoter
     );
 
 Buffered runner

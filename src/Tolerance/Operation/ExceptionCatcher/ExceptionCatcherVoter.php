@@ -11,6 +11,9 @@
 
 namespace Tolerance\Operation\ExceptionCatcher;
 
+/**
+ * @deprecated Use ThrowableCatcherVoter instead
+ */
 interface ExceptionCatcherVoter
 {
     /**
@@ -19,6 +22,7 @@ interface ExceptionCatcherVoter
      * @param \Exception $e
      *
      * @return bool
+     * @deprecated
      */
     public function shouldCatch(\Exception $e);
 }
