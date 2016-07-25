@@ -20,18 +20,19 @@
         "ruflin/elastica": "^3.0",
         "symfony/symfony": "~2.8|~3.0",
         "jms/serializer-bundle": "^1.1",
-        "oldsound/rabbitmq-bundle": "^1.8"
+        "oldsound/rabbitmq-bundle": "^1.8",
+        "laravel/framework": "^5.1"
     },
 
     "autoload": {
-        "psr-0": {
-            "Tolerance\\": "src/"
+        "psr-4": {
+            "": "src/"
         }
     },
 
     "autoload-dev": {
-        "psr-0": {
-            "Tolerance\\": "tests/"
+        "psr-4": {
+            "": "tests/"
         }
     },
     

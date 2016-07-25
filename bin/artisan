@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the LaravelYaml package.
+ *
+ * (c) Théo FIDRY <theo.fidry@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+define('LARAVEL_PATH', __DIR__.'/../tests/Tolerance/Bridge/Laravel/Functional');
+
+require __DIR__.'/../vendor/autoload.php';
+
+$app = require_once LARAVEL_PATH.'/bootstrap.php';
+/* @var \Illuminate\Contracts\Console\Kernel $kernel */
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+$status = $kernel->handle(
+    $input = new Symfony\Component\Console\Input\ArgvInput,
+    new Symfony\Component\Console\Output\ConsoleOutput
+);
+
+if ($kernel instanceof Illuminate\Foundation\Console\Kernel) {
+    /* @var \Illuminate\Foundation\Console\Kernel $kernel */
+    $kernel->terminate($input, $status);
+}
+
+exit($status);
