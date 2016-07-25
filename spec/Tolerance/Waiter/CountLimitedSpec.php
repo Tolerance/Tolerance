@@ -3,6 +3,7 @@
 namespace spec\Tolerance\Waiter;
 
 use Tolerance\Waiter\Exception\CountLimitReached;
+use Tolerance\Waiter\StatefulWaiter;
 use Tolerance\Waiter\Waiter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -18,6 +19,11 @@ class CountLimitedSpec extends ObjectBehavior
     function it_is_a_waiter()
     {
         $this->shouldHaveType(Waiter::class);
+    }
+
+    function it_is_a_stateful_waiter()
+    {
+        $this->shouldHaveType(StatefulWaiter::class);
     }
 
     function it_should_throw_directly_it_limit_is_zero(Waiter $waitStrategy)

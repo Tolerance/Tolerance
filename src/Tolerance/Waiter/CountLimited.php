@@ -13,7 +13,7 @@ namespace Tolerance\Waiter;
 
 use Tolerance\Waiter\Exception\CountLimitReached;
 
-class CountLimited implements Waiter
+class CountLimited implements Waiter, StatefulWaiter
 {
     /**
      * @var Waiter
@@ -23,16 +23,23 @@ class CountLimited implements Waiter
     /**
      * @var int
      */
-    private $limit;
+    private $initialLimit;
+
+    /**
+     * @var int
+     */
+    private $currentLimit;
 
     /**
      * @param Waiter $waiter
-     * @param int    $limit
+     * @param int    $initialLimit
      */
-    public function __construct(Waiter $waiter, $limit)
+    public function __construct(Waiter $waiter, $initialLimit)
     {
         $this->waiter = $waiter;
-        $this->limit = $limit;
+        $this->initialLimit = $initialLimit;
+
+        $this->resetState();
     }
 
     /**
@@ -40,10 +47,18 @@ class CountLimited implements Waiter
      */
     public function wait($seconds = 0)
     {
-        if ($this->limit-- <= 0) {
+        if ($this->currentLimit-- <= 0) {
             throw new CountLimitReached();
         }
 
         $this->waiter->wait($seconds);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resetState()
+    {
+        $this->currentLimit = $this->initialLimit;
     }
 }
