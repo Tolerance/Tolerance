@@ -11,7 +11,7 @@
 
 namespace Tolerance\Waiter;
 
-class ExponentialBackOff implements Waiter
+class ExponentialBackOff implements Waiter, StatefulWaiter
 {
     /**
      * @var Waiter
@@ -21,16 +21,31 @@ class ExponentialBackOff implements Waiter
     /**
      * @var int
      */
-    private $exponent;
+    private $initialExponent;
+
+    /**
+     * @var int|null
+     */
+    private $currentExponent;
 
     /**
      * @param Waiter $waiter
-     * @param int    $exponent
+     * @param int    $initialExponent
      */
-    public function __construct(Waiter $waiter, $exponent)
+    public function __construct(Waiter $waiter, $initialExponent)
     {
-        $this->exponent = $exponent;
         $this->waiter = $waiter;
+        $this->initialExponent = $initialExponent;
+
+        $this->resetState();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resetState()
+    {
+        $this->currentExponent = $this->initialExponent;
     }
 
     /**
@@ -42,7 +57,7 @@ class ExponentialBackOff implements Waiter
 
         $this->waiter->wait($time);
 
-        $this->exponent++;
+        ++$this->currentExponent;
     }
 
     /**
@@ -54,7 +69,6 @@ class ExponentialBackOff implements Waiter
      */
     public function getNextTime($seconds = 0)
     {
-        return $seconds + exp($this->exponent);
+        return $seconds + exp($this->currentExponent);
     }
 }
-

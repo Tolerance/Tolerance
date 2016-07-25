@@ -15,6 +15,7 @@ use Tolerance\Operation\ExceptionCatcher\ExceptionCatcherVoter;
 use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
 use Tolerance\Operation\ExceptionCatcher\WildcardExceptionVoter;
 use Tolerance\Operation\Operation;
+use Tolerance\Waiter\StatefulWaiter;
 use Tolerance\Waiter\WaiterException;
 use Tolerance\Waiter\Waiter;
 
@@ -58,6 +59,10 @@ class RetryOperationRunner implements OperationRunner
      */
     public function run(Operation $operation)
     {
+        if ($this->waitStrategy instanceof StatefulWaiter) {
+            $this->waitStrategy->resetState();
+        }
+
         try {
             return $this->runner->run($operation);
         } catch (\Throwable $e) {

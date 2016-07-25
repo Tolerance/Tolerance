@@ -7,6 +7,7 @@ use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
 use Tolerance\Operation\Operation;
 use Tolerance\Operation\Runner\OperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
+use Tolerance\Waiter\StatefulWaiter;
 use Tolerance\Waiter\WaiterException;
 use Tolerance\Waiter\Waiter;
 use PhpSpec\ObjectBehavior;
@@ -15,9 +16,9 @@ use Prophecy\Argument;
 
 class RetryOperationRunnerSpec extends ObjectBehavior
 {
-    function let(OperationRunner $runner, Waiter $waitStrategy)
+    function let(OperationRunner $runner, Waiter $waiter)
     {
-        $this->beConstructedWith($runner, $waitStrategy);
+        $this->beConstructedWith($runner, $waiter);
     }
 
     function it_should_be_an_operation_runner()
@@ -46,19 +47,19 @@ class RetryOperationRunnerSpec extends ObjectBehavior
         $this->run($operation)->shouldBeLike(new \stdClass());
     }
 
-    function it_should_throw_the_original_exception_if_the_wait_fails(OperationRunner $runner, Waiter $waitStrategy, Operation $operation)
+    function it_should_throw_the_original_exception_if_the_wait_fails(OperationRunner $runner, Waiter $waiter, Operation $operation)
     {
         $runner->run($operation)->will(function() use ($operation) {
             throw new \RuntimeException('Operation failed');
         });
 
-        $waitStrategy->wait()->willThrow(new WaiterException('Retried to many times'));
+        $waiter->wait()->willThrow(new WaiterException('Retried to many times'));
         $this->shouldThrow(\RuntimeException::class)->duringRun($operation);
     }
 
-    function it_should_not_retry_if_the_optional_catcher_voter_says_no(OperationRunner $runner, Operation $operation, Waiter $waitStrategy, ThrowableCatcherVoter $throwableCatcherVoter)
+    function it_should_not_retry_if_the_optional_catcher_voter_says_no(OperationRunner $runner, Operation $operation, Waiter $waiter, ThrowableCatcherVoter $throwableCatcherVoter)
     {
-        $this->beConstructedWith($runner, $waitStrategy, $throwableCatcherVoter);
+        $this->beConstructedWith($runner, $waiter, $throwableCatcherVoter);
 
         $throwableCatcherVoter->shouldCatchThrowable(Argument::any())->willReturn(false)->shouldBeCalled();
         $runner->run($operation)->will(function() use ($operation) {
@@ -69,5 +70,15 @@ class RetryOperationRunnerSpec extends ObjectBehavior
 
         $runner->run($operation)->shouldBeCalledTimes(1);
         $this->shouldThrow(\RuntimeException::class)->duringRun($operation);
+    }
+
+    function it_should_reset_the_state_of_any_stateful_waiter(StatefulWaiter $statefulWaiter, OperationRunner $runner, Operation $operation)
+    {
+        $this->beConstructedWith($runner, $statefulWaiter);
+
+        $statefulWaiter->resetState()->shouldBeCalled();
+
+        $runner->run($operation)->willReturn(true);
+        $this->run($operation)->shouldReturn(true);
     }
 }
