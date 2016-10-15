@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.metrics.collector.collection" class="Tolerance\Metrics\Collector\CollectionMetricCollector" />
+        <service id="tolerance.metrics.publisher.collection" class="Tolerance\Metrics\Publisher\CollectionMetricPublisher" />
+        <service id="tolerance.metrics.command.collect_and_publish" class="Tolerance\Bridge\Symfony\Metrics\Command\CollectAndPublishMetricsCommand">
+            <argument type="service" id="tolerance.metrics.collector.collection" />
+            <argument type="service" id="tolerance.metrics.publisher.collection" />
+
+            <tag name="console.command" />
+        </service>
+    </services>
+</container>

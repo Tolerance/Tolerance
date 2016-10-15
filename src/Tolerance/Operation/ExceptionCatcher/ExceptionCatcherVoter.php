@@ -22,6 +22,7 @@ interface ExceptionCatcherVoter
      * @param \Exception $e
      *
      * @return bool
+     *
      * @deprecated
      */
     public function shouldCatch(\Exception $e);

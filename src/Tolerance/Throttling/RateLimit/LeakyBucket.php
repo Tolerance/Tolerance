@@ -99,7 +99,7 @@ class LeakyBucket implements RateLimit
     private function computeCurrentRate($identifier)
     {
         $measure = $this->getMeasure($identifier);
-        $lastRequest = (double) $measure->getTime()->format('U.u');
+        $lastRequest = (float) $measure->getTime()->format('U.u');
         $lastRatio = $measure->getRate()->getTicks();
 
         $difference = (microtime(true) - $lastRequest) * 1000;

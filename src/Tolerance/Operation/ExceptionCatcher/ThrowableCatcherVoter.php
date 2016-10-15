@@ -12,7 +12,7 @@
 namespace Tolerance\Operation\ExceptionCatcher;
 
 /**
- * Voter on Throwable errors
+ * Voter on Throwable errors.
  *
  * This is extending ExceptionCatcherVoter for a BC layer. This extension should
  * be removed as soon as the ExceptionCatcherVoter is removed.

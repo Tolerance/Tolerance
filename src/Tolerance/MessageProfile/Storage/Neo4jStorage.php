@@ -154,6 +154,6 @@ class Neo4jStorage implements ProfileStorage
      */
     private function getUnixTimestamp(\DateTimeInterface $date)
     {
-        return (double) $date->format('U.u');
+        return (float) $date->format('U.u');
     }
 }

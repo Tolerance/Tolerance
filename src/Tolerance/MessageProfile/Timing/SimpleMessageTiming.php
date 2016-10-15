@@ -45,7 +45,7 @@ class SimpleMessageTiming implements MessageTiming
         $timing = new self();
         $timing->start = $start;
         $timing->end = $end;
-        $timing->duration = ((double) $end->format('U.u') - (double) $start->format('U.u')) * 1000;
+        $timing->duration = ((float) $end->format('U.u') - (float) $start->format('U.u')) * 1000;
 
         return $timing;
     }

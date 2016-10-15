@@ -58,10 +58,10 @@ class TimeRate implements Rate
      *
      * E.g. new TimeRate(100, TimeRate::PER_SECOND) will produce 100 ticks per second.
      *
-     * @param int    $ticks The amount of ticks per unit.
-     * @param string $unit  The unit as one of Rate's constants.
+     * @param int    $ticks The amount of ticks per unit
+     * @param string $unit  The unit as one of Rate's constants
      *
-     * @throws \InvalidArgumentException The unit must be a valid constant.
+     * @throws \InvalidArgumentException The unit must be a valid constant
      */
     public function __construct($ticks, $unit)
     {

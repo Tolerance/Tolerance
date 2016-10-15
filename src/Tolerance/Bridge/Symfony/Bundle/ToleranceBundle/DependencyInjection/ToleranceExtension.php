@@ -11,6 +11,7 @@
 
 namespace Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection;
 
+use GuzzleHttp\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +25,11 @@ use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
 use Tolerance\MessageProfile\Storage\ElasticaStorage;
 use Tolerance\MessageProfile\Storage\Neo4jStorage;
+use Tolerance\Metrics\Collector\NamespacedCollector;
+use Tolerance\Metrics\Collector\RabbitMq\RabbitMqCollector;
+use Tolerance\Metrics\Collector\RabbitMq\RabbitMqHttpClient;
+use Tolerance\Metrics\Publisher\HostedGraphitePublisher;
+use Tolerance\Metrics\Publisher\LoggerPublisher;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
 use Tolerance\Waiter\ExponentialBackOff;
@@ -89,6 +95,10 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
 
             $this->createOperationRunnerDefinition($container, $name, $operationRunner);
         }
+
+        $loader->load('metrics.xml');
+        $this->createMetricCollectors($container, $config['metrics']['collectors']);
+        $this->createMetricPublishers($container, $config['metrics']['publishers']);
     }
 
     private function loadMessageProfile(ContainerBuilder $container, LoaderInterface $loader, array $config)
@@ -287,5 +297,80 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         $definition->addTag('tolerance.operation_runner');
 
         return $definition;
+    }
+
+    private function createMetricCollectors(ContainerBuilder $container, array $collectors)
+    {
+        foreach ($collectors as $name => $collector) {
+            $definition = $this->createMetricCollector($container, $name, $collector)->addTag('tolerance.metrics.collector');
+        }
+    }
+
+    private function createMetricCollector(ContainerBuilder $container, $name, array $collector)
+    {
+        $serviceName = 'tolerance.metrics.collector.'.$name;
+        if ($collector['type'] == 'rabbitmq') {
+            $options = $collector['options'];
+
+            $httpClientServiceName = $serviceName.'.http_client';
+            $container->setDefinition($httpClientServiceName, new Definition(Client::class));
+
+            $clientServiceName = $serviceName.'.client';
+            $container->setDefinition($clientServiceName, new Definition(RabbitMqHttpClient::class, [
+                new Reference($httpClientServiceName),
+                $options['host'],
+                $options['port'],
+                $options['username'],
+                $options['password'],
+            ]));
+
+            $definition = $container->setDefinition($serviceName, new Definition(RabbitMqCollector::class, [
+                new Reference($clientServiceName),
+                $options['vhost'],
+                $options['queue'],
+            ]));
+        } else {
+            throw new \InvalidArgumentException(sprintf('Type "%s" not supported', $collector['type']));
+        }
+
+        if ($collector['namespace']) {
+            $definition = $container->setDefinition($serviceName.'.namespaced', new Definition(NamespacedCollector::class, [
+                new Reference($serviceName),
+                $collector['namespace'],
+            ]));
+        }
+
+        return $definition;
+    }
+
+    private function createMetricPublishers(ContainerBuilder $container, array $publishers)
+    {
+        foreach ($publishers as $name => $publisher) {
+            $this->createMetricPublisher($container, $name, $publisher)->addTag('tolerance.metrics.publisher');
+        }
+    }
+
+    private function createMetricPublisher(ContainerBuilder $container, $name, array $publisher)
+    {
+        $serviceName = 'tolerance.metrics.publisher.'.$name;
+
+        if ('logger' == $publisher['type']) {
+            return $container->setDefinition($serviceName, new Definition(LoggerPublisher::class, [
+                new Reference('logger'),
+            ]));
+        }
+
+        if ('hosted_graphite' == $publisher['type']) {
+            return $container->setDefinition($serviceName, new Definition(HostedGraphitePublisher::class, [
+                $publisher['options']['server'],
+                $publisher['options']['port'],
+                $publisher['options']['api_key'],
+            ]));
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Publisher "%s" not supported',
+            $publisher['type']
+        ));
     }
 }

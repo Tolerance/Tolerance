@@ -27,12 +27,12 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->append($this->getMessageProfileNode())
-                ->append($this->getOperationRunnersNode())
-                ->booleanNode('operation_runner_listener')->defaultTrue()->end()
-                ->booleanNode('aop')->defaultFalse()->end()
-            ->end()
-        ;
+            ->append($this->getMessageProfileNode())
+            ->append($this->getOperationRunnersNode())
+            ->append($this->getMetricsNode())
+            ->booleanNode('operation_runner_listener')->defaultTrue()->end()
+            ->booleanNode('aop')->defaultFalse()->end()
+            ->end();
 
         return $builder;
     }
@@ -79,16 +79,15 @@ class Configuration implements ConfigurationInterface
         $children = $node
             ->useAttributeAsKey('name')
             ->prototype('array')
-                ->children();
+            ->children();
 
         foreach ($this->getOperationRunnerNodes() as $runnerNode) {
             $children->append($runnerNode);
         }
 
         $children
-                ->end()
             ->end()
-        ;
+            ->end();
 
         return $node;
     }
@@ -102,9 +101,9 @@ class Configuration implements ConfigurationInterface
             $retryNode = $builder->root('retry');
             $children = $retryNode
                 ->children()
-                    ->arrayNode('waiter')
-                        ->isRequired()
-                        ->children();
+                ->arrayNode('waiter')
+                ->isRequired()
+                ->children();
 
             foreach ($this->getWaiterNodes() as $node) {
                 $children->append($node);
@@ -112,8 +111,8 @@ class Configuration implements ConfigurationInterface
 
             $runnerChildren = $retryNode
                 ->children()
-                    ->arrayNode('runner')
-                        ->children();
+                ->arrayNode('runner')
+                ->children();
 
             foreach ($this->getOperationRunnerNodes($except + ['retry']) as $runner) {
                 $runnerChildren->append($runner);
@@ -140,10 +139,10 @@ class Configuration implements ConfigurationInterface
             $maxNode = $builder->root('count_limited');
             $strategyChildren = $maxNode
                 ->children()
-                    ->integerNode('count')->isRequired()->end()
-                    ->arrayNode('waiter')
-                        ->isRequired()
-                        ->children();
+                ->integerNode('count')->isRequired()->end()
+                ->arrayNode('waiter')
+                ->isRequired()
+                ->children();
 
             array_push($except, 'count_limited');
             foreach ($this->getWaiterNodes($except) as $node) {
@@ -157,10 +156,10 @@ class Configuration implements ConfigurationInterface
             $exponentialNode = $builder->root('exponential_back_off');
             $strategyChildren = $exponentialNode
                 ->children()
-                    ->integerNode('exponent')->isRequired()->end()
-                    ->arrayNode('waiter')
-                        ->isRequired()
-                        ->children();
+                ->integerNode('exponent')->isRequired()->end()
+                ->arrayNode('waiter')
+                ->isRequired()
+                ->children();
 
             array_push($except, 'exponential_back_off');
             foreach ($this->getWaiterNodes($except) as $node) {
@@ -179,5 +178,38 @@ class Configuration implements ConfigurationInterface
         }
 
         return $nodes;
+    }
+
+    private function getMetricsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('metrics');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->arrayNode('collectors')
+                    ->defaultValue([])
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('type')->isRequired()->end()
+                            ->scalarNode('namespace')->isRequired()->end()
+                            ->variableNode('options')->defaultValue([])->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('publishers')
+                    ->defaultValue([])
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('type')->isRequired()->end()
+                            ->variableNode('options')->defaultValue([])->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }
