@@ -11,7 +11,7 @@
 
 namespace Tolerance\Metrics\Collector;
 
-class CollectionMetricCollector implements MetricCollector
+final class CollectionMetricCollector implements MetricCollector
 {
     /**
      * @var array|MetricCollector[]

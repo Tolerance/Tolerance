@@ -13,7 +13,7 @@ namespace Tolerance\Metrics\Publisher;
 
 use Psr\Log\LoggerInterface;
 
-class LoggerPublisher implements MetricPublisher
+final class LoggerPublisher implements MetricPublisher
 {
     /**
      * @var LoggerInterface

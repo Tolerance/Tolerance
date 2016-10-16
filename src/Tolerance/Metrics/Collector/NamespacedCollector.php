@@ -13,7 +13,7 @@ namespace Tolerance\Metrics\Collector;
 
 use Tolerance\Metrics\Metric;
 
-class NamespacedCollector implements MetricCollector
+final class NamespacedCollector implements MetricCollector
 {
     /**
      * @var MetricCollector

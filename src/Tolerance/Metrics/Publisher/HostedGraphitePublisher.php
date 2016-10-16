@@ -11,7 +11,7 @@
 
 namespace Tolerance\Metrics\Publisher;
 
-class HostedGraphitePublisher implements MetricPublisher
+final class HostedGraphitePublisher implements MetricPublisher
 {
     /**
      * @var string

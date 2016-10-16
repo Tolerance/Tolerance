@@ -11,7 +11,7 @@
 
 namespace Tolerance\Metrics\Publisher;
 
-class CollectionMetricPublisher implements MetricPublisher
+final class CollectionMetricPublisher implements MetricPublisher
 {
     /**
      * @var array|MetricPublisher[]
