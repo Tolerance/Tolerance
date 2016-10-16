@@ -31,7 +31,7 @@ class Configuration implements ConfigurationInterface
             ->append($this->getOperationRunnersNode())
             ->append($this->getMetricsNode())
             ->booleanNode('operation_runner_listener')->defaultTrue()->end()
-            ->booleanNode('aop')->defaultFalse()->end()
+            ->append($this->getAopNode())
             ->end();
 
         return $builder;
@@ -101,9 +101,9 @@ class Configuration implements ConfigurationInterface
             $retryNode = $builder->root('retry');
             $children = $retryNode
                 ->children()
-                ->arrayNode('waiter')
-                ->isRequired()
-                ->children();
+                    ->arrayNode('waiter')
+                    ->isRequired()
+                        ->children();
 
             foreach ($this->getWaiterNodes() as $node) {
                 $children->append($node);
@@ -111,8 +111,8 @@ class Configuration implements ConfigurationInterface
 
             $runnerChildren = $retryNode
                 ->children()
-                ->arrayNode('runner')
-                ->children();
+                    ->arrayNode('runner')
+                        ->children();
 
             foreach ($this->getOperationRunnerNodes($except + ['retry']) as $runner) {
                 $runnerChildren->append($runner);
@@ -125,6 +125,20 @@ class Configuration implements ConfigurationInterface
             $retryNode = $builder->root('callback');
 
             $nodes[] = $retryNode;
+        }
+
+        if (!in_array('success_failure_metrics', $except)) {
+            $successFailureMetricsNode = $builder->root('success_failure_metrics');
+
+            $successFailureMetricsNode
+                ->children()
+                    ->scalarNode('runner')->defaultValue('tolerance.operation_runners.default')->end()
+                    ->scalarNode('publisher')->isRequired()->end()
+                    ->scalarNode('namespace')->isRequired()->end()
+                ->end()
+            ;
+
+            $nodes[] = $successFailureMetricsNode;
         }
 
         return $nodes;
@@ -186,7 +200,6 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('metrics');
 
         $node
-            ->addDefaultsIfNotSet()
             ->children()
                 ->arrayNode('collectors')
                     ->defaultValue([])
@@ -204,6 +217,46 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->variableNode('options')->defaultValue([])->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('command')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('collector')->defaultValue('tolerance.metrics.collector.collection')->end()
+                        ->scalarNode('publisher')->defaultValue('tolerance.metrics.publisher.collection')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('request')
+                    ->children()
+                        ->scalarNode('publisher')->defaultValue('tolerance.metrics.publisher.collection')->end()
+                        ->scalarNode('namespace')->defaultNull()->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getAopNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('aop');
+
+        $node
+            ->canBeEnabled()
+            ->children()
+                ->arrayNode('wrappers')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('class')->isRequired()->end()
+                            ->arrayNode('methods')
+                                ->isRequired()
+                                ->prototype('scalar')
+                                ->end()
+                            ->end()
+                            ->scalarNode('runner')->isRequired()->end()
                         ->end()
                     ->end()
                 ->end()

@@ -15,6 +15,7 @@ use GuzzleHttp\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Parameter;
@@ -23,14 +24,19 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
+use Tolerance\Bridge\Symfony\Metrics\EventListener\RequestEnded\SendRequestTimeToCollectors;
+use Tolerance\Bridge\Symfony\Metrics\EventListener\RequestEnded\SendRequestTimeToPublisher;
+use Tolerance\Bridge\Symfony\Metrics\Request\StaticRequestMetricNamespaceResolver;
 use Tolerance\MessageProfile\Storage\ElasticaStorage;
 use Tolerance\MessageProfile\Storage\Neo4jStorage;
 use Tolerance\Metrics\Collector\NamespacedCollector;
 use Tolerance\Metrics\Collector\RabbitMq\RabbitMqCollector;
 use Tolerance\Metrics\Collector\RabbitMq\RabbitMqHttpClient;
+use Tolerance\Metrics\Publisher\BeberleiMetricsAdapterPublisher;
 use Tolerance\Metrics\Publisher\HostedGraphitePublisher;
 use Tolerance\Metrics\Publisher\LoggerPublisher;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
+use Tolerance\Operation\Runner\Metrics\SuccessFailurePublisherOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
 use Tolerance\Waiter\ExponentialBackOff;
 use Tolerance\Waiter\CountLimited;
@@ -78,8 +84,10 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('waiter.xml');
 
-        if ($config['aop']) {
-            $this->loadAop($container, $loader);
+        if ($config['aop']['enabled']) {
+            $loader->load('operations/aop.xml');
+
+            $this->loadAop($container, $config['aop']);
         }
 
         if ($config['operation_runner_listener']) {
@@ -96,9 +104,24 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             $this->createOperationRunnerDefinition($container, $name, $operationRunner);
         }
 
-        $loader->load('metrics.xml');
-        $this->createMetricCollectors($container, $config['metrics']['collectors']);
-        $this->createMetricPublishers($container, $config['metrics']['publishers']);
+        if (array_key_exists('metrics', $config)) {
+            $loader->load('metrics.xml');
+
+            $this->createMetricCollectors($container, $config['metrics']['collectors']);
+            $this->createMetricPublishers($container, $config['metrics']['publishers']);
+
+            // Configure the metrics command
+            $container
+                ->getDefinition('tolerance.metrics.command.collect_and_publish')
+                ->replaceArgument(0, new Reference($config['metrics']['command']['collector']))
+                ->replaceArgument(1, new Reference($config['metrics']['command']['publisher']))
+            ;
+
+            // Configure the request listeners
+            if (array_key_exists('request', $config['metrics'])) {
+                $this->configureRequestListeners($container, $config['metrics']);
+            }
+        }
     }
 
     private function loadMessageProfile(ContainerBuilder $container, LoaderInterface $loader, array $config)
@@ -191,14 +214,16 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         }
     }
 
-    private function loadAop(ContainerBuilder $container, LoaderInterface $loader)
+    private function loadAop(ContainerBuilder $container, array $config)
     {
         $bundles = $container->getParameter('kernel.bundles');
         if (!array_key_exists('JMSAopBundle', $bundles)) {
             throw new \RuntimeException('You need to add the JMSAopBundle if you want to use the AOP feature');
         }
 
-        $loader->load('operations/aop.xml');
+        foreach ($config['wrappers'] as $wrapper) {
+            $this->createAopWrapper($container, $wrapper);
+        }
     }
 
     private function createOperationRunnerDefinition(ContainerBuilder $container, $name, array $config)
@@ -207,6 +232,8 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             return $this->createRetryOperationRunnerDefinition($container, $name, $config['retry']);
         } elseif (array_key_exists('callback', $config)) {
             return $this->createCallbackOperationRunnerDefinition($container, $name);
+        } elseif (array_key_exists('success_failure_metrics', $config)) {
+            return $this->createSuccessFailureMetricsOperationRunnerDefinition($container, $name, $config['success_failure_metrics']);
         }
 
         throw new \RuntimeException(sprintf(
@@ -220,7 +247,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         $decoratedRunnerName = $this->createOperationRunnerDefinition($container, $name.'.runner', $config['runner']);
         $waiterName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
 
-        $container->setDefinition($name,  $this->createDefinition(RetryOperationRunner::class, [
+        $container->setDefinition($name, $this->createDefinition(RetryOperationRunner::class, [
             new Reference($decoratedRunnerName),
             new Reference($waiterName),
         ]));
@@ -231,6 +258,19 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
     private function createCallbackOperationRunnerDefinition(ContainerBuilder $container, $name)
     {
         $container->setDefinition($name, $this->createDefinition(CallbackOperationRunner::class));
+
+        return $name;
+    }
+
+    private function createSuccessFailureMetricsOperationRunnerDefinition(ContainerBuilder $container, $name, array $config)
+    {
+        $definition = $this->createDefinition(SuccessFailurePublisherOperationRunner::class, [
+            new Reference($config['runner']),
+            new Reference($config['publisher']),
+            $config['namespace']
+        ]);
+
+        $container->setDefinition($name, $definition);
 
         return $name;
     }
@@ -302,7 +342,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
     private function createMetricCollectors(ContainerBuilder $container, array $collectors)
     {
         foreach ($collectors as $name => $collector) {
-            $definition = $this->createMetricCollector($container, $name, $collector)->addTag('tolerance.metrics.collector');
+            $this->createMetricCollector($container, $name, $collector)->addTag('tolerance.metrics.collector');
         }
     }
 
@@ -334,8 +374,9 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         }
 
         if ($collector['namespace']) {
-            $definition = $container->setDefinition($serviceName.'.namespaced', new Definition(NamespacedCollector::class, [
-                new Reference($serviceName),
+            $container->setDefinition($serviceName.'.inner', $container->getDefinition($serviceName));
+            $definition = $container->setDefinition($serviceName, new Definition(NamespacedCollector::class, [
+                new Reference($serviceName.'.inner'),
                 $collector['namespace'],
             ]));
         }
@@ -368,9 +409,51 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             ]));
         }
 
+        if ('beberlei' == $publisher['type']) {
+            return $container->setDefinition($serviceName, new Definition(BeberleiMetricsAdapterPublisher::class, [
+                new Reference($publisher['options']['service']),
+                array_key_exists('auto_flush', $publisher['options']) ? (bool) $publisher['options']['auto_flush'] : true
+            ]));
+        }
+
         throw new \RuntimeException(sprintf(
             'Publisher "%s" not supported',
             $publisher['type']
         ));
+    }
+
+    private function createAopWrapper(ContainerBuilder $container, array $wrapper)
+    {
+        $runnerRepositoryDefinition = $container->getDefinition('tolerance.aop.runner_repository');
+
+        foreach ($wrapper['methods'] as $method) {
+            $runnerRepositoryDefinition->addMethodCall('addRunnerAt', [
+                sprintf('%s:%s', $wrapper['class'], $method),
+                new Reference($wrapper['runner']),
+            ]);
+        }
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param $config
+     */
+    private function configureRequestListeners(ContainerBuilder $container, $config)
+    {
+        $listenerName = 'tolerance.metrics.listener.request_ended.send_time_to_publishers';
+        $requestMetricNamespaceResolverName = $listenerName . '.request_metric_namespace_resolver';
+        $container->setDefinition($requestMetricNamespaceResolverName, new Definition(StaticRequestMetricNamespaceResolver::class, [
+            $config['request']['namespace']
+        ]));
+
+        $container->setDefinition($listenerName,
+            (
+            new Definition(SendRequestTimeToPublisher::class, [
+                new Reference($config['request']['publisher']),
+                new Reference($requestMetricNamespaceResolverName),
+                new Reference('logger', ContainerInterface::IGNORE_ON_INVALID_REFERENCE)
+            ])
+            )->addTag('kernel.event_subscriber')
+        );
     }
 }

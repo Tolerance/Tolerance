@@ -13,6 +13,18 @@ csa_guzzle:
     clients:
         3rd_party: ~
 
+services:
+    tolerance.metrics.traced_publisher:
+        class: "Tolerance\\Metrics\\Publisher\\TracedPublisher"
+        decorates: tolerance.metrics.publisher.default
+        arguments:
+            - "@tolerance.metrics.traced_publisher.inner"
+
+beberlei_metrics:
+    collectors:
+        'null':
+            type: 'null'
+
 tolerance:
     operation_runners:
         default:
@@ -35,3 +47,14 @@ tolerance:
         storage:
             buffered: false
             in_memory: true
+
+    metrics:
+        publishers:
+            default:
+                type: beberlei
+                options:
+                    service: beberlei_metrics.collector.null
+
+        request:
+            namespace: my.namespace
+            publisher: tolerance.metrics.publisher.default

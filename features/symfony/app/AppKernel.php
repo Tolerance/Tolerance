@@ -1,5 +1,6 @@
 <?php
 
+use Beberlei\Bundle\MetricsBundle\BeberleiMetricsBundle;
 use Csa\Bundle\GuzzleBundle\CsaGuzzleBundle;
 use JMS\AopBundle\JMSAopBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -22,6 +23,7 @@ class AppKernel extends Kernel
             new JMSAopBundle(),
             new ToleranceBundle(),
             new CsaGuzzleBundle(),
+            new BeberleiMetricsBundle(),
             new AppBundle(),
         ];
     }
