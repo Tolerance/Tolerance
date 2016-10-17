@@ -10,6 +10,7 @@ Contents:
     operation-runner/intro
     message-profile/index
     throttling/intro
+    metrics/intro
     bridges/symfony-bundle/intro
 
 Indices and tables
