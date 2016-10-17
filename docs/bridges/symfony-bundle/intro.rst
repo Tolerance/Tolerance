@@ -9,5 +9,6 @@ automatically with a Symfony application.
 
     getting-started
     operation-runner
-    aop
+    operation-wrappers
     message-profile
+    metrics

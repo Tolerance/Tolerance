@@ -15,6 +15,8 @@ default:
                 - GuzzleContext:
                     - "@app.guzzle.middleware.hookable_factory"
                     - "@app.api.guzzle_client"
+                - MetricsContext:
+                    - "@tolerance.metrics.traced_publisher"
 
     extensions:
         Behat\Symfony2Extension:

@@ -4,6 +4,7 @@ namespace Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection;
 
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
 
@@ -224,6 +225,54 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    public function test_it_configure_the_metrics_command()
+    {
+        $definitionArgument = $this->prophesize('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->getDefinition('tolerance.metrics.command.collect_and_publish')->willReturn($definitionArgument);
+
+        $definitionArgument->replaceArgument(0, new Reference('tolerance.metrics.collector.collection'))->shouldBeCalled()->willReturn($definitionArgument);
+        $definitionArgument->replaceArgument(1, new Reference('my_publisher_service'))->shouldBeCalled()->willReturn($definitionArgument);
+
+        $this->extension->load([
+            'tolerance' => [
+                'metrics' => [
+                    'command' => [
+                        'publisher' => 'my_publisher_service'
+                    ]
+                ],
+            ]
+        ], $builder->reveal());
+    }
+
+    public function test_it_do_not_add_the_request_listener_when_configured()
+    {
+        $builder = $this->createBuilder();
+        $builder->setDefinition('tolerance.metrics.listener.request_ended.send_time_to_publishers', Argument::any())->shouldNotBeCalled();
+
+        $this->extension->load([
+            'tolerance' => [
+                'metrics' => [],
+            ]
+        ], $builder->reveal());
+
+    }
+
+    public function test_it_adds_the_request_listener_when_configured()
+    {
+        $builder = $this->createBuilder();
+        $builder->setDefinition('tolerance.metrics.listener.request_ended.send_time_to_publishers', Argument::any())->shouldBeCalled();
+
+        $this->extension->load([
+            'tolerance' => [
+                'metrics' => [
+                    'request' => null,
+                ],
+            ]
+        ], $builder->reveal());
+    }
+
     /**
      * @return \Symfony\Component\DependencyInjection\ContainerBuilder
      */
@@ -235,6 +284,12 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->setAlias(Argument::any(), Argument::any())->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->willReturn(null);
         $builder->findTaggedServiceIds(Argument::any())->willReturn([]);
+        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->willReturn(null);
+
+        $definition = $this->prophesize('Symfony\Component\DependencyInjection\Definition');
+        $definition->replaceArgument(Argument::any(), Argument::any())->willReturn($definition);
+
+        $builder->getDefinition(Argument::type('string'))->willReturn($definition);
 
         return $builder;
     }

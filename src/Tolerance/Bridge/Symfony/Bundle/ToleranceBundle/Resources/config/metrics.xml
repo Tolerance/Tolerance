@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.metrics.collector.collection" class="Tolerance\Metrics\Collector\CollectionMetricCollector" />
+        <service id="tolerance.metrics.publisher.collection" class="Tolerance\Metrics\Publisher\CollectionMetricPublisher" />
+        <service id="tolerance.metrics.command.collect_and_publish" class="Tolerance\Bridge\Symfony\Metrics\Command\CollectAndPublishMetricsCommand">
+            <argument /> <!-- Collector, injected by the extension -->
+            <argument /> <!-- Publisher, injected by the extension -->
+
+            <tag name="console.command" />
+        </service>
+
+        <service id="tolerance.metrics.listener.record_request_start_time" class="Tolerance\Bridge\Symfony\Metrics\EventListener\KernelRequest\RecordRequestStartTime">
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="tolerance.metrics.listener.dispatch_request_ended_event" class="Tolerance\Bridge\Symfony\Metrics\EventListener\RequestsEnds\DispatchRequestEndedEvent">
+            <argument type="service" id="event_dispatcher" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
+    </services>
+</container>

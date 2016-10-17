@@ -27,12 +27,12 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->append($this->getMessageProfileNode())
-                ->append($this->getOperationRunnersNode())
-                ->booleanNode('operation_runner_listener')->defaultTrue()->end()
-                ->booleanNode('aop')->defaultFalse()->end()
-            ->end()
-        ;
+            ->append($this->getMessageProfileNode())
+            ->append($this->getOperationRunnersNode())
+            ->append($this->getMetricsNode())
+            ->booleanNode('operation_runner_listener')->defaultTrue()->end()
+            ->append($this->getAopNode())
+            ->end();
 
         return $builder;
     }
@@ -79,16 +79,15 @@ class Configuration implements ConfigurationInterface
         $children = $node
             ->useAttributeAsKey('name')
             ->prototype('array')
-                ->children();
+            ->children();
 
         foreach ($this->getOperationRunnerNodes() as $runnerNode) {
             $children->append($runnerNode);
         }
 
         $children
-                ->end()
             ->end()
-        ;
+            ->end();
 
         return $node;
     }
@@ -103,7 +102,7 @@ class Configuration implements ConfigurationInterface
             $children = $retryNode
                 ->children()
                     ->arrayNode('waiter')
-                        ->isRequired()
+                    ->isRequired()
                         ->children();
 
             foreach ($this->getWaiterNodes() as $node) {
@@ -128,6 +127,20 @@ class Configuration implements ConfigurationInterface
             $nodes[] = $retryNode;
         }
 
+        if (!in_array('success_failure_metrics', $except)) {
+            $successFailureMetricsNode = $builder->root('success_failure_metrics');
+
+            $successFailureMetricsNode
+                ->children()
+                    ->scalarNode('runner')->defaultValue('tolerance.operation_runners.default')->end()
+                    ->scalarNode('publisher')->isRequired()->end()
+                    ->scalarNode('namespace')->isRequired()->end()
+                ->end()
+            ;
+
+            $nodes[] = $successFailureMetricsNode;
+        }
+
         return $nodes;
     }
 
@@ -140,10 +153,10 @@ class Configuration implements ConfigurationInterface
             $maxNode = $builder->root('count_limited');
             $strategyChildren = $maxNode
                 ->children()
-                    ->integerNode('count')->isRequired()->end()
-                    ->arrayNode('waiter')
-                        ->isRequired()
-                        ->children();
+                ->integerNode('count')->isRequired()->end()
+                ->arrayNode('waiter')
+                ->isRequired()
+                ->children();
 
             array_push($except, 'count_limited');
             foreach ($this->getWaiterNodes($except) as $node) {
@@ -157,10 +170,10 @@ class Configuration implements ConfigurationInterface
             $exponentialNode = $builder->root('exponential_back_off');
             $strategyChildren = $exponentialNode
                 ->children()
-                    ->integerNode('exponent')->isRequired()->end()
-                    ->arrayNode('waiter')
-                        ->isRequired()
-                        ->children();
+                ->integerNode('exponent')->isRequired()->end()
+                ->arrayNode('waiter')
+                ->isRequired()
+                ->children();
 
             array_push($except, 'exponential_back_off');
             foreach ($this->getWaiterNodes($except) as $node) {
@@ -179,5 +192,77 @@ class Configuration implements ConfigurationInterface
         }
 
         return $nodes;
+    }
+
+    private function getMetricsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('metrics');
+
+        $node
+            ->children()
+                ->arrayNode('collectors')
+                    ->defaultValue([])
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('type')->isRequired()->end()
+                            ->scalarNode('namespace')->isRequired()->end()
+                            ->variableNode('options')->defaultValue([])->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('publishers')
+                    ->defaultValue([])
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('type')->isRequired()->end()
+                            ->variableNode('options')->defaultValue([])->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('command')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('collector')->defaultValue('tolerance.metrics.collector.collection')->end()
+                        ->scalarNode('publisher')->defaultValue('tolerance.metrics.publisher.collection')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('request')
+                    ->children()
+                        ->scalarNode('publisher')->defaultValue('tolerance.metrics.publisher.collection')->end()
+                        ->scalarNode('namespace')->defaultNull()->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getAopNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('aop');
+
+        $node
+            ->canBeEnabled()
+            ->children()
+                ->arrayNode('wrappers')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('class')->isRequired()->end()
+                            ->arrayNode('methods')
+                                ->isRequired()
+                                ->prototype('scalar')
+                                ->end()
+                            ->end()
+                            ->scalarNode('runner')->isRequired()->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }
