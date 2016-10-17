@@ -29,6 +29,7 @@ to the different components.
 
 - `Operation runners <operation-runner/intro.html>`_
 - `Message profile <message-profile/intro.html>`_
+- `Metrics <metrics/intro.html>`_
 - `Throttling <throttling/intro.html>`_
 
 Contributing
