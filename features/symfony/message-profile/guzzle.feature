@@ -12,8 +12,3 @@ Feature:
     Given the 3rd party API will fail
     When I send a request to the 3rd party API
     Then a request profile should have been stored
-
-  Scenario: It creates a request ID
-    Given the 3rd party API will succeed
-    When I send a request to the 3rd party API
-    Then the sent request should contain an "x-message-id" header
