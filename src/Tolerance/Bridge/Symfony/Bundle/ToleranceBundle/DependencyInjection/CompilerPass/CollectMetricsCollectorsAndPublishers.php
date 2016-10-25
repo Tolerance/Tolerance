@@ -13,6 +13,10 @@ class CollectMetricsCollectorsAndPublishers implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if (!$container->hasDefinition('tolerance.metrics.collector.collection')) {
+            return;
+        }
+
         $collectorCollection = $container->getDefinition('tolerance.metrics.collector.collection');
         foreach ($container->findTaggedServiceIds('tolerance.metrics.collector') as $serviceId => $tags) {
             $collectorCollection->addMethodCall('addCollector', [new Reference($serviceId)]);
