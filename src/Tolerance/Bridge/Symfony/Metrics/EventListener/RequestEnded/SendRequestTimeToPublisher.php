@@ -37,9 +37,9 @@ final class SendRequestTimeToPublisher implements EventSubscriberInterface
     private $logger;
 
     /**
-     * @param MetricPublisher $metricPublisher
+     * @param MetricPublisher                $metricPublisher
      * @param RequestMetricNamespaceResolver $requestMetricNamespaceResolver
-     * @param LoggerInterface $logger
+     * @param LoggerInterface                $logger
      */
     public function __construct(MetricPublisher $metricPublisher, RequestMetricNamespaceResolver $requestMetricNamespaceResolver, LoggerInterface $logger = null)
     {
@@ -86,7 +86,7 @@ final class SendRequestTimeToPublisher implements EventSubscriberInterface
                 $namespace,
                 null,
                 Metric::TYPE_INCREMENT
-            )
+            ),
         ]);
     }
 }

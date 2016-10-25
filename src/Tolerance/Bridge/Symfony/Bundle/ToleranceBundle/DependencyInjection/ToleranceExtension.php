@@ -24,7 +24,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
-use Tolerance\Bridge\Symfony\Metrics\EventListener\RequestEnded\SendRequestTimeToCollectors;
 use Tolerance\Bridge\Symfony\Metrics\EventListener\RequestEnded\SendRequestTimeToPublisher;
 use Tolerance\Bridge\Symfony\Metrics\Request\StaticRequestMetricNamespaceResolver;
 use Tolerance\MessageProfile\Storage\ElasticaStorage;
@@ -96,6 +95,18 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
 
         if ($config['message_profile']['enabled']) {
             $this->loadMessageProfile($container, $loader, $config['message_profile']);
+        }
+
+        if ($config['tracer']['enabled']) {
+            if (array_key_exists('zipkin', $config['tracer'])) {
+                if (array_key_exists('http', $config['tracer']['zipkin'])) {
+                    $container->setParameter('tolerance.tracer.zipkin.http.base_url', $config['tracer']['zipkin']['http']['base_url']);
+                }
+            }
+
+            $container->setParameter('tolerance.tracer.service_name', $config['tracer']['service_name']);
+
+            $loader->load('tracer.xml');
         }
 
         foreach ($config['operation_runners'] as $name => $operationRunner) {
@@ -267,7 +278,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         $definition = $this->createDefinition(SuccessFailurePublisherOperationRunner::class, [
             new Reference($config['runner']),
             new Reference($config['publisher']),
-            $config['namespace']
+            $config['namespace'],
         ]);
 
         $container->setDefinition($name, $definition);
@@ -412,7 +423,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
         if ('beberlei' == $publisher['type']) {
             return $container->setDefinition($serviceName, new Definition(BeberleiMetricsAdapterPublisher::class, [
                 new Reference($publisher['options']['service']),
-                array_key_exists('auto_flush', $publisher['options']) ? (bool) $publisher['options']['auto_flush'] : true
+                array_key_exists('auto_flush', $publisher['options']) ? (bool) $publisher['options']['auto_flush'] : true,
             ]));
         }
 
@@ -441,9 +452,9 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
     private function configureRequestListeners(ContainerBuilder $container, $config)
     {
         $listenerName = 'tolerance.metrics.listener.request_ended.send_time_to_publishers';
-        $requestMetricNamespaceResolverName = $listenerName . '.request_metric_namespace_resolver';
+        $requestMetricNamespaceResolverName = $listenerName.'.request_metric_namespace_resolver';
         $container->setDefinition($requestMetricNamespaceResolverName, new Definition(StaticRequestMetricNamespaceResolver::class, [
-            $config['request']['namespace']
+            $config['request']['namespace'],
         ]));
 
         $container->setDefinition($listenerName,
@@ -451,7 +462,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             new Definition(SendRequestTimeToPublisher::class, [
                 new Reference($config['request']['publisher']),
                 new Reference($requestMetricNamespaceResolverName),
-                new Reference('logger', ContainerInterface::IGNORE_ON_INVALID_REFERENCE)
+                new Reference('logger', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
             ])
             )->addTag('kernel.event_subscriber')
         );

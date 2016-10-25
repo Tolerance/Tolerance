@@ -9,13 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Bridge\Symfony;
+namespace Tolerance\Tracer\EndpointResolver;
 
-final class Events
+use Tolerance\Tracer\Span\Endpoint;
+
+interface EndpointResolver
 {
     /**
-     * This event will be dispatched when a request ends, even if the request ends with an
-     * exception.
+     * @return Endpoint
      */
-    const REQUEST_ENDS = 'tolerance.request_ends';
+    public function resolve();
 }

@@ -9,13 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Bridge\Symfony;
+namespace Tolerance\Tracer\Clock;
 
-final class Events
+class PhpClock implements Clock
 {
     /**
-     * This event will be dispatched when a request ends, even if the request ends with an
-     * exception.
+     * {@inheritdoc}
      */
-    const REQUEST_ENDS = 'tolerance.request_ends';
+    public function microseconds()
+    {
+        return (int) (microtime(true) * 1000 * 1000);
+    }
 }

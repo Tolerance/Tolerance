@@ -20,6 +20,9 @@ services:
         arguments:
             - "@tolerance.metrics.traced_publisher.inner"
 
+    tolerance.tracer:
+        class: "Tolerance\\Tracer\\InMemoryTracer"
+
 beberlei_metrics:
     collectors:
         'null':
@@ -47,6 +50,11 @@ tolerance:
         storage:
             buffered: false
             in_memory: true
+
+    tracer:
+        zipkin:
+            http:
+                base_url: http://example.com
 
     metrics:
         publishers:

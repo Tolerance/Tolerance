@@ -9,13 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Bridge\Symfony;
+namespace Tolerance\Tracer;
 
-final class Events
+use Tolerance\Tracer\Span\Span;
+
+interface Tracer
 {
     /**
-     * This event will be dispatched when a request ends, even if the request ends with an
-     * exception.
+     * @param Span[] $spans
+     *
+     * @throws TracerException
      */
-    const REQUEST_ENDS = 'tolerance.request_ends';
+    public function trace(array $spans);
 }

@@ -34,8 +34,8 @@ class RequestEnded extends Event
     private $exception;
 
     /**
-     * @param Request $request
-     * @param Response|null $response
+     * @param Request                    $request
+     * @param Response|null              $response
      * @param \Exception|\Throwable|null $exception
      */
     public function __construct(Request $request, Response $response = null, $exception = null)

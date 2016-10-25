@@ -46,6 +46,17 @@ class CollectMetricsCollectorsAndPublishersTest extends \PHPUnit_Framework_TestC
         $compilerPass->process($containerBuilder->reveal());
     }
 
+    public function test_it_do_not_collect_anything_if_collection_collector_is_not_found()
+    {
+        $containerBuilder = $this->getContainerBuilder();
+        $containerBuilder->hasDefinition('tolerance.metrics.collector.collection')->willReturn(false);
+        $containerBuilder->findTaggedServiceIds('tolerance.metrics.collector')->shouldNotBeCalled();
+
+        $compilerPass = new CollectMetricsCollectorsAndPublishers();
+        $compilerPass->process($containerBuilder->reveal());
+
+    }
+
     private function getContainerBuilder()
     {
         $containerBuilder = $this->prophesize('Symfony\Component\DependencyInjection\ContainerBuilder');
@@ -53,6 +64,8 @@ class CollectMetricsCollectorsAndPublishersTest extends \PHPUnit_Framework_TestC
         $containerBuilder->getDefinition(Argument::type('string'))->willReturn(
             $this->prophesize(Definition::class)
         );
+
+        $containerBuilder->hasDefinition('tolerance.metrics.collector.collection')->willReturn(true);
 
         return $containerBuilder;
     }
