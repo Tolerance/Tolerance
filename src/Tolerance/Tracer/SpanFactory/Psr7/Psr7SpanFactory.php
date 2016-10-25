@@ -19,7 +19,6 @@ use Tolerance\Tracer\IdentifierGenerator\IdentifierGenerator;
 use Tolerance\Tracer\Span\Annotation;
 use Tolerance\Tracer\Span\BinaryAnnotation;
 use Tolerance\Tracer\Span\Span;
-use Tolerance\Tracer\SpanContext;
 use Tolerance\Tracer\SpanStack\SpanStack;
 
 class Psr7SpanFactory
@@ -46,9 +45,9 @@ class Psr7SpanFactory
 
     /**
      * @param IdentifierGenerator $identifierGenerator
-     * @param Clock $clock
-     * @param EndpointResolver $endpointResolver
-     * @param SpanStack $spanStack
+     * @param Clock               $clock
+     * @param EndpointResolver    $endpointResolver
+     * @param SpanStack           $spanStack
      */
     public function __construct(IdentifierGenerator $identifierGenerator, Clock $clock, EndpointResolver $endpointResolver, SpanStack $spanStack)
     {
@@ -84,7 +83,7 @@ class Psr7SpanFactory
 
     /**
      * @param ResponseInterface $response
-     * @param Span $originalSpan
+     * @param Span              $originalSpan
      *
      * @return Span
      */
@@ -110,6 +109,6 @@ class Psr7SpanFactory
      */
     private function getName(RequestInterface $request)
     {
-        return $request->getMethod() . ' ' . $request->getUri()->getPath();
+        return $request->getMethod().' '.$request->getUri()->getPath();
     }
 }

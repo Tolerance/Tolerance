@@ -34,8 +34,8 @@ class CreateAndTraceIncomingSpan
     private $httpFoundationSpanFactory;
 
     /**
-     * @param SpanStack $stack
-     * @param Tracer $tracer
+     * @param SpanStack                 $stack
+     * @param Tracer                    $tracer
      * @param HttpFoundationSpanFactory $httpFoundationSpanFactory
      */
     public function __construct(SpanStack $stack, Tracer $tracer, HttpFoundationSpanFactory $httpFoundationSpanFactory)

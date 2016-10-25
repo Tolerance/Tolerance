@@ -21,7 +21,7 @@ class ServiceNameResolver implements EndpointResolver
     private $serviceName;
 
     /**
-     * @param string  $serviceName
+     * @param string $serviceName
      */
     public function __construct($serviceName = null)
     {

@@ -16,7 +16,7 @@ interface Clock
     /**
      * Returns the current time in micro-seconds.
      *
-     * @return integer
+     * @return int
      */
     public function microseconds();
 }

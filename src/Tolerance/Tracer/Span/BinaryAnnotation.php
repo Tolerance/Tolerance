@@ -32,7 +32,7 @@ class BinaryAnnotation
     private $value;
 
     /**
-     * @var integer
+     * @var int
      */
     private $type;
 
@@ -42,9 +42,9 @@ class BinaryAnnotation
     private $host;
 
     /**
-     * @param string $key
-     * @param string $value
-     * @param int $type
+     * @param string        $key
+     * @param string        $value
+     * @param int           $type
      * @param Endpoint|null $host
      */
     public function __construct($key, $value, $type, Endpoint $host = null)

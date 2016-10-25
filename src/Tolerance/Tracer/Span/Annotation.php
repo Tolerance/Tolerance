@@ -27,7 +27,7 @@ class Annotation
     private $value;
 
     /**
-     * @var integer
+     * @var int
      */
     private $timestamp;
 
@@ -37,8 +37,8 @@ class Annotation
     private $host;
 
     /**
-     * @param string $value
-     * @param integer $timestamp
+     * @param string        $value
+     * @param int           $timestamp
      * @param Endpoint|null $host
      */
     public function __construct($value, $timestamp, Endpoint $host = null)

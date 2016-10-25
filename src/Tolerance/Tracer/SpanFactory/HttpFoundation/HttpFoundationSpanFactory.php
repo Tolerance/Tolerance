@@ -20,7 +20,6 @@ use Tolerance\Tracer\Span\Annotation;
 use Tolerance\Tracer\Span\BinaryAnnotation;
 use Tolerance\Tracer\Span\Identifier;
 use Tolerance\Tracer\Span\Span;
-use Tolerance\Tracer\SpanContext;
 
 class HttpFoundationSpanFactory
 {
@@ -41,8 +40,8 @@ class HttpFoundationSpanFactory
 
     /**
      * @param IdentifierGenerator $identifierGenerator
-     * @param Clock $clock
-     * @param EndpointResolver $endpointResolver
+     * @param Clock               $clock
+     * @param EndpointResolver    $endpointResolver
      */
     public function __construct(IdentifierGenerator $identifierGenerator, Clock $clock, EndpointResolver $endpointResolver)
     {
@@ -76,7 +75,7 @@ class HttpFoundationSpanFactory
 
     /**
      * @param Response $response
-     * @param Span $originalSpan
+     * @param Span     $originalSpan
      *
      * @return Span
      */
@@ -106,12 +105,12 @@ class HttpFoundationSpanFactory
      */
     private function getName(Request $request)
     {
-        return $request->getMethod() . ' ' . $request->getPathInfo();
+        return $request->getMethod().' '.$request->getPathInfo();
     }
 
     /**
      * @param Request $request
-     * @param string $header
+     * @param string  $header
      *
      * @return Identifier
      */
@@ -126,7 +125,7 @@ class HttpFoundationSpanFactory
 
     /**
      * @param Request $request
-     * @param string $header
+     * @param string  $header
      *
      * @return null|Identifier
      */

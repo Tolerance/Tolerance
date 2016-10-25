@@ -11,7 +11,6 @@
 
 namespace Tolerance\Bridge\Guzzle\Tracer;
 
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

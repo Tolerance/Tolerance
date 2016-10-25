@@ -24,7 +24,7 @@ class Endpoint
     private $ipv6;
 
     /**
-     * @var integer
+     * @var int
      */
     private $port;
 
@@ -36,7 +36,7 @@ class Endpoint
     /**
      * @param string $ipv4
      * @param string $ipv6
-     * @param int $port
+     * @param int    $port
      * @param string $serviceName
      */
     public function __construct($ipv4, $ipv6, $port, $serviceName)
@@ -46,7 +46,6 @@ class Endpoint
         $this->port = $port;
         $this->serviceName = $serviceName;
     }
-
 
     /**
      * @return string

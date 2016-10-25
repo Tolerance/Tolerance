@@ -36,7 +36,7 @@ final class SuccessFailurePublisherOperationRunner implements OperationRunner
     /**
      * @param OperationRunner $decoratedOperationRunner
      * @param MetricPublisher $metricPublisher
-     * @param string $namespace
+     * @param string          $namespace
      */
     public function __construct(OperationRunner $decoratedOperationRunner, MetricPublisher $metricPublisher, $namespace)
     {

@@ -14,18 +14,17 @@ namespace Tolerance\Tracer\Span;
 class Identifier
 {
     /**
-     * @var integer
+     * @var int
      */
     private $value;
 
     /**
-     * @param integer $value
+     * @param int $value
      */
     private function __construct($value)
     {
         $this->value = $value;
     }
-
 
     public static function fromString($string)
     {

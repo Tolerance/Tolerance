@@ -44,31 +44,32 @@ class Span
     private $binaryAnnotations;
 
     /**
-     * @var boolean|null
+     * @var bool|null
      */
     private $debug;
 
     /**
-     * @var integer|null
+     * @var int|null
      */
     private $timestamp;
 
     /**
-     * @var integer|null
+     * @var int|null
      */
     private $duration;
 
     /**
      * Span constructor.
-     * @param Identifier $identifier
-     * @param string $name
-     * @param Identifier $traceIdentifier
-     * @param Annotation[] $annotations
+     *
+     * @param Identifier         $identifier
+     * @param string             $name
+     * @param Identifier         $traceIdentifier
+     * @param Annotation[]       $annotations
      * @param BinaryAnnotation[] $binaryAnnotations
-     * @param Identifier|null $parentIdentifier
-     * @param bool|null $debug
-     * @param int|null $timestamp
-     * @param int|null $duration
+     * @param Identifier|null    $parentIdentifier
+     * @param bool|null          $debug
+     * @param int|null           $timestamp
+     * @param int|null           $duration
      */
     public function __construct(Identifier $identifier, $name, Identifier $traceIdentifier, array $annotations = [], array $binaryAnnotations = [], Identifier $parentIdentifier = null, $debug = null, $timestamp = null, $duration = null)
     {

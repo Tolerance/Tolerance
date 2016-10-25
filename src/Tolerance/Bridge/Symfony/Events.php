@@ -16,7 +16,6 @@ final class Events
     /**
      * This event will be dispatched when a request ends, even if the request ends with an
      * exception.
-     *
      */
     const REQUEST_ENDS = 'tolerance.request_ends';
 }

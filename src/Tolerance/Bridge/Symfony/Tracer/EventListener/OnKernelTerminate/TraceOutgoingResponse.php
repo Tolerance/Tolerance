@@ -12,7 +12,6 @@
 namespace Tolerance\Bridge\Symfony\Tracer\EventListener\OnKernelTerminate;
 
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Tolerance\Tracer\SpanContext;
 use Tolerance\Tracer\SpanFactory\HttpFoundation\HttpFoundationSpanFactory;
 use Tolerance\Tracer\SpanStack\SpanStack;
 use Tolerance\Tracer\Tracer;
@@ -36,8 +35,8 @@ class TraceOutgoingResponse
 
     /**
      * @param HttpFoundationSpanFactory $httpFoundationSpanFactory
-     * @param Tracer $tracer
-     * @param SpanStack $spanStack
+     * @param Tracer                    $tracer
+     * @param SpanStack                 $spanStack
      */
     public function __construct(HttpFoundationSpanFactory $httpFoundationSpanFactory, Tracer $tracer, SpanStack $spanStack)
     {
