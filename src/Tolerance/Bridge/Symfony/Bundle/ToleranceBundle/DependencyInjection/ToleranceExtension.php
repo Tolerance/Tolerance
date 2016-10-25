@@ -104,7 +104,7 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
                 }
             }
 
-            $container->setParameter('tolerance.tracer.service_name', $config['tracer']['serviceName']);
+            $container->setParameter('tolerance.tracer.service_name', $config['tracer']['service_name']);
 
             $loader->load('tracer.xml');
         }

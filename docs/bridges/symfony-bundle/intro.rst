@@ -11,4 +11,5 @@ automatically with a Symfony application.
     operation-runner
     operation-wrappers
     message-profile
+    tracer
     metrics

@@ -1,6 +1,10 @@
 Message Profile
 ===============
 
+.. important::
+
+    The integration of this component is deprecated in favor of the `Tracer component integration <tracer.html>`_.
+
 This integration is created to require you the less effort possible to use Tolerance's Message Profile component. Enable
 it with the following configuration.
 

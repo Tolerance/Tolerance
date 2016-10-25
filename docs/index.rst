@@ -8,9 +8,10 @@ Contents:
 
     introduction
     operation-runner/intro
-    message-profile/index
     throttling/intro
+    tracer/intro
     bridges/symfony-bundle/intro
+    message-profile/index
 
 Indices and tables
 ==================

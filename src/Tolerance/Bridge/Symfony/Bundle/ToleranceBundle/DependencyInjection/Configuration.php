@@ -275,7 +275,7 @@ class Configuration implements ConfigurationInterface
         $node
             ->canBeEnabled()
             ->children()
-                ->scalarNode('serviceName')->defaultNull()->end()
+                ->scalarNode('service_name')->defaultNull()->end()
                 ->arrayNode('zipkin')
                     ->isRequired() // As it's the only backend at the moment
                     ->children()
