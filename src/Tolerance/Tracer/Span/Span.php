@@ -70,7 +70,7 @@ class Span
      * @param int|null $timestamp
      * @param int|null $duration
      */
-    public function __construct(Identifier $identifier, $name, Identifier $traceIdentifier, array $annotations, array $binaryAnnotations, Identifier $parentIdentifier = null, $debug = null, $timestamp = null, $duration = null)
+    public function __construct(Identifier $identifier, $name, Identifier $traceIdentifier, array $annotations = [], array $binaryAnnotations = [], Identifier $parentIdentifier = null, $debug = null, $timestamp = null, $duration = null)
     {
         $this->identifier = $identifier;
         $this->name = $name;

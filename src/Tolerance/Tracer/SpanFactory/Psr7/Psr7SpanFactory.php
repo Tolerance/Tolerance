@@ -20,6 +20,7 @@ use Tolerance\Tracer\Span\Annotation;
 use Tolerance\Tracer\Span\BinaryAnnotation;
 use Tolerance\Tracer\Span\Span;
 use Tolerance\Tracer\SpanContext;
+use Tolerance\Tracer\SpanStack\SpanStack;
 
 class Psr7SpanFactory
 {
@@ -29,9 +30,9 @@ class Psr7SpanFactory
     private $identifierGenerator;
 
     /**
-     * @var SpanContext
+     * @var SpanStack
      */
-    private $spanContext;
+    private $spanStack;
 
     /**
      * @var Clock
@@ -47,14 +48,14 @@ class Psr7SpanFactory
      * @param IdentifierGenerator $identifierGenerator
      * @param Clock $clock
      * @param EndpointResolver $endpointResolver
-     * @param SpanContext $spanContext
+     * @param SpanStack $spanStack
      */
-    public function __construct(IdentifierGenerator $identifierGenerator, Clock $clock, EndpointResolver $endpointResolver, SpanContext $spanContext)
+    public function __construct(IdentifierGenerator $identifierGenerator, Clock $clock, EndpointResolver $endpointResolver, SpanStack $spanStack)
     {
         $this->identifierGenerator = $identifierGenerator;
         $this->clock = $clock;
         $this->endpointResolver = $endpointResolver;
-        $this->spanContext = $spanContext;
+        $this->spanStack = $spanStack;
     }
 
     /**
@@ -64,7 +65,7 @@ class Psr7SpanFactory
      */
     public function fromOutgoingRequest(RequestInterface $request)
     {
-        $currentSpan = $this->spanContext->getCurrentSpan();
+        $currentSpan = $this->spanStack->current();
 
         return new Span(
             $this->identifierGenerator->generate(),
