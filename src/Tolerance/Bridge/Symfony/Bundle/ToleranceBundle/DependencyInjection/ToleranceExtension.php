@@ -98,6 +98,18 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             $this->loadMessageProfile($container, $loader, $config['message_profile']);
         }
 
+        if ($config['tracer']['enabled']) {
+            if (array_key_exists('zipkin', $config['tracer'])) {
+                if (array_key_exists('http', $config['tracer']['zipkin'])) {
+                    $container->setParameter('tolerance.tracer.zipkin.http.base_url', $config['tracer']['zipkin']['http']['base_url']);
+                }
+            }
+
+            $container->setParameter('tolerance.tracer.service_name', $config['tracer']['serviceName']);
+
+            $loader->load('tracer.xml');
+        }
+
         foreach ($config['operation_runners'] as $name => $operationRunner) {
             $name = sprintf('tolerance.operation_runners.%s', $name);
 

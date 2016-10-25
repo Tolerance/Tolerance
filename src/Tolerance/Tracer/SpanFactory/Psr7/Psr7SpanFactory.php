@@ -88,7 +88,7 @@ class Psr7SpanFactory
      *
      * @return Span
      */
-    public function fromIncomingResponse(ResponseInterface $response, Span $originalSpan)
+    public function fromIncomingResponse(Span $originalSpan, ResponseInterface $response = null)
     {
         return new Span(
             $originalSpan->getIdentifier(),

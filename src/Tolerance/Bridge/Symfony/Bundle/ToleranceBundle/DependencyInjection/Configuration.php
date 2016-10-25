@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
             ->append($this->getMetricsNode())
             ->booleanNode('operation_runner_listener')->defaultTrue()->end()
             ->append($this->getAopNode())
+            ->append($this->getTracerNode())
             ->end();
 
         return $builder;
@@ -257,6 +258,32 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('runner')->isRequired()->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getTracerNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('tracer');
+
+        $node
+            ->canBeEnabled()
+            ->children()
+                ->scalarNode('serviceName')->defaultNull()->end()
+                ->arrayNode('zipkin')
+                    ->isRequired() // As it's the only backend at the moment
+                    ->children()
+                        ->arrayNode('http')
+                            ->isRequired() // As it's the only transport at the moment
+                            ->children()
+                                ->scalarNode('base_url')->isRequired()->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()

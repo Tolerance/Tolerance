@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.tracer.stack_stack" class="Tolerance\Tracer\SpanStack\InMemorySpanStack" />
+
+        <!-- Zipkin backend, HTTP transport -->
+        <service id="tolerance.tracer.zipkin.http_client" class="GuzzleHttp\Client" />
+        <service id="tolerance.tracer.zipkin.http" class="Tolerance\Tracer\Zipkin\ZipkinHttpTracer">
+            <argument type="service" id="tolerance.tracer.zipkin.http_client" />
+            <argument>%tolerance.tracer.zipkin.http.base_url%</argument>
+        </service>
+
+        <!-- Hardcoded alias as it's the only possible, at the moment -->
+        <service id="tolerance.tracer" alias="tolerance.tracer.zipkin.http" />
+
+        <!-- Span factories -->
+        <service id="tolerance.tracer.clock" class="Tolerance\Tracer\Clock\PhpClock" />
+        <service id="tolerance.tracer.identifier_generator.rand" class="Tolerance\Tracer\IdentifierGenerator\RandIdentifierGenerator" />
+        <service id="tolerance.tracer.endpoint_resolver" class="Tolerance\Tracer\EndpointResolver\ServiceNameResolver">
+            <argument>%tolerance.tracer.service_name%</argument>
+        </service>
+        <service id="tolerance.tracer.span_factory.psr7" class="Tolerance\Tracer\SpanFactory\Psr7\Psr7SpanFactory">
+            <argument type="service" id="tolerance.tracer.identifier_generator.rand"/>
+            <argument type="service" id="tolerance.tracer.clock"/>
+            <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
+            <argument type="service" id="tolerance.tracer.stack_stack"/>
+        </service>
+        <service id="tolerance.tracer.span_factory.http_foundation" class="Tolerance\Tracer\SpanFactory\HttpFoundation\HttpFoundationSpanFactory">
+            <argument type="service" id="tolerance.tracer.identifier_generator.rand" />
+            <argument type="service" id="tolerance.tracer.clock"/>
+            <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
+        </service>
+
+        <!-- Monolog processor -->
+        <service id="tolerance.tracer.monolog.span_processor" class="Tolerance\Bridge\Monolog\Tracer\CurrentSpanProcessor">
+            <argument type="service" id="tolerance.tracer.stack_stack" />
+
+            <tag name="monolog.processor" />
+        </service>
+
+        <!-- Guzzle middleware -->
+        <service id="tolerance.tracer.guzzle.middleware_factory" class="Tolerance\Bridge\Guzzle\Tracer\TracerMiddlewareFactory">
+            <argument type="service" id="tolerance.tracer.span_factory.psr7"/>
+            <argument type="service" id="tolerance.tracer"/>
+        </service>
+
+        <service id="tolerance.tracer.guzzle.middleware" class="Closure">
+            <factory service="tolerance.tracer.guzzle.middleware_factory" method="create" />
+
+            <tag name="csa_guzzle.middleware" alias="tolerance.message_profile.message_identifier" />
+        </service>
+
+        <!-- Symfony Event Listener -->
+        <service id="tolerance.tracer.event_listener.kernel_request.create_and_trace_request" class="Tolerance\Bridge\Symfony\Tracer\EventListener\OnKernelRequest\CreateAndTraceIncomingSpan">
+            <argument type="service" id="tolerance.tracer.stack_stack" />
+            <argument type="service" id="tolerance.tracer" />
+            <argument type="service" id="tolerance.tracer.span_factory.http_foundation" />
+
+            <tag name="kernel.event_listener" event="kernel.request" priority="1000" />
+        </service>
+
+
+        <service id="tolerance.tracer.event_listener.kernel_terminate.trace_response" class="Tolerance\Bridge\Symfony\Tracer\EventListener\OnKernelTerminate\TraceOutgoingResponse">
+            <argument type="service" id="tolerance.tracer.span_factory.http_foundation"/>
+            <argument type="service" id="tolerance.tracer"/>
+            <argument type="service" id="tolerance.tracer.stack_stack"/>
+
+            <tag name="kernel.event_listener" event="kernel.terminate" />
+        </service>
+    </services>
+</container>

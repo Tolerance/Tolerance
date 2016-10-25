@@ -17,6 +17,8 @@ default:
                     - "@app.api.guzzle_client"
                 - MetricsContext:
                     - "@tolerance.metrics.traced_publisher"
+                - TracerContext:
+                    - "@tolerance.tracer"
 
     extensions:
         Behat\Symfony2Extension:

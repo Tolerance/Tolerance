@@ -33,7 +33,7 @@ class ServiceNameResolver implements EndpointResolver
      */
     public function resolve()
     {
-        $serverAddress = $_SERVER['SERVER_ADDR'];
+        $serverAddress = array_key_exists('SERVER_ADDR', $_SERVER) ? $_SERVER['SERVER_ADDR'] : '';
 
         return new Endpoint(
             $this->isIpv4($serverAddress) ? $serverAddress : null,

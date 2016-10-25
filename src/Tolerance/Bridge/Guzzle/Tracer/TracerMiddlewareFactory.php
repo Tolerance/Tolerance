@@ -11,6 +11,8 @@
 
 namespace Tolerance\Bridge\Guzzle\Tracer;
 
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Tolerance\Tracer\SpanFactory\Psr7\Psr7SpanFactory;
@@ -59,11 +61,17 @@ class TracerMiddlewareFactory
 
                 return $handler($request, $options)->then(function (ResponseInterface $response) use ($span) {
                     $this->tracer->trace([
-                        $this->psr7SpanFactory->fromIncomingResponse($response, $span),
+                        $this->psr7SpanFactory->fromIncomingResponse($span, $response),
                     ]);
 
                     return $response;
-                }, function ($reason) {
+                }, function ($reason) use ($span) {
+                    if ($reason instanceof RequestException) {
+                        $this->tracer->trace([
+                            $this->psr7SpanFactory->fromIncomingResponse($span, $reason->getResponse()),
+                        ]);
+                    }
+
                     throw $reason;
                 });
             };
