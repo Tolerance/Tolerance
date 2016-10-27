@@ -63,6 +63,16 @@ class RetryOperationRunner implements OperationRunner
             $this->waitStrategy->resetState();
         }
 
+        return $this->runOperation($operation);
+    }
+
+    /**
+     * @param Operation $operation
+     * 
+     * @return mixed
+     */
+    private function runOperation(Operation $operation)
+    {
         try {
             return $this->runner->run($operation);
         } catch (\Throwable $e) {
@@ -86,7 +96,7 @@ class RetryOperationRunner implements OperationRunner
             throw $e;
         }
 
-        return $this->run($operation);
+        return $this->runOperation($operation);
     }
 
     /**

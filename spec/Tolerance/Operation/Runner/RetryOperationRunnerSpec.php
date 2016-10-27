@@ -81,4 +81,21 @@ class RetryOperationRunnerSpec extends ObjectBehavior
         $runner->run($operation)->willReturn(true);
         $this->run($operation)->shouldReturn(true);
     }
+
+    function it_should_reset_the_state_only_once(StatefulWaiter $statefulWaiter, OperationRunner $runner, Operation $operation)
+    {
+        $this->beConstructedWith($runner, $statefulWaiter);
+
+        $runner->run($operation)->will(function() use ($operation) {
+            $this->run($operation)->willReturn(new \stdClass());
+
+            throw new \RuntimeException('Operation failed');
+        });
+
+        $runner->run($operation)->shouldBeCalledTimes(2);
+        $statefulWaiter->wait()->willReturn(null);
+        $statefulWaiter->resetState()->shouldBeCalledTimes(1);
+
+        $this->run($operation);
+    }
 }
