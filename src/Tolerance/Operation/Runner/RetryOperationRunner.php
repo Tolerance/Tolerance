@@ -21,6 +21,9 @@ use Tolerance\Waiter\Waiter;
 
 class RetryOperationRunner implements OperationRunner
 {
+    const FIRST_CALL = true;
+    const RECURSIVE_CALL = false;
+
     /**
      * @var OperationRunner
      */
@@ -36,6 +39,9 @@ class RetryOperationRunner implements OperationRunner
      */
     private $exceptionCatcherVoter;
 
+    /** @var bool */
+    private $isFirstCall;
+
     /**
      * @param OperationRunner          $runner
      * @param \Tolerance\Waiter\Waiter $waitStrategy
@@ -48,6 +54,7 @@ class RetryOperationRunner implements OperationRunner
         $this->runner = $runner;
         $this->waitStrategy = $waitStrategy;
         $this->exceptionCatcherVoter = $exceptionCatcherVoter ?: new WildcardExceptionVoter();
+        $this->isFirstCall = self::FIRST_CALL;
 
         if (!$this->exceptionCatcherVoter instanceof ThrowableCatcherVoter) {
             trigger_error(sprintf('%s is deprecated, you should implement %s instead', ExceptionCatcherVoter::class, ThrowableCatcherVoter::class), E_USER_DEPRECATED);
@@ -59,7 +66,8 @@ class RetryOperationRunner implements OperationRunner
      */
     public function run(Operation $operation)
     {
-        if ($this->waitStrategy instanceof StatefulWaiter) {
+        if ($this->hasWaiterStrategyToBeReset()) {
+
             $this->waitStrategy->resetState();
         }
 
@@ -86,6 +94,8 @@ class RetryOperationRunner implements OperationRunner
             throw $e;
         }
 
+        $this->isFirstCall = self::RECURSIVE_CALL;
+
         return $this->run($operation);
     }
 
@@ -95,5 +105,14 @@ class RetryOperationRunner implements OperationRunner
     public function supports(Operation $operation)
     {
         return $this->runner->supports($operation);
+    }
+
+    /**
+     * @return bool
+     */
+    private function hasWaiterStrategyToBeReset()
+    {
+        return $this->waitStrategy instanceof StatefulWaiter
+            && self::FIRST_CALL === $this->isFirstCall;
     }
 }
