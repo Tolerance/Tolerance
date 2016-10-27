@@ -20,8 +20,9 @@ This runner will retry to run the operation until it is successful or the wait s
 
     use Tolerance\Operation\Runner\CallbackOperationRunner;
     use Tolerance\Operation\Runner\RetryOperationRunner;
-    use Tolerance\Waiter\Waiter\SleepWaiter;
-    use Tolerance\Waiter\Waiter\ExponentialBackOff;
+    use Tolerance\Waiter\SleepWaiter;
+    use Tolerance\Waiter\ExponentialBackOff;
+    use Tolerance\Waiter\CountLimited;
 
     // Creates the strategy used to wait between failing calls
     $waitStrategy = new CountLimited(
