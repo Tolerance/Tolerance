@@ -6,7 +6,7 @@ use Tolerance\Operation\ExceptionCatcher\ExceptionCatcherVoter;
 use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
 use Tolerance\Operation\Operation;
 use Tolerance\Operation\Runner\OperationRunner;
-use Tolerance\Operation\Runner\RetryOperationRunner;
+use Tolerance\Waiter\CountLimited;
 use Tolerance\Waiter\StatefulWaiter;
 use Tolerance\Waiter\WaiterException;
 use Tolerance\Waiter\Waiter;
@@ -80,5 +80,20 @@ class RetryOperationRunnerSpec extends ObjectBehavior
 
         $runner->run($operation)->willReturn(true);
         $this->run($operation)->shouldReturn(true);
+    }
+
+    function it_should_reset_the_state_of_any_stateful_waiter_only_once(Waiter $waiter, OperationRunner $runner, Operation $operation)
+    {
+        $retryAttempts = 2;
+        $waiter->wait(0)->willReturn();
+        $statefulWaiter = new CountLimited($waiter->getWrappedObject(), $retryAttempts); // Not a mock in order to avoid infinite loop
+        $this->beConstructedWith($runner, $statefulWaiter);
+
+        $runner->run(Argument::any())
+            ->willThrow(WaiterException::class)
+            ->shouldBeCalledTimes(1 + $retryAttempts)
+        ;
+
+        $this->shouldThrow(WaiterException::class)->duringRun($operation);
     }
 }
