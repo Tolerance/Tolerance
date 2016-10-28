@@ -127,3 +127,14 @@ iterations in a loop for instance, to ensure that each the iteration rate will m
 
 The *optional* argument of the :code:`wait` method is the identifier of the operation you want to isolate. That means
 that you can use the same waiter/rate limit for different type of operations if you want.
+
+Time Out
+--------
+
+This decoration strategy defines a time out to your operation execution. Once this time out is exceeded, it will
+throw the :code:`TimedOutExceeded` exception.
+
+.. code-block:: php
+
+    // Time out in 20 seconds
+    $waitingStrategy = new TimeOut($waitingStrategy, 20);
