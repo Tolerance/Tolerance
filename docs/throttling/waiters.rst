@@ -32,7 +32,7 @@ This implementation will use PHP's :code:`sleep` function to actually pause your
     $waiter = new SleepWaiter();
 
     // That will sleep for 500 milliseconds
-    $waiter->sleep(0.5);
+    $waiter->wait(0.5);
 
 NullWaiter
 ----------
