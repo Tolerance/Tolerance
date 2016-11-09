@@ -49,11 +49,16 @@ class RabbitMqCollector implements MetricCollector
     public function collect()
     {
         $queue = $this->rabbitMqClient->getQueue($this->vhost, $this->queueName);
-
-        return [
-            new Metric('rate', $queue['messages_details']['rate']),
+        $metrics = [
             new Metric('pending', $queue['messages_ready']),
             new Metric('running', $queue['messages_unacknowledged']),
         ];
+
+        if (array_key_exists('message_stats', $queue)) {
+            $metrics[] = new Metric('publish_rate', $queue['message_stats']['publish_details']['rate']);
+            $metrics[] = new Metric('deliver_rate', $queue['message_stats']['deliver_get_details']['rate']);
+        }
+
+        return $metrics;
     }
 }
