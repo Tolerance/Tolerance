@@ -59,13 +59,21 @@ class RabbitMqHttpClient
     /**
      * @param string $vhost
      * @param string $name
+     * @param int $interval
      *
      * @return array
      */
-    public function getQueue($vhost, $name)
+    public function getQueue($vhost, $name, $interval = 30)
     {
         $queueName = sprintf('%s/%s', urlencode($vhost), urlencode($name));
-        $url = sprintf('http://%s:%d/api/queues/%s', $this->hostname, $this->port, $queueName);
+        $url = sprintf('http://%s:%d/api/queues/%s?%s', $this->hostname, $this->port, $queueName, http_build_query([
+            'lengths_age' => $interval,
+            'lengths_incr' => $interval,
+            'msg_rates_age' => $interval,
+            'msg_rates_incr' => $interval,
+            'data_rates_age' => $interval,
+            'data_rates_incr' => $interval,
+        ]));
 
         $response = $this->httpClient->get($url, [
             'auth' => [
