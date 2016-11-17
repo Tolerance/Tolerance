@@ -4,6 +4,7 @@ namespace spec\Tolerance\Bridge\RabbitMqBundle\Tracer;
 
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Tolerance\Tracer\Span\Identifier;
@@ -38,8 +39,9 @@ class TracedProducerSpec extends ObjectBehavior
                 return false;
             }
 
-            return isset($properties['application_headers']['X-B3-SpanId']) &&
-                   isset($properties['application_headers']['X-B3-TraceId']);
+            $headers = $properties['application_headers']->getNativeData();
+
+            return isset($headers['X-B3-SpanId']) && isset($headers['X-B3-TraceId']);
         }))->shouldBeCalled();
 
         $tracer->trace([$span])->shouldBeCalled();

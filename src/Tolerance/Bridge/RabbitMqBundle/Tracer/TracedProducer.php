@@ -13,6 +13,7 @@ namespace Tolerance\Bridge\RabbitMqBundle\Tracer;
 
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 use Tolerance\Tracer\SpanFactory\Amqp\AmqpSpanFactory;
 use Tolerance\Tracer\Tracer;
 
@@ -53,14 +54,17 @@ final class TracedProducer implements ProducerInterface
         $message = new AMQPMessage((string) $msgBody, array_merge($additionalProperties, ['routing_key' => $routingKey]));
         $span = $this->amqpSpanFactory->fromProducedMessage($message);
 
-        $additionalProperties = array_merge([
-            'application_headers' => [
-                'X-B3-SpanId' => (string) $span->getIdentifier(),
-                'X-B3-TraceId' => (string) $span->getTraceIdentifier(),
-                'X-B3-ParentSpanId' => (string) $span->getParentIdentifier(),
-                'X-B3-Flags' => $span->getDebug() ? '1' : '0',
-            ],
-        ], $additionalProperties);
+        if (!array_key_exists('application_headers', $additionalProperties)) {
+            $additionalProperties['application_headers'] = new AMQPTable();
+        } elseif (!$additionalProperties['application_headers'] instanceof AMQPTable) {
+            throw new \InvalidArgumentException('Your `application_headers` must be an `AMQPTable`');
+        }
+
+        $headers = $additionalProperties['application_headers'];
+        $headers->set('X-B3-SpanId', (string) $span->getIdentifier());
+        $headers->set('X-B3-TraceId', (string) $span->getTraceIdentifier());
+        $headers->set('X-B3-ParentSpanId', (string) $span->getParentIdentifier());
+        $headers->set('X-B3-Flags', $span->getDebug() ? '1' : '0');
 
         $result = $this->decoratedProducer->publish($msgBody, $routingKey, $additionalProperties);
 
