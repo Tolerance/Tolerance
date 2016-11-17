@@ -12,6 +12,7 @@
 namespace Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -111,6 +112,14 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
 
             if ($container->getParameter('kernel.debug')) {
                 $loader->load('tracer/debug.xml');
+            }
+
+            if (interface_exists('GuzzleHttp\ClientInterface')) {
+                if (version_compare(ClientInterface::VERSION, '6.0') >= 0) {
+                    $loader->load('tracer/guzzle/6.x.xml');
+                } else {
+                    $loader->load('tracer/guzzle/4.x-5.x.xml');
+                }
             }
 
             if ($config['tracer']['rabbitmq']['enabled']) {

@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.tracer.span_factory.guzzle" class="Tolerance\Bridge\Guzzle\Tracer\SpanFactory\GuzzleMessageSpanFactory">
+            <argument type="service" id="tolerance.tracer.identifier_generator.rand"/>
+            <argument type="service" id="tolerance.tracer.clock"/>
+            <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
+            <argument type="service" id="tolerance.tracer.stack_stack"/>
+        </service>
+
+        <service id="tolerance.tracer.guzzle.subscriber" class="Tolerance\Bridge\Guzzle\Tracer\TracerSubscriber">
+            <argument type="service" id="tolerance.tracer.span_factory.guzzle"/>
+            <argument type="service" id="tolerance.tracer"/>
+
+            <tag name="csa_guzzle.subscriber" alias="tolerance" />
+        </service>
+    </services>
+</container>
