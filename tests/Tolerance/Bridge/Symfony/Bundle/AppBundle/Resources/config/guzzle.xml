@@ -5,10 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.guzzle.middleware.hookable_factory" class="Tolerance\Bridge\Guzzle\HookableMiddlewareFactory">
-            <argument type="service" id="tolerance.message_profile.identifier.generator.uuid" />
-            <argument>%tolerance.message_profile.header%</argument>
-        </service>
+        <service id="app.guzzle.middleware.hookable_factory" class="Tolerance\Bridge\Guzzle\HookableMiddlewareFactory" />
 
         <service id="app.guzzle.middleware.hookable" class="Closure">
             <factory service="app.guzzle.middleware.hookable_factory" method="create" />
