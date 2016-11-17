@@ -120,6 +120,20 @@ class Configuration implements ConfigurationInterface
             $nodes[] = $bufferedNode;
         }
 
+        if (!in_array('placeholder', $except)) {
+            $placeholderNode = $builder->root('placeholder');
+
+            $placeholderNode
+                ->children()
+                    ->scalarNode('runner')->defaultValue('tolerance.operation_runners.default')->end()
+                    ->scalarNode('value')->defaultNull()->end()
+                    ->scalarNode('logger')->defaultNull()->end()
+                ->end()
+            ;
+
+            $nodes[] = $placeholderNode;
+        }
+
         return $nodes;
     }
 
