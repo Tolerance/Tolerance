@@ -35,7 +35,13 @@ class ZipkinHttpTracerSpec extends ObjectBehavior
 
     function it_throws_a_TracerException_if_anything_goes_wrong(ClientInterface $client, RequestInterface $request)
     {
-        $client->request('POST', Argument::any(), Argument::any())->willThrow(new RequestException('Message', $request->getWrappedObject()));
+        $exception = new RequestException('Message', $request->getWrappedObject());
+
+        if (version_compare(ClientInterface::VERSION, '6.0') >= 0) {
+            $client->request('POST', Argument::any(), Argument::any())->willThrow($exception);
+        } else {
+            $client->post(Argument::type('string'), Argument::type('array'))->willThrow($exception);
+        }
 
         $this->shouldThrow(TracerException::class)->duringTrace([
             $this->generateTrace(),
