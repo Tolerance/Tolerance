@@ -72,4 +72,15 @@ final class TracedProducer implements ProducerInterface
 
         return $result;
     }
+
+    /**
+     * This method is added for compatibility reasons with a strange way of closing
+     * RabbitMq connections.
+     *
+     * @see https://github.com/php-amqplib/RabbitMqBundle/pull/378
+     */
+    public function close()
+    {
+        return $this->decoratedProducer->close();
+    }
 }
