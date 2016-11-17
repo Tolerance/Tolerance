@@ -24,6 +24,8 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
 use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
+use Tolerance\Bridge\RabbitMqBundle\Tracer\TracedConsumer;
+use Tolerance\Bridge\RabbitMqBundle\Tracer\TracedProducer;
 use Tolerance\Bridge\Symfony\Metrics\EventListener\RequestEnded\SendRequestTimeToPublisher;
 use Tolerance\Bridge\Symfony\Metrics\Request\StaticRequestMetricNamespaceResolver;
 use Tolerance\MessageProfile\Storage\ElasticaStorage;
@@ -105,8 +107,16 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             }
 
             $container->setParameter('tolerance.tracer.service_name', $config['tracer']['service_name']);
-
             $loader->load('tracer.xml');
+
+            if ($container->getParameter('kernel.debug')) {
+                $loader->load('tracer/debug.xml');
+            }
+
+            if ($config['tracer']['rabbitmq']['enabled']) {
+                $container->setParameter('tolerance.tracer.rabbitmq.enabled', true);
+                $container->setParameter('tolerance.tracer.rabbitmq.consumers', $config['tracer']['rabbitmq']['consumers']);
+            }
         }
 
         foreach ($config['operation_runners'] as $name => $operationRunner) {

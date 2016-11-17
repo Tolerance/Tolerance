@@ -34,6 +34,12 @@
             <argument type="service" id="tolerance.tracer.clock"/>
             <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
         </service>
+        <service id="tolerance.tracer.span_factory.amqp" class="Tolerance\Tracer\SpanFactory\Amqp\AmqpSpanFactory">
+            <argument type="service" id="tolerance.tracer.identifier_generator.rand"/>
+            <argument type="service" id="tolerance.tracer.clock"/>
+            <argument type="service" id="tolerance.tracer.stack_stack"/>
+            <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
+        </service>
 
         <!-- Monolog processor -->
         <service id="tolerance.tracer.monolog.span_processor" class="Tolerance\Bridge\Monolog\Tracer\CurrentSpanProcessor">
@@ -42,7 +48,7 @@
             <tag name="monolog.processor" />
         </service>
 
-        <!-- Guzzle middleware -->
+        <!-- Guzzle 6.x middleware -->
         <service id="tolerance.tracer.guzzle.middleware_factory" class="Tolerance\Bridge\Guzzle\Tracer\TracerMiddlewareFactory">
             <argument type="service" id="tolerance.tracer.span_factory.psr7"/>
             <argument type="service" id="tolerance.tracer"/>
@@ -52,6 +58,21 @@
             <factory service="tolerance.tracer.guzzle.middleware_factory" method="create" />
 
             <tag name="csa_guzzle.middleware" alias="tolerance.message_profile.message_identifier" />
+        </service>
+
+        <!-- Guzzle 4.x & 5.x Event Subscriber -->
+        <service id="tolerance.tracer.span_factory.guzzle" class="Tolerance\Bridge\Guzzle\Tracer\SpanFactory\GuzzleMessageSpanFactory">
+            <argument type="service" id="tolerance.tracer.identifier_generator.rand"/>
+            <argument type="service" id="tolerance.tracer.clock"/>
+            <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
+            <argument type="service" id="tolerance.tracer.stack_stack"/>
+        </service>
+
+        <service id="tolerance.tracer.guzzle.subscriber" class="Tolerance\Bridge\Guzzle\Tracer\TracerSubscriber">
+            <argument type="service" id="tolerance.tracer.span_factory.guzzle"/>
+            <argument type="service" id="tolerance.tracer"/>
+
+            <tag name="csa_guzzle.subscriber" alias="tolerance" />
         </service>
 
         <!-- Symfony Event Listener -->
@@ -70,6 +91,12 @@
             <argument type="service" id="tolerance.tracer.stack_stack"/>
 
             <tag name="kernel.event_listener" event="kernel.terminate" />
+        </service>
+
+        <!-- SimpleBusRabbitMqBundleBridge -->
+        <service id="tolerance.tracer.simple_bus.rabbit_mq_bundle_bridge.message_class_name_additional_properties_resolver"
+                 class="Tolerance\Bridge\SimpleBus\RabbitMqBundleBridge\Tracer\MessageClassNameAdditionalPropertiesResolver">
+            <tag name="simple_bus.additional_properties_resolver" />
         </service>
     </services>
 </container>

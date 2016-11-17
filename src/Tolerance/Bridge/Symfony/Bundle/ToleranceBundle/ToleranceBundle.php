@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection\CompilerPass\AopCompilerPass;
 use Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection\CompilerPass\CollectMetricsCollectorsAndPublishers;
 use Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection\CompilerPass\CollectOperationRunnersCompilerPass;
+use Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection\CompilerPass\RabbitMqCompilerPass;
 
 class ToleranceBundle extends Bundle
 {
@@ -27,5 +28,6 @@ class ToleranceBundle extends Bundle
         $container->addCompilerPass(new AopCompilerPass());
         $container->addCompilerPass(new CollectOperationRunnersCompilerPass());
         $container->addCompilerPass(new CollectMetricsCollectorsAndPublishers());
+        $container->addCompilerPass(new RabbitMqCompilerPass());
     }
 }
