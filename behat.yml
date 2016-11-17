@@ -18,7 +18,7 @@ default:
                 - MetricsContext:
                     - "@tolerance.metrics.traced_publisher"
                 - TracerContext:
-                    - "@tolerance.tracer"
+                    - "@tolerance.tracer.in_memory"
 
     extensions:
         Behat\Symfony2Extension:

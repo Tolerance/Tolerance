@@ -20,8 +20,11 @@ services:
         arguments:
             - "@tolerance.metrics.traced_publisher.inner"
 
-    tolerance.tracer:
+    tolerance.tracer.in_memory:
         class: "Tolerance\\Tracer\\InMemoryTracer"
+
+    tolerance.tracer:
+        alias: tolerance.tracer.in_memory
 
 beberlei_metrics:
     collectors:
