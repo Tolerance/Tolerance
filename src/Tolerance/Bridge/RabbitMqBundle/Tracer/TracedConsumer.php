@@ -58,11 +58,20 @@ final class TracedConsumer implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        $span = $this->amqpSpanFactory->fromConsumedMessage($msg);
+        $span = $this->amqpSpanFactory->fromReceivedMessage($msg);
 
         $this->tracer->trace([$span]);
+
         $this->spanStack->push($span);
 
-        return $this->decoratedConsumer->execute($msg);
+        $result = $this->decoratedConsumer->execute($msg);
+
+        $this->tracer->trace([
+            $this->amqpSpanFactory->fromConsumedMessage($msg),
+        ]);
+
+        $this->spanStack->pop();
+
+        return $result;
     }
 }

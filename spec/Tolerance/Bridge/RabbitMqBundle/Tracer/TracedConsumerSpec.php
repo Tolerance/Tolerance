@@ -16,11 +16,14 @@ class TracedConsumerSpec extends ObjectBehavior
 {
     function let(ConsumerInterface $decoratedConsumer, Tracer $tracer, SpanStack $spanStack, AmqpSpanFactory $amqpSpanFactory)
     {
-        $amqpSpanFactory->fromConsumedMessage(Argument::type(AMQPMessage::class))->willReturn(new Span(
+        $span = new Span(
             Identifier::fromString('1234'),
             'name',
             Identifier::fromString('1234')
-        ));
+        );
+
+        $amqpSpanFactory->fromReceivedMessage(Argument::type(AMQPMessage::class))->willReturn($span);
+        $amqpSpanFactory->fromConsumedMessage(Argument::type(AMQPMessage::class))->willReturn($span);
 
         $this->beConstructedWith($decoratedConsumer, $tracer, $spanStack, $amqpSpanFactory);
     }
@@ -46,10 +49,14 @@ class TracedConsumerSpec extends ObjectBehavior
         $this->execute(new AMQPMessage(''));
     }
 
-    function it_adds_the_span_in_the_stack(ConsumerInterface $decoratedConsumer, SpanStack $spanStack)
+    function it_adds_the_span_in_the_stack_during_the_execution(ConsumerInterface $decoratedConsumer, SpanStack $spanStack)
     {
-        $spanStack->push(Argument::type(Span::class))->shouldBeCalled();
+        $message = new AMQPMessage('');
 
-        $this->execute(new AMQPMessage(''));
+        $spanStack->push(Argument::type(Span::class))->shouldBeCalled();
+        $decoratedConsumer->execute($message)->shouldBeCalled();
+        $spanStack->pop()->shouldBeCalled();
+
+        $this->execute($message);
     }
 }
