@@ -20,7 +20,7 @@
         "ruflin/elastica": "^3.0",
         "symfony/symfony": "~2.8|~3.0",
         "jms/serializer-bundle": "^1.1",
-        "oldsound/rabbitmq-bundle": "^1.8",
+        "php-amqplib/rabbitmq-bundle": "^1.8",
         "beberlei/metrics": "^2.1",
         "simple-bus/rabbitmq-bundle-bridge": "^3.0"
     },
