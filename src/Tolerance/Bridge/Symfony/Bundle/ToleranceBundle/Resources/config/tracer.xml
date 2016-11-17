@@ -14,9 +14,6 @@
             <argument>%tolerance.tracer.zipkin.http.base_url%</argument>
         </service>
 
-        <!-- Hardcoded alias as it's the only possible, at the moment -->
-        <service id="tolerance.tracer" alias="tolerance.tracer.zipkin.http" />
-
         <!-- Span factories -->
         <service id="tolerance.tracer.clock" class="Tolerance\Tracer\Clock\PhpClock" />
         <service id="tolerance.tracer.identifier_generator.rand" class="Tolerance\Tracer\IdentifierGenerator\RandIdentifierGenerator" />
