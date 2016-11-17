@@ -11,9 +11,12 @@
 
 namespace Tolerance\Bridge\Symfony\Operation;
 
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Tolerance\Operation\Runner\BufferedOperationRunner;
 
-class RunBufferedOperationsWhenTerminates
+class RunBufferedOperationsWhenTerminates implements EventSubscriberInterface
 {
     /**
      * @var OperationRunnerRegistry
@@ -28,7 +31,22 @@ class RunBufferedOperationsWhenTerminates
         $this->registry = $registry;
     }
 
-    public function onKernelTerminate()
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::TERMINATE => 'onTerminate',
+            ConsoleEvents::TERMINATE => 'onTerminate',
+        ];
+    }
+
+    /**
+     * Run all the buffered operations.
+     *
+     */
+    public function onTerminate()
     {
         foreach ($this->getRunners() as $runner) {
             $runner->runBufferedOperations();
