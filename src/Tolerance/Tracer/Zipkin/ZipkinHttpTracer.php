@@ -48,9 +48,15 @@ class ZipkinHttpTracer implements Tracer
     public function trace(array $spans)
     {
         try {
-            $this->client->request('POST', $this->baseUrl.'/api/v1/spans', [
+            $options = [
                 'json' => array_map([$this, 'normalizeSpan'], $spans),
-            ]);
+            ];
+
+            if (version_compare(ClientInterface::VERSION, '6.0') >= 0) {
+                $this->client->request('POST', $this->baseUrl . '/api/v1/spans', $options);
+            } else {
+                $this->client->post($this->baseUrl . '/api/v1/spans', $options);
+            }
         } catch (RequestException $e) {
             throw new TracerException('Unable to publish the traces', $e->getCode(), $e);
         }
@@ -97,11 +103,16 @@ class ZipkinHttpTracer implements Tracer
      */
     private function normalizeBinaryAnnotation(BinaryAnnotation $binaryAnnotation)
     {
-        return [
+        $normalizedAnnotation = [
             'key' => $binaryAnnotation->getKey(),
-            'value' => $binaryAnnotation->getValue(),
-            'endpoint' => null !== $binaryAnnotation->getHost() ? $this->normalizeEndpoint($binaryAnnotation->getHost()) : null,
+            'value' => (string) $binaryAnnotation->getValue(),
         ];
+
+        if (null !== ($host = $binaryAnnotation->getHost())) {
+            $normalizedAnnotation['endpoint'] = $this->normalizeEndpoint($host);
+        }
+
+        return $normalizedAnnotation;
     }
 
     /**

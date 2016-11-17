@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.tracer.guzzle.middleware_factory" class="Tolerance\Bridge\Guzzle\Tracer\TracerMiddlewareFactory">
+            <argument type="service" id="tolerance.tracer.span_factory.psr7"/>
+            <argument type="service" id="tolerance.tracer"/>
+        </service>
+
+        <service id="tolerance.tracer.guzzle.middleware" class="Closure">
+            <factory service="tolerance.tracer.guzzle.middleware_factory" method="create" />
+
+            <tag name="csa_guzzle.middleware" alias="tolerance.message_profile.message_identifier" />
+        </service>
+    </services>
+</container>

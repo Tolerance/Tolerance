@@ -19,7 +19,7 @@ class TimeOut implements Waiter, StatefulWaiter
     private $delegateWaiter;
 
     /**
-     * @var integer
+     * @var int
      */
     private $timeOut;
 
@@ -29,14 +29,15 @@ class TimeOut implements Waiter, StatefulWaiter
     private $secondsEllapsed;
 
     /**
-     * @var Waiter $delegateWaiter
-     * @var integer $timeOut
+     * @param Waiter $delegateWaiter
+     * @param int    $timeOut
      */
     public function __construct(Waiter $delegateWaiter, $timeOut)
     {
         $this->delegateWaiter = $delegateWaiter;
         $this->timeOut = $timeOut;
-        $this->secondsEllapsed = 0.0;
+
+        $this->resetState();
     }
 
     /**
@@ -46,6 +47,7 @@ class TimeOut implements Waiter, StatefulWaiter
     {
         $this->delegateWaiter->wait($seconds);
         $this->secondsEllapsed += $seconds;
+
         if ($this->timeOut <= $this->secondsEllapsed) {
             throw Exception\TimedOutExceeded::withValue($this->timeOut);
         }
@@ -56,6 +58,6 @@ class TimeOut implements Waiter, StatefulWaiter
      */
     public function resetState()
     {
-        $this->secondsEllapsed = 0;
+        $this->secondsEllapsed = 0.0;
     }
 }

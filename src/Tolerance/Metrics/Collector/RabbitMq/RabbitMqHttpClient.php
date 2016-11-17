@@ -59,7 +59,7 @@ class RabbitMqHttpClient
     /**
      * @param string $vhost
      * @param string $name
-     * @param int $interval
+     * @param int    $interval
      *
      * @return array
      */

@@ -66,6 +66,8 @@ class HttpFoundationSpanFactory
             ],
             [
                 new BinaryAnnotation('http.host', $request->getHost(), BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.scheme', $request->getScheme(), BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.path', $request->getPathInfo(), BinaryAnnotation::TYPE_STRING),
             ],
             $this->getIdentifier($request, 'X-B3-ParentSpanId'),
             $request->headers->get('X-B3-Flags') == '1',
@@ -90,7 +92,9 @@ class HttpFoundationSpanFactory
             [
                 new Annotation(Annotation::SERVER_SEND, $timestamp, $this->endpointResolver->resolve()),
             ],
-            [],
+            [
+                new BinaryAnnotation('http.status', $response->getStatusCode(), BinaryAnnotation::TYPE_INTEGER_16),
+            ],
             $originalSpan->getParentIdentifier(),
             $originalSpan->getDebug(),
             $originalSpan->getTimestamp(),

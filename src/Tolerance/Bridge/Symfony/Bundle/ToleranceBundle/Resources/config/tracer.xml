@@ -34,24 +34,18 @@
             <argument type="service" id="tolerance.tracer.clock"/>
             <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
         </service>
+        <service id="tolerance.tracer.span_factory.amqp" class="Tolerance\Tracer\SpanFactory\Amqp\AmqpSpanFactory">
+            <argument type="service" id="tolerance.tracer.identifier_generator.rand"/>
+            <argument type="service" id="tolerance.tracer.clock"/>
+            <argument type="service" id="tolerance.tracer.stack_stack"/>
+            <argument type="service" id="tolerance.tracer.endpoint_resolver"/>
+        </service>
 
         <!-- Monolog processor -->
         <service id="tolerance.tracer.monolog.span_processor" class="Tolerance\Bridge\Monolog\Tracer\CurrentSpanProcessor">
             <argument type="service" id="tolerance.tracer.stack_stack" />
 
             <tag name="monolog.processor" />
-        </service>
-
-        <!-- Guzzle middleware -->
-        <service id="tolerance.tracer.guzzle.middleware_factory" class="Tolerance\Bridge\Guzzle\Tracer\TracerMiddlewareFactory">
-            <argument type="service" id="tolerance.tracer.span_factory.psr7"/>
-            <argument type="service" id="tolerance.tracer"/>
-        </service>
-
-        <service id="tolerance.tracer.guzzle.middleware" class="Closure">
-            <factory service="tolerance.tracer.guzzle.middleware_factory" method="create" />
-
-            <tag name="csa_guzzle.middleware" alias="tolerance.message_profile.message_identifier" />
         </service>
 
         <!-- Symfony Event Listener -->
@@ -63,13 +57,18 @@
             <tag name="kernel.event_listener" event="kernel.request" priority="1000" />
         </service>
 
-
         <service id="tolerance.tracer.event_listener.kernel_terminate.trace_response" class="Tolerance\Bridge\Symfony\Tracer\EventListener\OnKernelTerminate\TraceOutgoingResponse">
             <argument type="service" id="tolerance.tracer.span_factory.http_foundation"/>
             <argument type="service" id="tolerance.tracer"/>
             <argument type="service" id="tolerance.tracer.stack_stack"/>
 
             <tag name="kernel.event_listener" event="kernel.terminate" />
+        </service>
+
+        <!-- SimpleBusRabbitMqBundleBridge -->
+        <service id="tolerance.tracer.simple_bus.rabbit_mq_bundle_bridge.message_class_name_additional_properties_resolver"
+                 class="Tolerance\Bridge\SimpleBus\RabbitMqBundleBridge\Tracer\MessageClassNameAdditionalPropertiesResolver">
+            <tag name="simple_bus.additional_properties_resolver" />
         </service>
     </services>
 </container>

@@ -9,19 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Tracer\SpanFactory\Psr7;
+namespace Tolerance\Bridge\Guzzle\Tracer\SpanFactory;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\ResponseInterface;
 use Tolerance\Tracer\Clock\Clock;
 use Tolerance\Tracer\EndpointResolver\EndpointResolver;
 use Tolerance\Tracer\IdentifierGenerator\IdentifierGenerator;
 use Tolerance\Tracer\Span\Annotation;
 use Tolerance\Tracer\Span\BinaryAnnotation;
+use Tolerance\Tracer\Span\Identifier;
 use Tolerance\Tracer\Span\Span;
 use Tolerance\Tracer\SpanStack\SpanStack;
 
-class Psr7SpanFactory
+class GuzzleMessageSpanFactory
 {
     /**
      * @var IdentifierGenerator
@@ -74,9 +75,9 @@ class Psr7SpanFactory
                 new Annotation(Annotation::CLIENT_SEND, $this->clock->microseconds(), $this->endpointResolver->resolve()),
             ],
             [
-                new BinaryAnnotation('http.host', $request->getUri()->getHost(), BinaryAnnotation::TYPE_STRING),
-                new BinaryAnnotation('http.path', $request->getUri()->getPath(), BinaryAnnotation::TYPE_STRING),
-                new BinaryAnnotation('http.method', $request->getMethod(), BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.host', $request->getHost() ?: '', BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.method', $request->getMethod() ?: '', BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.path', $request->getPath() ?: '', BinaryAnnotation::TYPE_STRING),
             ],
             $currentSpan !== null ? $currentSpan->getIdentifier() : null,
             $currentSpan !== null ? $currentSpan->getDebug() : null
@@ -84,25 +85,30 @@ class Psr7SpanFactory
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param Span              $originalSpan
+     * @param RequestInterface $originalRequest
+     * @param ResponseInterface|null $response
      *
      * @return Span
      */
-    public function fromIncomingResponse(Span $originalSpan, ResponseInterface $response = null)
+    public function fromIncomingResponse(RequestInterface $originalRequest, ResponseInterface $response = null)
     {
+        $span = $originalRequest->getHeader('X-B3-SpanId');
+        $trace = $originalRequest->getHeader('X-B3-TraceId');
+
+        if (empty($span) || empty($trace)) {
+            throw new \InvalidArgumentException('Unable to find the original request properties');
+        }
+
         return new Span(
-            $originalSpan->getIdentifier(),
-            $originalSpan->getName(),
-            $originalSpan->getTraceIdentifier(),
+            Identifier::fromString($span),
+            $this->getName($originalRequest),
+            Identifier::fromString($trace),
             [
                 new Annotation(Annotation::CLIENT_RECEIVE, $this->clock->microseconds(), $this->endpointResolver->resolve()),
             ],
             [
                 new BinaryAnnotation('http.status', $response !== null ? $response->getStatusCode() : 0, BinaryAnnotation::TYPE_INTEGER_16),
-            ],
-            $originalSpan->getParentIdentifier(),
-            $originalSpan->getDebug()
+            ]
         );
     }
 
@@ -113,6 +119,6 @@ class Psr7SpanFactory
      */
     private function getName(RequestInterface $request)
     {
-        return $request->getMethod().' '.$request->getUri()->getPath();
+        return $request->getMethod() . ' ' . $request->getPath();
     }
 }

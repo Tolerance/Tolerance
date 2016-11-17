@@ -287,6 +287,15 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('rabbitmq')
+                    ->canBeEnabled()
+                    ->children()
+                        ->arrayNode('consumers')
+                            ->defaultValue([])
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

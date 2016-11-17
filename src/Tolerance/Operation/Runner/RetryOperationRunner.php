@@ -68,7 +68,7 @@ class RetryOperationRunner implements OperationRunner
 
     /**
      * @param Operation $operation
-     * 
+     *
      * @return mixed
      */
     private function runOperation(Operation $operation)

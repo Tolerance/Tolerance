@@ -17,6 +17,12 @@ use Psr\Http\Message\ResponseInterface;
 use Tolerance\Tracer\SpanFactory\Psr7\Psr7SpanFactory;
 use Tolerance\Tracer\Tracer;
 
+/**
+ * This Guzzle middleware is to be used with Guzzle 6.x
+ *
+ * If you are using Guzzle 4 or 5, you should have a look to the TracerSubscriber class.
+ *
+ */
 class TracerMiddlewareFactory
 {
     /**

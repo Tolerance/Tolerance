@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Stop-Watched tracer -->
+        <service id="tolerance.tracer.stop_watched"
+                 class="Tolerance\Bridge\Symfony\Tracer\StopWatch\WatchedTracer"
+                 decorates="tolerance.tracer">
+            <argument type="service" id="tolerance.tracer.stop_watched.inner" />
+            <argument type="service" id="debug.stopwatch" />
+        </service>
+    </services>
+</container>
