@@ -31,9 +31,12 @@ use Tolerance\Metrics\Publisher\BeberleiMetricsAdapterPublisher;
 use Tolerance\Metrics\Publisher\HostedGraphitePublisher;
 use Tolerance\Metrics\Publisher\LoggerPublisher;
 use Tolerance\Operation\Buffer\InMemoryOperationBuffer;
+use Tolerance\Operation\Placeholder\PlaceholderResponseResolver;
+use Tolerance\Operation\Placeholder\ValueConstructedPlaceholderResponseResolver;
 use Tolerance\Operation\Runner\BufferedOperationRunner;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
 use Tolerance\Operation\Runner\Metrics\SuccessFailurePublisherOperationRunner;
+use Tolerance\Operation\Runner\PlaceholderOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
 use Tolerance\Waiter\ExponentialBackOff;
 use Tolerance\Waiter\CountLimited;
@@ -155,6 +158,8 @@ class ToleranceExtension extends Extension
             return $this->createSuccessFailureMetricsOperationRunnerDefinition($container, $name, $config['success_failure_metrics']);
         } elseif (array_key_exists('buffered', $config)) {
             return $this->createBufferedOperationRunnerDefinition($container, $name, $config['buffered']);
+        } elseif (array_key_exists('placeholder', $config)) {
+            return $this->createPlaceholderOperationRunnerDefinition($container, $name, $config['placeholder']);
         }
 
         throw new \RuntimeException(sprintf(
@@ -207,6 +212,20 @@ class ToleranceExtension extends Extension
         $definition = $this->createDefinition(BufferedOperationRunner::class, [
             new Reference($config['runner']),
             $buffer,
+        ]);
+
+        $container->setDefinition($name, $definition);
+
+        return $name;
+    }
+
+    private function createPlaceholderOperationRunnerDefinition(ContainerBuilder $container, $name, array $config)
+    {
+        $definition = $this->createDefinition(PlaceholderOperationRunner::class, [
+            new Reference($config['runner']),
+            new Definition(ValueConstructedPlaceholderResponseResolver::class, [$config['value']]),
+            null,
+            $config['logger'] !== null ? new Reference($config['logger']) : null,
         ]);
 
         $container->setDefinition($name, $definition);
