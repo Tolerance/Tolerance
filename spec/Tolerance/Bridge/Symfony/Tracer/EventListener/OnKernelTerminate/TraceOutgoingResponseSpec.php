@@ -30,4 +30,14 @@ class TraceOutgoingResponseSpec extends ObjectBehavior
 
         $this->onKernelTerminate($event);
     }
+
+    function it_do_not_trace_if_no_request_in_stack(Tracer $tracer, SpanStack $spanStack, Span $span, PostResponseEvent $event)
+    {
+        $event->isMasterRequest()->willReturn(true);
+
+        $spanStack->pop()->willReturn(null);
+        $tracer->trace(Argument::any())->shouldNotBeCalled();
+
+        $this->onKernelTerminate($event);
+    }
 }

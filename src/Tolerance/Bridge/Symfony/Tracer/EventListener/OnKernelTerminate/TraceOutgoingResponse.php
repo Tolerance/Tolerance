@@ -54,11 +54,13 @@ class TraceOutgoingResponse
             return;
         }
 
-        $this->tracer->trace([
-            $this->httpFoundationSpanFactory->fromOutgoingResponse(
-                $event->getResponse(),
-                $this->spanStack->pop()
-            ),
-        ]);
+        if ($span = $this->spanStack->pop()) {
+            $this->tracer->trace([
+                $this->httpFoundationSpanFactory->fromOutgoingResponse(
+                    $event->getResponse(),
+                    $span
+                ),
+            ]);
+        }
     }
 }
