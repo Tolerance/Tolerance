@@ -75,6 +75,8 @@ class Psr7SpanFactory
             ],
             [
                 new BinaryAnnotation('http.host', $request->getUri()->getHost(), BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.path', $request->getUri()->getPath(), BinaryAnnotation::TYPE_STRING),
+                new BinaryAnnotation('http.method', $request->getMethod(), BinaryAnnotation::TYPE_STRING),
             ],
             $currentSpan !== null ? $currentSpan->getIdentifier() : null,
             $currentSpan !== null ? $currentSpan->getDebug() : null
@@ -96,7 +98,9 @@ class Psr7SpanFactory
             [
                 new Annotation(Annotation::CLIENT_RECEIVE, $this->clock->microseconds(), $this->endpointResolver->resolve()),
             ],
-            [],
+            [
+                new BinaryAnnotation('http.status', $response !== null ? $response->getStatusCode() : 0, BinaryAnnotation::TYPE_INTEGER_16),
+            ],
             $originalSpan->getParentIdentifier(),
             $originalSpan->getDebug()
         );
