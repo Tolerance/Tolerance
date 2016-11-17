@@ -23,13 +23,13 @@ class AmqpSpanFactorySpec extends ObjectBehavior
 
     function it_generates_a_message_identifier_from_incoming_message_without_headers()
     {
-        $span = $this->fromConsumedMessage(new AMQPMessage(''));
+        $span = $this->fromReceivedMessage(new AMQPMessage(''));
         $span->shouldHaveAnIdentifier();
     }
 
     function it_uses_the_information_from_headers_if_found()
     {
-        $span = $this->fromConsumedMessage(new AMQPMessage('', [
+        $span = $this->fromReceivedMessage(new AMQPMessage('', [
             'application_headers' => [
                 'X-B3-TraceId' => '1234',
                 'X-B3-SpanId' => '9876',
@@ -38,6 +38,17 @@ class AmqpSpanFactorySpec extends ObjectBehavior
 
         $span->getIdentifier()->shouldBeLike(Identifier::fromString('9876'));
         $span->getTraceIdentifier()->shouldBeLike(Identifier::fromString('1234'));
+    }
+
+    function it_uses_the_name_in_headers_if_found()
+    {
+        $span = $this->fromReceivedMessage(new AMQPMessage('', [
+            'application_headers' => [
+                'name' => 'My-Command',
+            ]
+        ]));
+
+        $span->getName()->shouldBeLike('My-Command');
     }
 
     public function getMatchers()

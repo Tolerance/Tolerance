@@ -74,7 +74,28 @@ class AmqpSpanFactory
             ],
             [],
             $currentSpan !== null ? $currentSpan->getIdentifier() : null,
-            $currentSpan !== null ? $currentSpan->getDebug() : null
+            $currentSpan !== null ? $currentSpan->getDebug() : null,
+            $this->clock->microseconds()
+        );
+    }
+
+    /**
+     * @param AMQPMessage $message
+     *
+     * @return Span
+     */
+    public function fromReceivedMessage(AMQPMessage $message)
+    {
+        return new Span(
+            $this->getIdentifierOrGenerate($message, 'X-B3-SpanId'),
+            $this->getMessageName($message),
+            $this->getIdentifierOrGenerate($message, 'X-B3-TraceId'),
+            [
+                new Annotation(Annotation::SERVER_RECEIVE, $this->clock->microseconds(), $this->endpointResolver->resolve()),
+            ],
+            [],
+            $this->getIdentifier($message, 'X-B3-ParentSpanId'),
+            $this->getMessageHeader($message, 'X-B3-Flags') == '1'
         );
     }
 
@@ -90,12 +111,11 @@ class AmqpSpanFactory
             $this->getMessageName($message),
             $this->getIdentifierOrGenerate($message, 'X-B3-TraceId'),
             [
-                new Annotation(Annotation::SERVER_RECEIVE, $this->clock->microseconds(), $this->endpointResolver->resolve()),
+                new Annotation(Annotation::SERVER_SEND, $this->clock->microseconds(), $this->endpointResolver->resolve()),
             ],
             [],
             $this->getIdentifier($message, 'X-B3-ParentSpanId'),
-            $this->getMessageHeader($message, 'X-B3-Flags') == '1',
-            $this->clock->microseconds()
+            $this->getMessageHeader($message, 'X-B3-Flags') == '1'
         );
     }
 
@@ -106,7 +126,11 @@ class AmqpSpanFactory
      */
     private function getMessageName(AMQPMessage $message)
     {
-        return 'AMQP';
+        if (null === ($name = $this->getMessageHeader($message, 'name'))) {
+            $name = 'AMQP';
+        }
+
+        return $name;
     }
 
     /**
