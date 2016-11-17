@@ -1,8 +1,0 @@
-Tolerance\MessageProfile\HttpRequest\HttpMessageProfile:
-    properties:
-        method:
-            type: string
-        path:
-            type: string
-        statusCode:
-            type: integer

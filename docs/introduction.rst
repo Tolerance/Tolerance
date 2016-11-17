@@ -11,7 +11,7 @@ Software fails. Software communicates with other softwares. Software can be dist
 makes it even more subject to faults and monitoring/tracing problems.
 
 Tolerance helps to `run fault-tolerant operations <operation-runner/intro.html>`_, `throttle <throttling/intro.html>`_
-(ie rate limiting) your outgoing or incoming messages, `track messages across services and protocols <message-profile/intro.html>`_
+(ie rate limiting) your outgoing or incoming messages, `track messages across services and protocols <tracer/intro.html>`_
 and more.
 
 Getting started
@@ -28,7 +28,7 @@ If you are using Symfony, then checkout the `Symfony Bundle <bridges/symfony-bun
 to the different components.
 
 - `Operation runners <operation-runner/intro.html>`_
-- `Message profile <message-profile/intro.html>`_
+- `Tracer <tracer/intro.html>`_
 - `Metrics <metrics/intro.html>`_
 - `Throttling <throttling/intro.html>`_
 

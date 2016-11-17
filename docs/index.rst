@@ -12,7 +12,6 @@ Contents:
     tracer/intro
     metrics/intro
     bridges/symfony-bundle/intro
-    message-profile/index
 
 Indices and tables
 ==================

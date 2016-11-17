@@ -27,7 +27,6 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-            ->append($this->getMessageProfileNode())
             ->append($this->getOperationRunnersNode())
             ->append($this->getMetricsNode())
             ->booleanNode('operation_runner_listener')->defaultTrue()->end()
@@ -36,40 +35,6 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         return $builder;
-    }
-
-    private function getMessageProfileNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('message_profile');
-
-        $node
-            ->addDefaultsIfNotSet()
-            ->canBeEnabled()
-            ->children()
-                ->scalarNode('header')->cannotBeEmpty()->defaultValue('x-message-id')->end()
-                ->arrayNode('integrations')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('monolog')->defaultTrue()->end()
-                        ->booleanNode('rabbitmq')->defaultTrue()->end()
-                        ->booleanNode('jms_serializer')->defaultTrue()->end()
-                    ->end()
-                ->end()
-                ->arrayNode('storage')
-                    ->isRequired()
-                    ->children()
-                        ->booleanNode('in_memory')->defaultFalse()->end()
-                        ->booleanNode('buffered')->defaultTrue()->end()
-                        ->scalarNode('elastica')->cannotBeEmpty()->end()
-                        ->scalarNode('neo4j')->cannotBeEmpty()->end()
-                    ->end()
-                ->end()
-                ->variableNode('current_peer')->defaultValue([])->end()
-            ->end()
-        ;
-
-        return $node;
     }
 
     private function getOperationRunnersNode()

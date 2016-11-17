@@ -18,19 +18,12 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
-use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileConsumer;
-use Tolerance\Bridge\RabbitMqBundle\MessageProfile\StoreMessageProfileProducer;
-use Tolerance\Bridge\RabbitMqBundle\Tracer\TracedConsumer;
-use Tolerance\Bridge\RabbitMqBundle\Tracer\TracedProducer;
 use Tolerance\Bridge\Symfony\Metrics\EventListener\RequestEnded\SendRequestTimeToPublisher;
 use Tolerance\Bridge\Symfony\Metrics\Request\StaticRequestMetricNamespaceResolver;
-use Tolerance\MessageProfile\Storage\ElasticaStorage;
-use Tolerance\MessageProfile\Storage\Neo4jStorage;
 use Tolerance\Metrics\Collector\NamespacedCollector;
 use Tolerance\Metrics\Collector\RabbitMq\RabbitMqCollector;
 use Tolerance\Metrics\Collector\RabbitMq\RabbitMqHttpClient;
@@ -45,34 +38,8 @@ use Tolerance\Waiter\CountLimited;
 use Tolerance\Waiter\NullWaiter;
 use Tolerance\Waiter\SleepWaiter;
 
-class ToleranceExtension extends Extension implements PrependExtensionInterface
+class ToleranceExtension extends Extension
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container)
-    {
-        $configs = $container->getExtensionConfig($this->getAlias());
-        $config = $this->processConfiguration(new Configuration(), $configs);
-        if (!$config['message_profile']['enabled'] || !$config['message_profile']['integrations']['jms_serializer']) {
-            return;
-        }
-
-        $bundles = $container->getParameter('kernel.bundles');
-        if (array_key_exists('JMSSerializerBundle', $bundles)) {
-            $container->prependExtensionConfig('jms_serializer', [
-                'metadata' => [
-                    'directories' => [
-                        'ToleranceMessageProfile' => [
-                            'namespace_prefix' => 'Tolerance\\MessageProfile\\',
-                            'path' => '%kernel.root_dir%/../vendor/tolerance/tolerance/src/Tolerance/Bridge/JMSSerializer/MessageProfile/Resources/config',
-                        ],
-                    ],
-                ],
-            ]);
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -94,10 +61,6 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
 
         if ($config['operation_runner_listener']) {
             $loader->load('operations/listeners.xml');
-        }
-
-        if ($config['message_profile']['enabled']) {
-            $this->loadMessageProfile($container, $loader, $config['message_profile']);
         }
 
         if ($config['tracer']['enabled']) {
@@ -151,96 +114,6 @@ class ToleranceExtension extends Extension implements PrependExtensionInterface
             if (array_key_exists('request', $config['metrics'])) {
                 $this->configureRequestListeners($container, $config['metrics']);
             }
-        }
-    }
-
-    private function loadMessageProfile(ContainerBuilder $container, LoaderInterface $loader, array $config)
-    {
-        $container->setParameter('tolerance.message_profile.header', $config['header']);
-        $container->setParameter('tolerance.message_profile.current_peer', $config['current_peer']);
-
-        $loader->load('message-profile/listener.xml');
-        $loader->load('message-profile/storage.xml');
-        $loader->load('message-profile/guzzle.xml');
-
-        $this->configureMessageProfileStorage($container, $loader, $config['storage']);
-        $this->loadMessageProfileIntegrations($container, $loader, $config['integrations']);
-    }
-
-    private function loadMessageProfileIntegrations(ContainerBuilder $container, LoaderInterface $loader, array $config)
-    {
-        if ($config['monolog']) {
-            $loader->load('message-profile/monolog.xml');
-        }
-
-        if ($config['rabbitmq']) {
-            $this->decorateRabbitMqConsumersAndProducers($container, $loader);
-        }
-    }
-
-    private function decorateRabbitMqConsumersAndProducers(ContainerBuilder $container, LoaderInterface $loader)
-    {
-        foreach ($container->findTaggedServiceIds('old_sound_rabbit_mq.producer') as $id => $attributes) {
-            $decoratorId = $id.'.tolerance_decorator';
-            $decoratorDefinition = new Definition(StoreMessageProfileProducer::class, [
-                new Reference($decoratorId.'.inner'),
-                new Reference('tolerance.message_profile.storage'),
-                new Reference('tolerance.message_profile.identifier.generator.uuid'),
-                new Reference('tolerance.message_profile.peer.resolver.current'),
-                new Parameter('tolerance.message_profile.header'),
-            ]);
-
-            $decoratorDefinition->setDecoratedService($id);
-            $container->setDefinition($decoratorId, $decoratorDefinition);
-        }
-
-        foreach ($container->findTaggedServiceIds('old_sound_rabbit_mq.consumer') as $id => $attributes) {
-            $decoratorId = $id.'.tolerance_decorator';
-            $decoratorDefinition = new Definition(StoreMessageProfileConsumer::class, [
-                new Reference($decoratorId.'.inner'),
-                new Reference('tolerance.message_profile.storage'),
-                new Reference('tolerance.message_profile.identifier.generator.uuid'),
-                new Reference('tolerance.message_profile.peer.resolver.current'),
-                new Parameter('tolerance.message_profile.header'),
-            ]);
-
-            $decoratorDefinition->setDecoratedService($id);
-            $container->setDefinition($decoratorId, $decoratorDefinition);
-        }
-    }
-
-    private function configureMessageProfileStorage(ContainerBuilder $container, LoaderInterface $loader, array $config)
-    {
-        if (array_key_exists('elastica', $config)) {
-            $loader->load('message-profile/jms_serializer.xml');
-
-            $storage = 'tolerance.message_profile.storage.elastica';
-            $container->setDefinition($storage, new Definition(
-                ElasticaStorage::class,
-                [
-                    new Reference('tolerance.message_profile.storage.normalizer.jms_serializer'),
-                    new Reference($config['elastica']),
-                ]
-            ));
-        } elseif (array_key_exists('neo4j', $config)) {
-            $storage = 'tolerance.message_profile.storage.neo4j';
-            $container->setDefinition($storage, new Definition(
-                Neo4jStorage::class,
-                [
-                    new Reference($config['neo4j']),
-                    new Reference('tolerance.message_profile.storage.profile_normalizer.simple'),
-                ]
-            ));
-        } elseif (false !== $config['in_memory']) {
-            $storage = 'tolerance.message_profile.storage.in_memory';
-        } else {
-            throw new \RuntimeException('Unable to configure Request Identifier storage');
-        }
-
-        $container->setAlias('tolerance.message_profile.storage', $storage);
-
-        if ($config['buffered']) {
-            $loader->load('message-profile/storage/buffered.xml');
         }
     }
 
