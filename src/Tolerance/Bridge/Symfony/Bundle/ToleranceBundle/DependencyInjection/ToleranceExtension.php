@@ -30,6 +30,8 @@ use Tolerance\Metrics\Collector\RabbitMq\RabbitMqHttpClient;
 use Tolerance\Metrics\Publisher\BeberleiMetricsAdapterPublisher;
 use Tolerance\Metrics\Publisher\HostedGraphitePublisher;
 use Tolerance\Metrics\Publisher\LoggerPublisher;
+use Tolerance\Operation\Buffer\InMemoryOperationBuffer;
+use Tolerance\Operation\Runner\BufferedOperationRunner;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
 use Tolerance\Operation\Runner\Metrics\SuccessFailurePublisherOperationRunner;
 use Tolerance\Operation\Runner\RetryOperationRunner;
@@ -64,14 +66,28 @@ class ToleranceExtension extends Extension
         }
 
         if ($config['tracer']['enabled']) {
+            $loader->load('tracer.xml');
+            $container->setParameter('tolerance.tracer.service_name', $config['tracer']['service_name']);
+
             if (array_key_exists('zipkin', $config['tracer'])) {
                 if (array_key_exists('http', $config['tracer']['zipkin'])) {
                     $container->setParameter('tolerance.tracer.zipkin.http.base_url', $config['tracer']['zipkin']['http']['base_url']);
+                    $tracer = 'tolerance.tracer.zipkin.http';
                 }
             }
 
-            $container->setParameter('tolerance.tracer.service_name', $config['tracer']['service_name']);
-            $loader->load('tracer.xml');
+            if (!isset($tracer)) {
+                throw new \InvalidArgumentException('No tracer configured');
+            }
+
+            if (null !== ($runner = $config['tracer']['operation_runner'])) {
+                $container->getDefinition($tracer)->addTag('tolerance.operation_wrapper', [
+                    'runner' => $runner,
+                    'methods' => 'trace',
+                ]);
+            }
+
+            $container->setAlias('tolerance.tracer', $tracer);
 
             if ($container->getParameter('kernel.debug')) {
                 $loader->load('tracer/debug.xml');
@@ -137,6 +153,8 @@ class ToleranceExtension extends Extension
             return $this->createCallbackOperationRunnerDefinition($container, $name);
         } elseif (array_key_exists('success_failure_metrics', $config)) {
             return $this->createSuccessFailureMetricsOperationRunnerDefinition($container, $name, $config['success_failure_metrics']);
+        } elseif (array_key_exists('buffered', $config)) {
+            return $this->createBufferedOperationRunnerDefinition($container, $name, $config['buffered']);
         }
 
         throw new \RuntimeException(sprintf(
@@ -171,6 +189,24 @@ class ToleranceExtension extends Extension
             new Reference($config['runner']),
             new Reference($config['publisher']),
             $config['namespace'],
+        ]);
+
+        $container->setDefinition($name, $definition);
+
+        return $name;
+    }
+
+    private function createBufferedOperationRunnerDefinition(ContainerBuilder $container, $name, array $config)
+    {
+        if ($config['buffer'] == 'in_memory') {
+            $buffer = new Definition(InMemoryOperationBuffer::class);
+        } else {
+            $buffer = new Reference($config['buffer']);
+        }
+
+        $definition = $this->createDefinition(BufferedOperationRunner::class, [
+            new Reference($config['runner']),
+            $buffer,
         ]);
 
         $container->setDefinition($name, $definition);

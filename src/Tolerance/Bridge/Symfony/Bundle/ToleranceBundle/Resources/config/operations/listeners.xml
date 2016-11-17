@@ -10,7 +10,7 @@
         <service id="tolerance.operation_runner_listeners.buffered_termination" class="Tolerance\Bridge\Symfony\Operation\RunBufferedOperationsWhenTerminates">
             <argument type="service" id="tolerance.operation_runner_registry" />
 
-            <tag name="kernel.event_listener" event="kernel.terminate" />
+            <tag name="kernel.event_subscriber" />
         </service>
     </services>
 </container>

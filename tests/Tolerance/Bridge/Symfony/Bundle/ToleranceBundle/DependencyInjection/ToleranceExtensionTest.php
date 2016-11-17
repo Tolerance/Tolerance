@@ -61,7 +61,7 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
         $builder->setDefinition('tolerance.operation_runner_listeners.buffered_termination', Argument::that(function(Definition $definition) {
-            return $definition->hasTag('kernel.event_listener');
+            return $definition->hasTag('kernel.event_subscriber');
         }))->shouldBeCalled();
 
         $this->extension->load([], $builder->reveal());

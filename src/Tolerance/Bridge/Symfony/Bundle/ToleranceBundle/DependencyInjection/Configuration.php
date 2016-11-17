@@ -107,6 +107,19 @@ class Configuration implements ConfigurationInterface
             $nodes[] = $successFailureMetricsNode;
         }
 
+        if (!in_array('buffered', $except)) {
+            $bufferedNode = $builder->root('buffered');
+
+            $bufferedNode
+                ->children()
+                    ->scalarNode('runner')->defaultValue('tolerance.operation_runners.default')->end()
+                    ->scalarNode('buffer')->defaultValue('in_memory')->end()
+                ->end()
+            ;
+
+            $nodes[] = $bufferedNode;
+        }
+
         return $nodes;
     }
 
@@ -241,6 +254,7 @@ class Configuration implements ConfigurationInterface
             ->canBeEnabled()
             ->children()
                 ->scalarNode('service_name')->defaultNull()->end()
+                ->scalarNode('operation_runner')->defaultNull()->end()
                 ->arrayNode('zipkin')
                     ->isRequired() // As it's the only backend at the moment
                     ->children()
