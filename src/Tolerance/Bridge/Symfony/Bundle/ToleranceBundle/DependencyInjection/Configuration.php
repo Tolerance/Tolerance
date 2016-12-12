@@ -209,6 +209,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
+                            ->scalarNode('operation_runner')->end()
                             ->variableNode('options')->defaultValue([])->end()
                         ->end()
                     ->end()
