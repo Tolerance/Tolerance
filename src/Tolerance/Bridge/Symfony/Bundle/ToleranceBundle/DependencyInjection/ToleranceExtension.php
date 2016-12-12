@@ -28,6 +28,7 @@ use Tolerance\Metrics\Collector\NamespacedCollector;
 use Tolerance\Metrics\Collector\RabbitMq\RabbitMqCollector;
 use Tolerance\Metrics\Collector\RabbitMq\RabbitMqHttpClient;
 use Tolerance\Metrics\Publisher\BeberleiMetricsAdapterPublisher;
+use Tolerance\Metrics\Publisher\DelegatesToOperationRunnerPublisher;
 use Tolerance\Metrics\Publisher\HostedGraphitePublisher;
 use Tolerance\Metrics\Publisher\LoggerPublisher;
 use Tolerance\Operation\Buffer\InMemoryOperationBuffer;
@@ -345,7 +346,7 @@ class ToleranceExtension extends Extension
     private function createMetricPublishers(ContainerBuilder $container, array $publishers)
     {
         foreach ($publishers as $name => $publisher) {
-            $this->createMetricPublisher($container, $name, $publisher)->addTag('tolerance.metrics.publisher');
+            $this->createMetricPublisher($container, $name, $publisher);
         }
     }
 
@@ -354,30 +355,35 @@ class ToleranceExtension extends Extension
         $serviceName = 'tolerance.metrics.publisher.'.$name;
 
         if ('logger' == $publisher['type']) {
-            return $container->setDefinition($serviceName, new Definition(LoggerPublisher::class, [
+            $definiton = $container->setDefinition($serviceName, new Definition(LoggerPublisher::class, [
                 new Reference('logger'),
             ]));
-        }
-
-        if ('hosted_graphite' == $publisher['type']) {
-            return $container->setDefinition($serviceName, new Definition(HostedGraphitePublisher::class, [
+        } elseif ('hosted_graphite' == $publisher['type']) {
+            $definiton = $container->setDefinition($serviceName, new Definition(HostedGraphitePublisher::class, [
                 $publisher['options']['server'],
                 $publisher['options']['port'],
                 $publisher['options']['api_key'],
             ]));
-        }
-
-        if ('beberlei' == $publisher['type']) {
-            return $container->setDefinition($serviceName, new Definition(BeberleiMetricsAdapterPublisher::class, [
+        } elseif ('beberlei' == $publisher['type']) {
+            $definiton = $container->setDefinition($serviceName, new Definition(BeberleiMetricsAdapterPublisher::class, [
                 new Reference($publisher['options']['service']),
                 array_key_exists('auto_flush', $publisher['options']) ? (bool) $publisher['options']['auto_flush'] : true,
             ]));
+        } else {
+            throw new \RuntimeException(sprintf(
+                'Publisher "%s" not supported',
+                $publisher['type']
+            ));
         }
 
-        throw new \RuntimeException(sprintf(
-            'Publisher "%s" not supported',
-            $publisher['type']
-        ));
+        if (isset($publisher['operation_runner'])) {
+            $definiton = $container->setDefinition($serviceName, new Definition(DelegatesToOperationRunnerPublisher::class, [
+                $container->getDefinition($serviceName),
+                new Reference($publisher['operation_runner'])
+            ]));
+        }
+
+        $definiton->addTag('tolerance.metrics.publisher');
     }
 
     private function createAopWrapper(ContainerBuilder $container, array $wrapper)
