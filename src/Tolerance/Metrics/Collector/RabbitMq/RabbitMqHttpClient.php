@@ -75,13 +75,20 @@ class RabbitMqHttpClient
             'data_rates_incr' => $interval,
         ]));
 
-        $response = $this->httpClient->get($url, [
+
+        $options = [
             'auth' => [
                 $this->user,
                 $this->password,
             ],
-        ]);
+        ];
 
-        return $response->json();
+        if (version_compare(ClientInterface::VERSION, '6.0') >= 0) {
+            $response = $this->httpClient->request('get', $url, $options);
+        } else {
+            $response = $this->httpClient->get($url, $options);
+        }
+
+        return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
     }
 }
