@@ -40,8 +40,8 @@ class DispatchRequestEndedEvent implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::TERMINATE => ['onTerminate', -255],
-            KernelEvents::EXCEPTION => ['onException', -255],
+            KernelEvents::TERMINATE => ['onTerminate', -10],
+            KernelEvents::EXCEPTION => ['onException', -10],
         ];
     }
 
