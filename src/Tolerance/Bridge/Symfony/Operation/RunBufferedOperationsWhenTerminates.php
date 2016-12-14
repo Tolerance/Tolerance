@@ -37,8 +37,8 @@ class RunBufferedOperationsWhenTerminates implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::TERMINATE => 'onTerminate',
-            ConsoleEvents::TERMINATE => 'onTerminate',
+            KernelEvents::TERMINATE => ['onTerminate', -25],
+            ConsoleEvents::TERMINATE => ['onTerminate', -25],
         ];
     }
 
