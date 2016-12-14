@@ -74,6 +74,8 @@ class PlaceholderOperationRunner implements OperationRunner
             $this->logger->warning('An operation exception was replaced by a placeholder', [
                 'operation' => $operation,
                 'placeholder' => $placeholder,
+                'exception' => $e,
+                'message' => $e->getMessage(),
             ]);
         }
 
