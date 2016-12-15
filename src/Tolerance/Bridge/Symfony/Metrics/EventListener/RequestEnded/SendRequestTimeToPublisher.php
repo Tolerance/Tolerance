@@ -66,7 +66,7 @@ final class SendRequestTimeToPublisher implements EventSubscriberInterface
         $request = $event->getRequest();
 
         if (null === ($requestTime = $request->attributes->get('_tolerance_request_time', null))) {
-            $this->logger !== null && $this->logger->error('The request do not contain the start time');
+            $this->logger !== null && $this->logger->debug('The request do not contain the start time');
 
             return;
         }
