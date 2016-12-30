@@ -126,7 +126,7 @@ class Configuration implements ConfigurationInterface
             $placeholderNode
                 ->children()
                     ->scalarNode('runner')->defaultValue('tolerance.operation_runners.default')->end()
-                    ->scalarNode('value')->defaultNull()->end()
+                    ->variableNode('value')->defaultNull()->end()
                     ->scalarNode('logger')->defaultNull()->end()
                 ->end()
             ;
