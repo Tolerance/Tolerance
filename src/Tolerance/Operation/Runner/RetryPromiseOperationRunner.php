@@ -11,12 +11,13 @@
 
 namespace Tolerance\Operation\Runner;
 
+use Tolerance\Operation\Exception\PromiseException;
 use Tolerance\Operation\Exception\UnsupportedOperation;
+use Tolerance\Operation\ExceptionCatcher\IgnoreExceptionVoter;
+use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
+use Tolerance\Operation\ExceptionCatcher\WildcardExceptionVoter;
 use Tolerance\Operation\Operation;
 use Tolerance\Operation\PromiseOperation;
-use Tolerance\Operation\RetryEvaluator\AlwaysRetryEvaluator;
-use Tolerance\Operation\RetryEvaluator\NeverRetryEvaluator;
-use Tolerance\Operation\RetryEvaluator\RetryEvaluator;
 use Tolerance\Waiter\StatefulWaiter;
 use Tolerance\Waiter\Waiter;
 use Tolerance\Waiter\WaiterException;
@@ -27,25 +28,27 @@ class RetryPromiseOperationRunner implements OperationRunner
      * @var Waiter
      */
     private $waitStrategy;
-    /**
-     * @var RetryEvaluator
-     */
-    private $fulfilledEvaluator;
-    /**
-     * @var RetryEvaluator
-     */
-    private $rejectedEvaluator;
 
     /**
-     * @param Waiter $waitStrategy
-     * @param RetryEvaluator|null $fulfilledEvaluator
-     * @param RetryEvaluator|null $rejectedEvaluator
+     * @var ThrowableCatcherVoter
      */
-    public function __construct(Waiter $waitStrategy, RetryEvaluator $fulfilledEvaluator = null, RetryEvaluator $rejectedEvaluator = null)
+    private $fulfilledVoter;
+
+    /**
+     * @var ThrowableCatcherVoter
+     */
+    private $rejectedVoter;
+
+    /**
+     * @param Waiter                     $waitStrategy
+     * @param ThrowableCatcherVoter|null $fulfilledEvaluator
+     * @param ThrowableCatcherVoter|null $rejectedEvaluator
+     */
+    public function __construct(Waiter $waitStrategy, ThrowableCatcherVoter $fulfilledVoter = null, ThrowableCatcherVoter $rejectedVoter = null)
     {
         $this->waitStrategy = $waitStrategy;
-        $this->fulfilledEvaluator = $fulfilledEvaluator ?: new NeverRetryEvaluator();
-        $this->rejectedEvaluator = $rejectedEvaluator ?: new AlwaysRetryEvaluator();
+        $this->fulfilledVoter = $fulfilledVoter ?: new IgnoreExceptionVoter();
+        $this->rejectedVoter = $rejectedVoter ?: new WildcardExceptionVoter();
     }
 
     /**
@@ -76,22 +79,23 @@ class RetryPromiseOperationRunner implements OperationRunner
     public function runOperation(PromiseOperation $operation)
     {
         return $operation->getPromise()->then(
-            $this->onTerminate($operation, $this->fulfilledEvaluator),
-            $this->onTerminate($operation, $this->rejectedEvaluator)
+            $this->onTerminate($operation, $this->fulfilledVoter, true),
+            $this->onTerminate($operation, $this->rejectedVoter, false)
         );
     }
 
-    protected function onTerminate(PromiseOperation $operation, RetryEvaluator $evaluator)
+    protected function onTerminate(PromiseOperation $operation, ThrowableCatcherVoter $voter, $fulfilled)
     {
-        return function ($result) use ($operation, $evaluator) {
-            if (!$evaluator->shouldRetry($result)) {
-                return $result;
+        return function ($value) use ($operation, $voter, $fulfilled) {
+            $exception = new PromiseException($value, $fulfilled);
+            if (!$voter->shouldCatchThrowable($exception)) {
+                return $value;
             }
 
             try {
                 $this->waitStrategy->wait();
             } catch (WaiterException $waiterException) {
-                return $result;
+                throw $exception;
             }
 
             return $this->runOperation($operation);

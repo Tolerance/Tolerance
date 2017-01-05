@@ -9,14 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Tolerance\Operation\RetryEvaluator;
+namespace Tolerance\Operation\ExceptionCatcher;
 
-class NeverRetryEvaluator implements RetryEvaluator
+final class IgnoreExceptionVoter implements ThrowableCatcherVoter
 {
     /**
      * {@inheritdoc}
      */
-    public function shouldRetry($result)
+    public function shouldCatch(\Exception $e)
+    {
+        return $this->shouldCatchThrowable($e);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function shouldCatchThrowable($throwable)
     {
         return false;
     }
