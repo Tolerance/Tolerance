@@ -28,3 +28,21 @@ use object methods. For instance:
 
     $operation = new Callback([$this, 'run']);
 
+
+Promise Operation
+-----------------
+
+This class accepts any supported `PHP callable <http://php.net/manual/en/language.types.callable.php>`_, which must
+returns a `Promise`.
+
+For instance:
+
+.. code-block:: php
+
+    use Tolerance\Operation\PromiseOperation;
+
+    $operation = new PromiseOperation(function () use ($nextHandler, $request) {
+        return $nextHandler($request);
+    });
+
+The :code:`PromiseOperation` is runned by the :code:`RetryPromiseOperationRunner`.
