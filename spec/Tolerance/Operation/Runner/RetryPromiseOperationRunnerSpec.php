@@ -5,7 +5,7 @@ namespace spec\Tolerance\Operation\Runner;
 use GuzzleHttp\Promise\FulfilledPromise;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\RejectedPromise;
-use Tolerance\Operation\Exception\PromiseException;
+use GuzzleHttp\Promise\RejectionException;
 use Tolerance\Operation\PromiseOperation;
 use Tolerance\Operation\Runner\OperationRunner;
 use Tolerance\Waiter\StatefulWaiter;
@@ -60,8 +60,8 @@ class RetryPromiseOperationRunnerSpec extends ObjectBehavior
         } catch (\Exception $exception) {
         }
 
-        if (!$exception instanceof PromiseException) {
-            throw new \Exception(sprintf('Expected exception "%s", got "%s"', PromiseException::class, $exception ? get_class($exception) : 'null'));
+        if (!$exception instanceof RejectionException) {
+            throw new \Exception(sprintf('Expected exception "%s", got "%s"', RejectionException::class, $exception ? get_class($exception) : 'null'));
         }
     }
 
