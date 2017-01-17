@@ -13,6 +13,7 @@ namespace Tolerance\Bridge\Guzzle;
 
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\RequestInterface;
+use Tolerance\Bridge\Guzzle\Operation\ExceptionCatcher\RequestServerErrorVoter;
 use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
 use Tolerance\Operation\PromiseOperation;
 use Tolerance\Operation\Runner\RetryPromiseOperationRunner;
@@ -20,7 +21,7 @@ use Tolerance\Operation\Runner\RetryPromiseOperationRunner;
 /**
  * Guzzle 6 middleware that retries failed requests
  */
-class ToleranceMiddleware
+class RetryMiddleware
 {
     /**
      * @var callable
@@ -40,11 +41,11 @@ class ToleranceMiddleware
     public function __construct(
         callable $nextHandler,
         callable $waiterFactory,
-        ThrowableCatcherVoter $errorVoter
+        ThrowableCatcherVoter $errorVoter = null
     ) {
         $this->nextHandler = $nextHandler;
         $this->waiterFactory = $waiterFactory;
-        $this->errorVoter = $errorVoter;
+        $this->errorVoter = $errorVoter ?: new RequestServerErrorVoter();
     }
 
     /**

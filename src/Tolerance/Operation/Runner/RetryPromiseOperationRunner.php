@@ -44,8 +44,8 @@ class RetryPromiseOperationRunner implements OperationRunner
 
     /**
      * @param Waiter                     $waitStrategy
-     * @param ThrowableCatcherVoter|null $fulfilledEvaluator
-     * @param ThrowableCatcherVoter|null $rejectedEvaluator
+     * @param ThrowableCatcherVoter|null $fulfilledVoter
+     * @param ThrowableCatcherVoter|null $rejectedVoter
      */
     public function __construct(Waiter $waitStrategy, ThrowableCatcherVoter $fulfilledVoter = null, ThrowableCatcherVoter $rejectedVoter = null)
     {
@@ -100,7 +100,7 @@ class RetryPromiseOperationRunner implements OperationRunner
             try {
                 $this->waitStrategy->wait();
             } catch (WaiterException $waiterException) {
-                // If it is a Guzzle Promise, use Guzzle as return.
+                // If it is a Guzzle Promise, use Guzzle's objects.
                 if ($promise instanceof PromiseInterface) {
                     return $fulfilled ? new FulfilledPromise($value) : new RejectedPromise($value);
                 }

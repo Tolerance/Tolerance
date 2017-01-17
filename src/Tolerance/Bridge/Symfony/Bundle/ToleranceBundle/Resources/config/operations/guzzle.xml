@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="tolerance.guzzle.middleware" class="Closure">
+            <factory class="Tolerance\Bridge\Guzzle\Middleware" method="retry" />
+            <argument type="service" id="tolerance.guzzle.waiter_factory" />
+
+            <tag name="csa_guzzle.middleware" alias="retry" priority="-900" />
+        </service>
+
+        <service id="tolerance.guzzle.waiter_factory" class="Tolerance\Bridge\Guzzle\Waiter\WaiterFactory" />
+    </services>
+</container>

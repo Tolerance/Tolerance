@@ -69,6 +69,10 @@ class ToleranceExtension extends Extension
             $loader->load('operations/listeners.xml');
         }
 
+        if ($config['guzzle']) {
+            $loader->load('operations/guzzle.xml');
+        }
+
         if ($config['tracer']['enabled']) {
             $loader->load('tracer.xml');
             $container->setParameter('tolerance.tracer.service_name', $config['tracer']['service_name']);
