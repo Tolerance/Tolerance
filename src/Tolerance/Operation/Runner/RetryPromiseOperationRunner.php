@@ -11,6 +11,9 @@
 
 namespace Tolerance\Operation\Runner;
 
+use GuzzleHttp\Promise\FulfilledPromise;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\RejectedPromise;
 use Tolerance\Operation\Exception\PromiseException;
 use Tolerance\Operation\Exception\UnsupportedOperation;
 use Tolerance\Operation\ExceptionCatcher\IgnoreExceptionVoter;
@@ -41,8 +44,8 @@ class RetryPromiseOperationRunner implements OperationRunner
 
     /**
      * @param Waiter                     $waitStrategy
-     * @param ThrowableCatcherVoter|null $fulfilledEvaluator
-     * @param ThrowableCatcherVoter|null $rejectedEvaluator
+     * @param ThrowableCatcherVoter|null $fulfilledVoter
+     * @param ThrowableCatcherVoter|null $rejectedVoter
      */
     public function __construct(Waiter $waitStrategy, ThrowableCatcherVoter $fulfilledVoter = null, ThrowableCatcherVoter $rejectedVoter = null)
     {
@@ -78,15 +81,17 @@ class RetryPromiseOperationRunner implements OperationRunner
      */
     public function runOperation(PromiseOperation $operation)
     {
-        return $operation->getPromise()->then(
-            $this->onTerminate($operation, $this->fulfilledVoter, true),
-            $this->onTerminate($operation, $this->rejectedVoter, false)
+        $promise = $operation->getPromise();
+
+        return $promise->then(
+            $this->onTerminate($operation, $this->fulfilledVoter, true, $promise),
+            $this->onTerminate($operation, $this->rejectedVoter, false, $promise)
         );
     }
 
-    protected function onTerminate(PromiseOperation $operation, ThrowableCatcherVoter $voter, $fulfilled)
+    protected function onTerminate(PromiseOperation $operation, ThrowableCatcherVoter $voter, $fulfilled, $promise)
     {
-        return function ($value) use ($operation, $voter, $fulfilled) {
+        return function ($value) use ($operation, $voter, $fulfilled, $promise) {
             $exception = new PromiseException($value, $fulfilled);
             if (!$voter->shouldCatchThrowable($exception)) {
                 return $value;
@@ -95,6 +100,11 @@ class RetryPromiseOperationRunner implements OperationRunner
             try {
                 $this->waitStrategy->wait();
             } catch (WaiterException $waiterException) {
+                // If it is a Guzzle Promise, use Guzzle's objects.
+                if ($promise instanceof PromiseInterface) {
+                    return $fulfilled ? new FulfilledPromise($value) : new RejectedPromise($value);
+                }
+
                 throw $exception;
             }
 

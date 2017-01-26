@@ -30,6 +30,7 @@ class Configuration implements ConfigurationInterface
             ->append($this->getOperationRunnersNode())
             ->append($this->getMetricsNode())
             ->booleanNode('operation_runner_listener')->defaultTrue()->end()
+            ->booleanNode('guzzle')->defaultFalse()->end()
             ->append($this->getAopNode())
             ->append($this->getTracerNode())
             ->end();

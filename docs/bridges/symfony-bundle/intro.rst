@@ -12,3 +12,4 @@ automatically with a Symfony application.
     operation-wrappers
     tracer
     metrics
+    guzzle
