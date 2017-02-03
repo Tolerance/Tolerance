@@ -16,7 +16,7 @@ Then you must enabled the bridge using the `guzzle` key:
     tolerance:
         guzzle: true
 
-Finally, just add the `retry` option in the configuration of your client:
+Finally, just add the `retries` option in the configuration of your client:
 
 .. code-block:: yaml
 
@@ -24,4 +24,4 @@ Finally, just add the `retry` option in the configuration of your client:
         clients:
             my_client:
                 config:
-                    retry: 2
+                    retries: 2
