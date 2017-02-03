@@ -20,11 +20,11 @@ use Tolerance\Waiter\SleepWaiter;
  */
 class WaiterFactory
 {
-    private $defaultRetry;
+    private $defaultRetries;
 
-    public function __construct($defaultRetry = 0)
+    public function __construct($defaultRetries = 0)
     {
-        $this->defaultRetry = (int) $defaultRetry;
+        $this->defaultRetries = (int) $defaultRetries;
     }
 
     public function __invoke($options)
@@ -34,7 +34,7 @@ class WaiterFactory
                 new SleepWaiter(),
                 1
             ),
-            isset($options['retry']) ? $options['retry'] : $this->defaultRetry
+            isset($options['retries']) ? $options['retries'] : $this->defaultRetries
         );
     }
 }
