@@ -79,7 +79,7 @@ class RetryPromiseOperationRunner implements OperationRunner
      *
      * @return mixed
      */
-    public function runOperation(PromiseOperation $operation)
+    private function runOperation(PromiseOperation $operation)
     {
         $promise = $operation->getPromise();
 
@@ -89,7 +89,7 @@ class RetryPromiseOperationRunner implements OperationRunner
         );
     }
 
-    protected function onTerminate(PromiseOperation $operation, ThrowableCatcherVoter $voter, $fulfilled, $promise)
+    private function onTerminate(PromiseOperation $operation, ThrowableCatcherVoter $voter, $fulfilled, $promise)
     {
         return function ($value) use ($operation, $voter, $fulfilled, $promise) {
             $exception = new PromiseException($value, $fulfilled);
