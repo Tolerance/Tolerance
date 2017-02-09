@@ -6,7 +6,7 @@
 
     "require": {
         "ramsey/uuid": "^3.1",
-        "symfony/psr-http-message-bridge": "^0.2.0",
+        "symfony/psr-http-message-bridge": "^1.0",
         "zendframework/zend-diactoros": "^1.3"
     },
 
