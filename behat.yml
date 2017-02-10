@@ -19,6 +19,12 @@ default:
                 - TracerContext:
                     - "@tolerance.tracer.in_memory"
 
+        php_http:
+            filters: { tags: "php_http"}
+            paths:    [ %paths.base%/features/symfony ]
+            contexts:
+                - PhpHttpContext
+
     extensions:
         Behat\Symfony2Extension:
             kernel:

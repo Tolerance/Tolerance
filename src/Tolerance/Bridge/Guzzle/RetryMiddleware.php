@@ -19,7 +19,7 @@ use Tolerance\Operation\PromiseOperation;
 use Tolerance\Operation\Runner\RetryPromiseOperationRunner;
 
 /**
- * Guzzle 6 middleware that retries failed requests
+ * Guzzle 6 middleware that retries failed requests.
  */
 class RetryMiddleware
 {

@@ -43,15 +43,21 @@ class RetryPromiseOperationRunner implements OperationRunner
     private $rejectedVoter;
 
     /**
+     * @var bool
+     */
+    private $async;
+
+    /**
      * @param Waiter                     $waitStrategy
      * @param ThrowableCatcherVoter|null $fulfilledVoter
      * @param ThrowableCatcherVoter|null $rejectedVoter
      */
-    public function __construct(Waiter $waitStrategy, ThrowableCatcherVoter $fulfilledVoter = null, ThrowableCatcherVoter $rejectedVoter = null)
+    public function __construct(Waiter $waitStrategy, ThrowableCatcherVoter $fulfilledVoter = null, ThrowableCatcherVoter $rejectedVoter = null, $async = true)
     {
         $this->waitStrategy = $waitStrategy;
         $this->fulfilledVoter = $fulfilledVoter ?: new IgnoreExceptionVoter();
         $this->rejectedVoter = $rejectedVoter ?: new WildcardExceptionVoter();
+        $this->async = $async;
     }
 
     /**
@@ -108,7 +114,11 @@ class RetryPromiseOperationRunner implements OperationRunner
                 throw $exception;
             }
 
-            return $this->runOperation($operation);
+            if ($this->async) {
+                return $this->runOperation($operation);
+            }
+
+            return $this->runOperation($operation)->wait();
         };
     }
 
