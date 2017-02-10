@@ -8,8 +8,9 @@ default:
             contexts:
                 - FeatureContext:
                     - "@kernel"
-                    - "@app.api.client"
                     - "@app.my_buffered_operation_runner"
+                - AopContext:
+                    - "@app.api.client"
                 - GuzzleContext:
                     - "@app.guzzle.middleware.hookable_factory"
                     - "@app.api.guzzle_client"
