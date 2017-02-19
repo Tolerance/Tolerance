@@ -31,13 +31,7 @@ class AffirmativeThrowableCatcherVoter implements ThrowableCatcherVoter
      */
     public function shouldCatch(\Exception $e)
     {
-        foreach ($this->voters as $voter) {
-            if ($voter->shouldCatch($e)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->shouldCatchThrowable($e);
     }
 
     /**
