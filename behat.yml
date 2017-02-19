@@ -8,8 +8,9 @@ default:
             contexts:
                 - FeatureContext:
                     - "@kernel"
-                    - "@app.api.client"
                     - "@app.my_buffered_operation_runner"
+                - AopContext:
+                    - "@app.api.client"
                 - GuzzleContext:
                     - "@app.guzzle.middleware.hookable_factory"
                     - "@app.api.guzzle_client"
@@ -17,6 +18,12 @@ default:
                     - "@tolerance.metrics.traced_publisher"
                 - TracerContext:
                     - "@tolerance.tracer.in_memory"
+
+        php_http:
+            filters: { tags: "php_http"}
+            paths:    [ %paths.base%/features/symfony ]
+            contexts:
+                - PhpHttpContext
 
     extensions:
         Behat\Symfony2Extension:

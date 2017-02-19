@@ -36,7 +36,7 @@ class RequestServerErrorVoterSpec extends ObjectBehavior
         $this->callOnWrappedObject('shouldCatchThrowable', [new PromiseException('value', true)])->shouldReturn(true);
     }
 
-    function it_should_catch_promise_exception_if_vaule_is_a_response_and_server_error()
+    function it_should_catch_promise_exception_if_value_is_a_response_and_server_error()
     {
         $this->callOnWrappedObject('shouldCatchThrowable', [new PromiseException(new Response(500), true)])->shouldReturn(true);
     }

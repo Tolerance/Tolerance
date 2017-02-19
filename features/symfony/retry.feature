@@ -3,6 +3,7 @@ Feature:
   As a developer
   I want to be able to only add a tag in the Symfony DIC
 
+  @aop @php_http
   Scenario: Uses a retry operation runner
     Given the 3rd party API will fail at the 1st run
     And the 3rd party API will succeed at the 2nd run
