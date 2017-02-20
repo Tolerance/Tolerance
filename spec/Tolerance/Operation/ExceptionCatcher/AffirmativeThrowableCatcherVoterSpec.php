@@ -26,7 +26,7 @@ class AffirmativeThrowableCatcherVoterSpec extends ObjectBehavior
         $firstVoter->shouldCatchThrowable($throwable)->willReturn(false);
         $secondVoter->shouldCatchThrowable($throwable)->willReturn(true);
 
-        $this->shouldCatchThrowable($throwable)->shouldReturn(true);
+        $this->callOnWrappedObject('shouldCatchThrowable', [$throwable])->shouldReturn(true);
     }
 
     function it_vote_no_if_no_voter_says_yes(ThrowableCatcherVoter $firstVoter, ThrowableCatcherVoter $secondVoter, \Exception $throwable)
@@ -34,6 +34,6 @@ class AffirmativeThrowableCatcherVoterSpec extends ObjectBehavior
         $firstVoter->shouldCatchThrowable($throwable)->willReturn(false);
         $secondVoter->shouldCatchThrowable($throwable)->willReturn(false);
 
-        $this->shouldCatchThrowable($throwable)->shouldReturn(false);
+        $this->callOnWrappedObject('shouldCatchThrowable', [$throwable])->shouldReturn(false);
     }
 }
