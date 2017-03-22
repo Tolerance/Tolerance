@@ -132,6 +132,33 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         ], $builder->reveal());
     }
 
+    public function test_it_registers_the_timeout_waiter_service()
+    {
+        $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
+
+        $builder = $this->createBuilder();
+        $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
+        $builder->setDefinition('tolerance.operation_runners.foo.waiter', Argument::any())->shouldBeCalled();
+
+        $this->extension->load([
+            'tolerance' => [
+                'operation_runners' => [
+                    'foo' => [
+                        'retry' => [
+                            'runner' => ['callback' => null],
+                            'waiter' => [
+                                'timeout' => [
+                                    'waiter' => ['null' => null],
+                                    'timeout' => 60,
+                                ]
+                            ],
+                        ]
+                    ]
+                ],
+            ]
+        ], $builder->reveal());
+    }
+
     /**
      * @return \Symfony\Component\DependencyInjection\ContainerBuilder
      */

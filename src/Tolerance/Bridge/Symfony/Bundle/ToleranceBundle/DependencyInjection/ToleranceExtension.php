@@ -43,6 +43,7 @@ use Tolerance\Waiter\ExponentialBackOff;
 use Tolerance\Waiter\CountLimited;
 use Tolerance\Waiter\NullWaiter;
 use Tolerance\Waiter\SleepWaiter;
+use Tolerance\Waiter\TimeOut;
 
 class ToleranceExtension extends Extension
 {
@@ -248,6 +249,8 @@ class ToleranceExtension extends Extension
             return $this->createSleepWaiterDefinition($container, $name);
         } elseif (array_key_exists('null', $config)) {
             return $this->createNullWaiterDefinition($container, $name);
+        } elseif (array_key_exists('timeout', $config)) {
+            return $this->createTimeoutWaiterDefinition($container, $name, $config['timeout']);
         }
 
         throw new \RuntimeException(sprintf(
@@ -290,6 +293,18 @@ class ToleranceExtension extends Extension
     private function createNullWaiterDefinition(ContainerBuilder $container, $name)
     {
         $container->setDefinition($name, new Definition(NullWaiter::class));
+
+        return $name;
+    }
+
+    private function createTimeoutWaiterDefinition(ContainerBuilder $container, $name, array $config)
+    {
+        $decoratedWaiterName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
+
+        $container->setDefinition($name, new Definition(TimeOut::class, [
+            new Reference($decoratedWaiterName),
+            $config['timeout']
+        ]));
 
         return $name;
     }

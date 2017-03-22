@@ -177,6 +177,21 @@ class Configuration implements ConfigurationInterface
             $nodes[] = $exponentialNode;
         }
 
+        if (!in_array('timeout', $except)) {
+            $timeoutNode = $builder->root('timeout');
+            $strategyChildren = $timeoutNode
+                ->children()
+                ->integerNode('timeout')->isRequired()->end()
+                ->arrayNode('waiter')->isRequired()->children();
+
+            array_push($except, 'timeout');
+            foreach ($this->getWaiterNodes($except) as $node) {
+                $strategyChildren->append($node);
+            }
+
+            $nodes[] = $timeoutNode;
+        }
+
         if (!in_array('null', $except)) {
             $nodes[] = $builder->root('null');
         }
