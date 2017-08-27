@@ -16,7 +16,7 @@ interface Waiter
     /**
      * Wait that given amount of time.
      *
-     * @param int $seconds
+     * @param float $seconds
      *
      * @throws WaiterException
      */
