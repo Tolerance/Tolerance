@@ -275,9 +275,19 @@ class ToleranceExtension extends Extension
     {
         $decoratedWaiterName = $this->createWaiterDefinition($container, $name.'.waiter', $config['waiter']);
 
+        // BC
+        if (isset($config['exponent'])) {
+            if (isset($config['initial_exponent'])) {
+                throw new \RuntimeException('The `initial_exponent` has replaced the `exponent` configuration, please only use `initial_exponent`.');
+            }
+
+            $config['initial_exponent'] = $config['exponent'];
+        }
+
         $container->setDefinition($name, new Definition(ExponentialBackOff::class, [
             new Reference($decoratedWaiterName),
-            $config['exponent'],
+            $config['initial_exponent'],
+            $config['step']
         ]));
 
         return $name;

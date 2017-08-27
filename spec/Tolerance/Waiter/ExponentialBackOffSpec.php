@@ -33,15 +33,15 @@ class ExponentialBackOffSpec extends ObjectBehavior
 
     function it_waits_a_fraction_of_a_second(Waiter $waiter)
     {
-        $this->beConstructedWith($waiter, 0.5);
+        $this->beConstructedWith($waiter, 0, 0.5);
+
+        $waiter->wait(exp(0))->shouldBeCalled();
+        $this->wait();
 
         $waiter->wait(exp(0.5))->shouldBeCalled();
         $this->wait();
 
         $waiter->wait(exp(1))->shouldBeCalled();
-        $this->wait();
-
-        $waiter->wait(exp(1.5))->shouldBeCalled();
         $this->wait();
     }
 }

@@ -19,23 +19,30 @@ class ExponentialBackOff implements Waiter, StatefulWaiter
     private $waiter;
 
     /**
-     * @var int
+     * @var float
      */
     private $initialExponent;
 
     /**
-     * @var int|null
+     * @var float
+     */
+    private $step;
+
+    /**
+     * @var float|null
      */
     private $currentExponent;
 
     /**
      * @param Waiter $waiter
-     * @param int    $initialExponent
+     * @param float $initialExponent
+     * @param float $step
      */
-    public function __construct(Waiter $waiter, $initialExponent)
+    public function __construct(Waiter $waiter, $initialExponent, float $step = 1.0)
     {
         $this->waiter = $waiter;
         $this->initialExponent = $initialExponent;
+        $this->step = $step;
 
         $this->resetState();
     }
@@ -57,7 +64,7 @@ class ExponentialBackOff implements Waiter, StatefulWaiter
 
         $this->waiter->wait($time);
 
-        ++$this->currentExponent;
+        $this->currentExponent += $this->step;
     }
 
     /**
