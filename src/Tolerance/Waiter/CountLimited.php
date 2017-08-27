@@ -60,5 +60,9 @@ class CountLimited implements Waiter, StatefulWaiter
     public function resetState()
     {
         $this->currentLimit = $this->initialLimit;
+
+        if ($this->waiter instanceof StatefulWaiter) {
+            $this->waiter->resetState();
+        }
     }
 }

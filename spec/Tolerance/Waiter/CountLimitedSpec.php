@@ -40,4 +40,12 @@ class CountLimitedSpec extends ObjectBehavior
         $this->wait();
         $this->shouldThrow(CountLimitReached::class)->duringWait();
     }
+
+    function it_propagates_the_state_reset(StatefulWaiter $waiter)
+    {
+        $this->beConstructedWith($waiter, 2);
+
+        $waiter->resetState()->shouldBeCalled();
+        $this->resetState();
+    }
 }
