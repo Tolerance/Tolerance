@@ -3,6 +3,7 @@
 namespace Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\DependencyInjection;
 
 use Prophecy\Argument;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -169,9 +170,12 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->setParameter(Argument::any(), Argument::any())->willReturn(null);
         $builder->findTaggedServiceIds(Argument::any())->willReturn([]);
         $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->willReturn(null);
-        $builder->fileExists(Argument::any())->will(function($arguments) {
-            return file_exists($arguments[0]);
-        });
+
+        if (method_exists(ContainerBuilder::class, 'fileExists')) {
+            $builder->fileExists(Argument::any())->will(function ($arguments) {
+                return file_exists($arguments[0]);
+            });
+        }
 
         $definition = $this->prophesize('Symfony\Component\DependencyInjection\Definition');
         $definition->replaceArgument(Argument::any(), Argument::any())->willReturn($definition);
