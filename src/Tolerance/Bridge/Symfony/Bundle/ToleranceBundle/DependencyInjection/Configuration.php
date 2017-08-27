@@ -164,7 +164,7 @@ class Configuration implements ConfigurationInterface
             $exponentialNode = $builder->root('exponential_back_off');
             $strategyChildren = $exponentialNode
                 ->children()
-                ->integerNode('exponent')->isRequired()->end()
+                ->floatNode('exponent')->isRequired()->end()
                 ->arrayNode('waiter')
                 ->isRequired()
                 ->children();
