@@ -19,7 +19,7 @@ class TimeOut implements Waiter, StatefulWaiter
     private $delegateWaiter;
 
     /**
-     * @var int
+     * @var float
      */
     private $timeOut;
 
@@ -30,7 +30,7 @@ class TimeOut implements Waiter, StatefulWaiter
 
     /**
      * @param Waiter $delegateWaiter
-     * @param int    $timeOut
+     * @param float    $timeOut
      */
     public function __construct(Waiter $delegateWaiter, $timeOut)
     {

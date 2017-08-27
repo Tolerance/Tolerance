@@ -57,7 +57,6 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
-        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
         $builder->setDefinition('tolerance.operation_runner_listeners.buffered_termination', Argument::that(function(Definition $definition) {
@@ -72,7 +71,6 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $definitionArgument = Argument::type('Symfony\Component\DependencyInjection\Definition');
 
         $builder = $this->createBuilder();
-        $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->shouldBeCalled();
         $builder->setDefinition(Argument::any(), $definitionArgument)->willReturn(null);
         $builder->setParameter(Argument::any(), Argument::any())->shouldBeCalled();
         $builder->setDefinition('tolerance.operation_runner_listeners.buffered_termination', Argument::any())->shouldNotBeCalled();
@@ -171,6 +169,9 @@ class ToleranceExtensionTest extends \PHPUnit_Framework_TestCase
         $builder->setParameter(Argument::any(), Argument::any())->willReturn(null);
         $builder->findTaggedServiceIds(Argument::any())->willReturn([]);
         $builder->addResource(Argument::type('Symfony\Component\Config\Resource\ResourceInterface'))->willReturn(null);
+        $builder->fileExists(Argument::any())->will(function($arguments) {
+            return file_exists($arguments[0]);
+        });
 
         $definition = $this->prophesize('Symfony\Component\DependencyInjection\Definition');
         $definition->replaceArgument(Argument::any(), Argument::any())->willReturn($definition);
