@@ -11,6 +11,8 @@
 
 namespace Tolerance\Operation\Exception;
 
+use Psr\Http\Message\ResponseInterface;
+
 class PromiseException extends \Exception
 {
     /**
@@ -27,6 +29,21 @@ class PromiseException extends \Exception
     {
         $this->value = $value;
         $this->fulfilled = $fulfilled;
+
+        if (false === $this->fulfilled) {
+            if ($value instanceof ResponseInterface) {
+                $message = sprintf(
+                    'Request resulted in a `%s %s` response',
+                    $value->getStatusCode(),
+                    $value->getReasonPhrase()
+                );
+            } elseif ($value instanceof \Exception) {
+                $message = $value->getMessage();
+                $previous = $value;
+            }
+
+            parent::__construct($message ?? null, 0, $previous ?? null);
+        }
     }
 
     /**
