@@ -38,7 +38,7 @@ class ExponentialBackOff implements Waiter, StatefulWaiter
      * @param float $initialExponent
      * @param float $step
      */
-    public function __construct(Waiter $waiter, $initialExponent, float $step = 1.0)
+    public function __construct(Waiter $waiter, $initialExponent, $step = 1.0)
     {
         $this->waiter = $waiter;
         $this->initialExponent = $initialExponent;
