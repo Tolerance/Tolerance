@@ -40,9 +40,11 @@ class PromiseException extends \Exception
             } elseif ($value instanceof \Exception) {
                 $message = $value->getMessage();
                 $previous = $value;
+            } else {
+                $message = !is_object($value) ? (string) $value : sprintf('Something went wrong (%s)', get_class($value));
             }
 
-            parent::__construct($message ?? null, 0, $previous ?? null);
+            parent::__construct($message, 0, isset($previous) ? $previous : null);
         }
     }
 
