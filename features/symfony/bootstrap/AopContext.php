@@ -52,6 +52,19 @@ class AopContext implements Context
     }
 
     /**
+     * @Given the 3rd party API will fail until the :nth run
+     */
+    public function theRdPartyApiWillFailUntilNthRun($nth)
+    {
+        $nbFail = substr($nth, 0, -2);
+        for ($i = 0; $i < $nbFail; ++$i) {
+            $this->stepByStepHookApiClient->registerStepHook($i, function () {
+                return new ApiException('That first step that fails');
+            });
+        }
+    }
+
+    /**
      * @When I call my local client service
      */
     public function iCallMyLocalClientService()
@@ -65,6 +78,16 @@ class AopContext implements Context
     public function iShouldSeeTheCallAsSuccessful()
     {
         if ($this->response != 'The good API answer') {
+            throw new \RuntimeException('The found answer is not matching the expected one');
+        }
+    }
+
+    /**
+     * @Then I should see the call as error
+     */
+    public function iShouldSeeTheCallAsError()
+    {
+        if (false === $this->response instanceof ApiException) {
             throw new \RuntimeException('The found answer is not matching the expected one');
         }
     }

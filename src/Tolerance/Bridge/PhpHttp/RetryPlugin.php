@@ -12,9 +12,12 @@
 namespace Tolerance\Bridge\PhpHttp;
 
 use Http\Client\Common\Plugin;
+use Http\Client\Promise\HttpRejectedPromise;
+use Http\Client\Promise\HttpFulfilledPromise;
 use Psr\Http\Message\RequestInterface;
 use Tolerance\Operation\PromiseOperation;
 use Tolerance\Operation\Runner\RetryPromiseOperationRunner;
+use Tolerance\Operation\Exception\PromiseException;
 use Tolerance\Operation\ExceptionCatcher\ThrowableCatcherVoter;
 use Tolerance\Waiter\Waiter;
 
@@ -35,10 +38,16 @@ final class RetryPlugin implements Plugin
      */
     public function handleRequest(RequestInterface $request, callable $next, callable $first)
     {
-        $runner = new RetryPromiseOperationRunner($this->waiter, $this->retryVoter, null, false);
+        try {
+            $runner = new RetryPromiseOperationRunner($this->waiter, $this->retryVoter, null, false);
 
-        return $runner->run(new PromiseOperation(function () use ($next, $request) {
-            return $next($request);
-        }));
+            return $runner->run(new PromiseOperation(function () use ($next, $request) {
+                return $next($request);
+            }));
+        } catch (PromiseException $exception) {
+            $value = $exception->getValue();
+
+            return $exception->isFulfilled() ? new HttpFulfilledPromise($value) : new HttpRejectedPromise($value);
+        }
     }
 }
