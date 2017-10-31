@@ -5,6 +5,7 @@ use Http\Mock\Client as MockClient;
 use Http\Client\Common\PluginClient;
 use Tolerance\Bridge\PhpHttp\RetryPlugin;
 use Tolerance\Waiter\SleepWaiter;
+use Tolerance\Waiter\CountLimited;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use function GuzzleHttp\Psr7\copy_to_string;
 
@@ -22,8 +23,7 @@ class PhpHttpContext implements Context
         $this->httpClient = new PluginClient(
             $this->mockClient,
             [
-                new RetryPlugin(new SleepWaiter()),
-                new \Http\Client\Common\Plugin\ErrorPlugin(),
+                new RetryPlugin(new CountLimited(new SleepWaiter(), 10)),
             ]
         );
         $this->messageFactory = new GuzzleMessageFactory();
@@ -35,6 +35,17 @@ class PhpHttpContext implements Context
     public function theRdPartyApiWillFailAtTheStRun()
     {
         $this->mockClient->addResponse($this->messageFactory->createResponse(500, 'Internal Error'));
+    }
+
+    /**
+     * @Given the 3rd party API will fail until the :nth run
+     */
+    public function theRdPartyApiWillFailUntilNthRun($nth)
+    {
+        $nbFail = substr($nth, 0, -2);
+        for ($i = 0; $i <= $nbFail; ++$i) {
+            $this->mockClient->addResponse($this->messageFactory->createResponse(500, 'Internal Error'));
+        }
     }
 
     /**
@@ -59,6 +70,16 @@ class PhpHttpContext implements Context
     public function iShouldSeeTheCallAsSuccessful()
     {
         if (copy_to_string($this->response->getBody()) != 'bingo !') {
+            throw new \RuntimeException('The found answer is not matching the expected one');
+        }
+    }
+
+    /**
+     * @Then I should see the call as error
+     */
+    public function iShouldSeeTheCallAsError()
+    {
+        if ($this->response->getStatusCode() < 400) {
             throw new \RuntimeException('The found answer is not matching the expected one');
         }
     }
