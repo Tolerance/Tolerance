@@ -2,14 +2,14 @@
 
 [![Package version](https://img.shields.io/packagist/v/sroze/tolerance.svg)](https://packagist.org/packages/sroze/tolerance)
 [![Build Status](https://travis-ci.org/Tolerance/Tolerance.svg?branch=master)](https://travis-ci.org/Tolerance/Tolerance)
-[![Documentation Status](https://readthedocs.org/projects/tolerance/badge/?version=latest)](http://tolerance.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/tolerance/badge/?version=latest)](https://tolerance.readthedocs.io?badge=latest)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Tolerance/Tolerance/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Tolerance/Tolerance/?branch=master)
 
 Tolerance is a PHP library that provides fault tolerance and microservices related tools.
 
 ## Getting started
 
-- [Documentation](http://tolerance.io)
+- [Documentation](https://tolerance.readthedocs.io)
 
 ## License
 
