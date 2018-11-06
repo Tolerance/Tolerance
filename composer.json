@@ -23,14 +23,14 @@
     },
 
     "autoload": {
-        "psr-0": {
-            "Tolerance\\": "src/"
+        "psr-4": {
+            "Tolerance\\": "src/Tolerance/"
         }
     },
 
     "autoload-dev": {
-        "psr-0": {
-            "Tolerance\\": "tests/"
+        "psr-4": {
+            "Tolerance\\": "tests/Tolerance/"
         }
     },
 
